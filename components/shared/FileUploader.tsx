@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { UploadCloud, File, X, AlertCircle, CheckCircle2, Image as ImageIcon } from 'lucide-react';
+import { UploadCloud, File, X, AlertCircle, CheckCircle2, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { formatBytes } from '@/lib/utils/formatters';
 import { useI18n } from '@/lib/i18n/i18n-context';
 
@@ -42,19 +42,17 @@ export function FileUploader({
     }
 
     for (const file of filesArray) {
-      // Size check
       if (file.size > maxFileSizeMB * 1024 * 1024) {
-        setErrorMessage(`File "${file.name}" exceeds the maximum limit of ${maxFileSizeMB} MB.`);
+        setErrorMessage(`File "${file.name}" exceeds the limit of ${maxFileSizeMB} MB.`);
         continue;
       }
 
-      // Extension / Mime validation
       const ext = '.' + file.name.split('.').pop()?.toLowerCase();
       const hasValidExt = acceptedExtensions.length === 0 || acceptedExtensions.some((e) => e.toLowerCase() === ext);
       const hasValidMime = acceptedMimeTypes.length === 0 || acceptedMimeTypes.some((m) => file.type.startsWith(m.replace('/*', '')));
 
       if (acceptedExtensions.length > 0 && !hasValidExt && !hasValidMime) {
-        setErrorMessage(`Unsupported file format "${ext}". Allowed formats: ${acceptedExtensions.join(', ')}`);
+        setErrorMessage(`Unsupported file format "${ext}". Allowed: ${acceptedExtensions.join(', ')}`);
         continue;
       }
 
@@ -88,7 +86,6 @@ export function FileUploader({
     }
   };
 
-  // Clipboard paste support for images
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
       if (e.clipboardData && e.clipboardData.files.length > 0) {
@@ -101,16 +98,16 @@ export function FileUploader({
 
   return (
     <div className="w-full space-y-4">
-      {/* Drag & Drop Zone */}
+      {/* Upload Drop Area */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !disabled && fileInputRef.current?.click()}
-        className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all cursor-pointer select-none ${
+        className={`relative rounded-3xl p-8 sm:p-12 text-center transition-all duration-200 cursor-pointer select-none border-2 border-dashed ${
           isDragging
-            ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-950/20 scale-[1.01]'
-            : 'border-slate-300 dark:border-slate-700 hover:border-brand-400 dark:hover:border-brand-500 bg-slate-50/50 dark:bg-slate-900/30'
+            ? 'border-brand-500 bg-brand-500/10 scale-[1.01] shadow-xl shadow-brand-500/10'
+            : 'border-slate-300 dark:border-slate-700/80 hover:border-brand-400 dark:hover:border-brand-500/60 bg-slate-50/80 dark:bg-slate-900/60'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <input
@@ -128,37 +125,35 @@ export function FileUploader({
           }}
         />
 
-        <div className="flex flex-col items-center justify-center space-y-3">
-          <div className="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-            <UploadCloud className="w-8 h-8" />
+        <div className="flex flex-col items-center justify-center space-y-3.5">
+          <div className="w-14 h-14 rounded-2xl bg-brand-600/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 flex items-center justify-center shadow-sm">
+            <UploadCloud className="w-7 h-7" />
           </div>
 
-          <div className="space-y-1">
-            <h3 className="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100">
-              {t.dropzoneTitle}
+          <div className="space-y-1 max-w-sm">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+              {isDragging ? 'Drop file to upload' : 'Drop your files here'}
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              {t.dropzoneSubtitle}
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              or browse from your device
             </p>
           </div>
 
-          <div className="pt-2">
-            <button
-              type="button"
-              disabled={disabled}
-              className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-medium text-sm shadow-md hover:shadow-brand-500/25 transition-all inline-flex items-center gap-2"
-            >
-              <UploadCloud className="w-4 h-4" />
-              <span>{t.chooseFiles}</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            disabled={disabled}
+            className="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-95 text-white font-bold text-xs shadow-md shadow-brand-600/25 transition-all inline-flex items-center gap-2"
+          >
+            <UploadCloud className="w-4 h-4" />
+            <span>Choose Files</span>
+          </button>
 
-          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500 pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400 pt-1 font-medium">
             {acceptedExtensions.length > 0 && (
-              <span>Supported: {acceptedExtensions.join(', ').toUpperCase()}</span>
+              <span>Formats: {acceptedExtensions.join(', ').toUpperCase()}</span>
             )}
             <span>•</span>
-            <span>Max file size: {maxFileSizeMB} MB</span>
+            <span>Max size: {maxFileSizeMB} MB</span>
             {maxFiles > 1 && (
               <>
                 <span>•</span>
@@ -171,7 +166,7 @@ export function FileUploader({
 
       {/* Error alert */}
       {errorMessage && (
-        <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs sm:text-sm flex items-start gap-2.5">
+        <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-start gap-2.5">
           <AlertCircle className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -179,8 +174,8 @@ export function FileUploader({
 
       {/* Selected Files Queue */}
       {selectedFiles.length > 0 && (
-        <div className="space-y-2.5 pt-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
+        <div className="space-y-2 pt-2">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
             <span>
               Selected Files ({selectedFiles.length}{maxFiles > 1 ? ` / ${maxFiles}` : ''})
             </span>
@@ -188,32 +183,32 @@ export function FileUploader({
               <button
                 type="button"
                 onClick={() => onFilesSelected([])}
-                className="text-rose-500 hover:text-rose-600 text-xs font-normal"
+                className="text-rose-500 hover:text-rose-600 text-xs font-semibold"
               >
                 Clear all
               </button>
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-60 overflow-y-auto p-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1">
             {selectedFiles.map((file, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-sm"
+                className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0 text-slate-600 dark:text-slate-300">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 text-slate-600 dark:text-slate-300">
                     {file.type.startsWith('image/') ? (
                       <ImageIcon className="w-4 h-4 text-brand-500" />
                     ) : (
-                      <File className="w-4 h-4 text-slate-500" />
+                      <File className="w-4 h-4 text-slate-400" />
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-medium text-slate-800 dark:text-slate-100 truncate">
+                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
                       {file.name}
                     </p>
-                    <p className="text-[10px] text-slate-400">
+                    <p className="text-[10px] text-slate-400 font-mono">
                       {formatBytes(file.size)}
                     </p>
                   </div>
@@ -226,7 +221,7 @@ export function FileUploader({
                       e.stopPropagation();
                       onRemoveFile(idx);
                     }}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                     title="Remove file"
                   >
                     <X className="w-4 h-4" />

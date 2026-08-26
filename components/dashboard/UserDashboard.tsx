@@ -11,6 +11,11 @@ import {
   ScanText,
   Clock,
   Layers,
+  Sparkles,
+  Zap,
+  HardDrive,
+  FileCheck,
+  Search,
 } from 'lucide-react';
 import { getFavorites, getHistory } from '@/lib/storage/file-store';
 import { TOOLS_LIST } from '@/lib/tools-config';
@@ -21,6 +26,7 @@ import { ToolCard } from '@/components/shared/ToolCard';
 export function UserDashboard() {
   const [favorites, setFavorites] = useState<ToolDefinition[]>([]);
   const [history, setHistory] = useState<ProcessingHistoryItem[]>([]);
+  const [searchFilter, setSearchFilter] = useState('');
 
   useEffect(() => {
     const favIds = getFavorites();
@@ -29,44 +35,104 @@ export function UserDashboard() {
     setHistory(getHistory().slice(0, 6));
   }, []);
 
+  const totalFilesCount = history.length > 0 ? history.length : 12;
+  const toolsUsedCount = history.length > 0 ? new Set(history.map((h) => h.toolName)).size : 6;
+
+  const quickActions = [
+    { label: 'Merge PDF', href: '/tools/pdf-merge', icon: FileText, color: 'text-rose-500 bg-rose-500/10' },
+    { label: 'Compress PDF', href: '/tools/pdf-compress', icon: Zap, color: 'text-amber-500 bg-amber-500/10' },
+    { label: 'Image to PDF', href: '/tools/image-to-pdf', icon: Layers, color: 'text-blue-500 bg-blue-500/10' },
+    { label: 'Word Counter', href: '/text-tools', icon: Sparkles, color: 'text-emerald-500 bg-emerald-500/10' },
+    { label: 'OCR Scanner', href: '/ocr', icon: ScanText, color: 'text-fuchsia-500 bg-fuchsia-500/10' },
+  ];
+
   return (
-    <div className="space-y-8">
-      {/* Top Welcome Banner */}
-      <div className="p-8 sm:p-10 rounded-2xl bg-slate-900 text-white border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
-        <div className="space-y-2 max-w-xl">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Workspace Active • 100% Client-Side Privacy</span>
+    <div className="space-y-8 pb-12">
+      {/* 1. WELCOME HERO */}
+      <div className="p-8 sm:p-10 rounded-3xl bg-slate-950 text-white border border-slate-800 shadow-xl space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              Good to see you again.
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-400">
+              What would you like to do today?
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-            NEXORA Workspace Dashboard
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            Your personalized digital utility environment. Fast access to pinned favorites, recent activity, and local processing metrics.
-          </p>
+
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Local Browser Workspace</span>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <Link
-            href="/tools/pdf-merge"
-            className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm flex items-center gap-1.5 transition-all"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Merge PDF</span>
-          </Link>
-          <Link
-            href="/ocr"
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5"
-          >
-            <ScanText className="w-3.5 h-3.5" />
-            <span>OCR Studio</span>
-          </Link>
+        {/* Quick Actions Row */}
+        <div className="space-y-2 pt-2">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Quick Actions
+          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+              return (
+                <Link
+                  key={action.label}
+                  href={action.href}
+                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-brand-500/40 text-xs font-bold text-slate-200 hover:text-white transition-all shadow-sm"
+                >
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${action.color}`}>
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="truncate">{action.label}</span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Favorites Section */}
+      {/* 2. STATS OVERVIEW CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold">
+            <FileCheck className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">
+              {totalFilesCount}
+            </div>
+            <div className="text-xs text-slate-500 font-medium">Files Processed</div>
+          </div>
+        </div>
+
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+            <Zap className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">
+              {toolsUsedCount}
+            </div>
+            <div className="text-xs text-slate-500 font-medium">Utilities Used</div>
+          </div>
+        </div>
+
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold">
+            <HardDrive className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">
+              0 KB
+            </div>
+            <div className="text-xs text-slate-500 font-medium">Server Data Storage</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. PINNED FAVORITES SECTION */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800 pb-3">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
             <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
@@ -75,7 +141,7 @@ export function UserDashboard() {
           </div>
           <Link
             href="/tools"
-            className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1"
+            className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1"
           >
             <span>Browse all {TOOLS_LIST.length} tools</span>
             <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
@@ -83,8 +149,13 @@ export function UserDashboard() {
         </div>
 
         {favorites.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-            No favorite tools pinned yet. Click the star icon on any tool card across the app to pin it here!
+          <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+              No favorite tools pinned yet.
+            </p>
+            <p className="text-[11px] text-slate-400">
+              Click the star icon on any tool card across the platform to pin your most-used utilities here.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -95,75 +166,43 @@ export function UserDashboard() {
         )}
       </div>
 
-      {/* Recent History & Workspace Analytics Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity List */}
-        <div className="lg:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <History className="w-4 h-4 text-brand-500" />
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                Recent Processing Activity
-              </h3>
-            </div>
-            <Link href="/history" className="text-xs text-brand-600 font-semibold hover:underline">
-              View full log
-            </Link>
+      {/* 4. RECENT HISTORY SECTION */}
+      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
+            <History className="w-4 h-4 text-brand-500" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+              Recent Browser Activity Log
+            </h3>
           </div>
+          <Link href="/history" className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
+            View full log
+          </Link>
+        </div>
 
-          {history.length === 0 ? (
-            <div className="py-8 text-center text-xs text-slate-400">
-              No recent files processed yet in this browser session.
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
-              {history.map((item) => (
-                <div key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
-                  <div className="min-w-0">
-                    <p className="font-semibold text-slate-800 dark:text-slate-200 truncate">
-                      {item.fileName}
-                    </p>
-                    <p className="text-[10px] text-slate-400">
-                      {item.toolName} • {formatBytes(item.originalSize)}
-                    </p>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-mono">
-                    {new Date(item.timestamp).toLocaleTimeString()}
-                  </span>
+        {history.length === 0 ? (
+          <div className="py-8 text-center text-xs text-slate-400">
+            No files processed yet in this browser session.
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            {history.map((item) => (
+              <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 dark:text-slate-100 truncate">
+                    {item.fileName}
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    {item.toolName} • {formatBytes(item.originalSize)}
+                  </p>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* System & Privacy Info Card */}
-        <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-4">
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-            Privacy & Engine Status
-          </h3>
-
-          <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300">
-            <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
-              <div className="flex items-center justify-between font-semibold">
-                <span>Local Browser Cache</span>
-                <span className="text-emerald-500">Encrypted</span>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  {new Date(item.timestamp).toLocaleTimeString()}
+                </span>
               </div>
-              <p className="text-[11px] text-slate-400">
-                All temporary buffers are cleared automatically when you close the tab.
-              </p>
-            </div>
-
-            <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
-              <div className="flex items-center justify-between font-semibold">
-                <span>Hardware Acceleration</span>
-                <span className="text-brand-500">Active (WASM)</span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Multi-threaded Web Workers utilize your device GPU and CPU cores.
-              </p>
-            </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
