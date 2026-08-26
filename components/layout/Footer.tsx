@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, ShieldCheck, Lock, Zap, FileText } from 'lucide-react';
+import { Sparkles, Lock } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { siteConfig } from '@/config/site';
 
@@ -10,42 +10,31 @@ export function Footer() {
   const { t } = useI18n();
 
   return (
-    <footer className="w-full border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 mt-20 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 space-y-12">
+    <footer className="w-full border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 mt-16 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Col */}
-          <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold">
+          <div className="lg:col-span-2 space-y-3">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold">
                 <Sparkles className="w-4 h-4 fill-current" />
               </div>
-              <span className="text-lg font-black text-slate-900 dark:text-slate-50">
+              <span className="text-base font-bold text-slate-900 dark:text-slate-50">
                 NEXORA<span className="text-brand-500 text-xs ml-1">TOOLS</span>
               </span>
             </Link>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed">
               {siteConfig.description}
             </p>
-
-            <div className="flex flex-wrap items-center gap-2.5 pt-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>{siteConfig.stats.clientSideRatio} Client WASM Privacy</span>
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">
-                <Zap className="w-3.5 h-3.5" />
-                <span>{siteConfig.stats.totalTools} Active Utilities</span>
-              </div>
-            </div>
           </div>
 
           {/* PDF & Document */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
               PDF & Documents
             </h4>
-            <ul className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+            <ul className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
               <li>
                 <Link href="/tools/pdf-merge" className="hover:text-brand-600 transition-colors">
                   Merge PDF
@@ -67,11 +56,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/pdf-editor" className="hover:text-brand-600 transition-colors">
-                  Visual PDF Editor
-                </Link>
-              </li>
-              <li>
                 <Link href="/tools/docx-to-pdf" className="hover:text-brand-600 transition-colors">
                   Word to PDF
                 </Link>
@@ -80,11 +64,11 @@ export function Footer() {
           </div>
 
           {/* Text & Developer */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
               Text & Developer
             </h4>
-            <ul className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+            <ul className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
               <li>
                 <Link href="/text-tools" className="hover:text-brand-600 transition-colors">
                   Word Counter & Case Studio
@@ -102,56 +86,41 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/security-tools" className="hover:text-brand-600 transition-colors">
-                  SHA-256 Hash & Password Generator
+                  SHA-256 & Password Tools
                 </Link>
               </li>
               <li>
                 <Link href="/ocr" className="hover:text-brand-600 transition-colors">
-                  Multi-Language OCR Center
-                </Link>
-              </li>
-              <li>
-                <Link href="/ai-tools" className="hover:text-brand-600 transition-colors">
-                  AI Document Assistant
+                  OCR Text Recognition
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* System & Workspace */}
-          <div className="space-y-3">
+          {/* Workspace */}
+          <div className="space-y-2.5">
             <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
-              Workspace & System
+              Utilities
             </h4>
-            <ul className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+            <ul className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
               <li>
                 <Link href="/dashboard" className="hover:text-brand-600 transition-colors">
-                  User Dashboard
+                  User Workspace
                 </Link>
               </li>
               <li>
                 <Link href="/calculators" className="hover:text-brand-600 transition-colors">
-                  Storage & Unit Calculators
+                  Unit Converters
                 </Link>
               </li>
               <li>
                 <Link href="/qr-barcode" className="hover:text-brand-600 transition-colors">
-                  QR & Barcode Studio
-                </Link>
-              </li>
-              <li>
-                <Link href="/batch" className="hover:text-brand-600 transition-colors">
-                  Batch Processing Queue
+                  QR & Barcodes
                 </Link>
               </li>
               <li>
                 <Link href="/history" className="hover:text-brand-600 transition-colors">
-                  Processing History
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin" className="hover:text-brand-600 transition-colors">
-                  Admin Dashboard
+                  Activity History
                 </Link>
               </li>
             </ul>
@@ -159,16 +128,9 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div className="flex items-center gap-1">
-            <span>© {new Date().getFullYear()} {siteConfig.name}. {t.footer.rights}</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1 text-slate-500">
-              <Lock className="w-3 h-3 text-emerald-500" />
-              <span>TLS 1.3 / AES-256 Encrypted • Zero Server Retention</span>
-            </span>
+        <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div>
+            © {new Date().getFullYear()} {siteConfig.name}. {t.footer.rights}
           </div>
         </div>
       </div>
