@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
+const isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
+
 const nextConfig = {
+  output: 'export',
+  basePath: isGitHubActions ? '/nexora-tools' : '',
+  assetPrefix: isGitHubActions ? '/nexora-tools/' : '',
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
   reactStrictMode: true,
   swcMinify: true,
   webpack: (config) => {
