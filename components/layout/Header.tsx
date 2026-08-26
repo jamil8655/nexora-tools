@@ -15,6 +15,7 @@ import {
   Layers,
   Wrench,
   Bookmark,
+  Smartphone,
 } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 import { siteConfig } from '@/config/site';
@@ -26,7 +27,6 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Global Ctrl+K / Cmd+K listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -38,18 +38,17 @@ export function Header() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Scroll detection for dynamic header
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 15);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const navLinks = [
-    { label: 'PDF', href: '/tools?category=pdf', icon: FileText },
-    { label: 'Images', href: '/tools?category=image', icon: ImageIcon },
+    { label: 'PDF Suite', href: '/tools?category=pdf', icon: FileText },
+    { label: 'Image Tools', href: '/tools?category=image', icon: ImageIcon },
     { label: 'Documents', href: '/tools?category=document', icon: Layers },
     { label: 'Calculators', href: '/calculators', icon: Wrench },
     { label: 'Dev Tools', href: '/dev-tools', icon: LayoutGrid },
@@ -59,21 +58,21 @@ export function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        className={`sticky top-0 z-40 w-full transition-all duration-200 ${
           isScrolled
-            ? 'bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 shadow-md shadow-black/20'
-            : 'bg-slate-900 dark:bg-slate-950 border-b border-slate-800/40'
+            ? 'glass-nav shadow-sm'
+            : 'bg-white/95 dark:bg-slate-900/95 border-b border-slate-200/80 dark:border-slate-800'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white flex items-center justify-center font-bold shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
                 <Sparkles className="w-4 h-4 fill-current" />
               </div>
-              <span className="text-base font-extrabold text-white tracking-tight">
-                NEXORA<span className="text-brand-400 text-xs ml-1 font-mono uppercase">Tools</span>
+              <span className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                NEXORA<span className="text-brand-600 dark:text-brand-400 text-xs ml-1 font-mono uppercase">Tools</span>
               </span>
             </Link>
 
@@ -85,10 +84,10 @@ export function Header() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                       isActive
-                        ? 'bg-slate-800 text-brand-400'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                        ? 'bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     {link.label}
@@ -104,20 +103,20 @@ export function Header() {
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 text-xs transition-all shadow-sm"
+              className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-semibold transition-all shadow-sm"
               aria-label="Search tools"
             >
               <Search className="w-3.5 h-3.5 text-slate-400" />
-              <span className="hidden sm:inline-block text-slate-400">Search tools...</span>
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-900 text-[10px] font-mono text-slate-400 border border-slate-700">
+              <span className="hidden sm:inline-block">Search 60+ tools...</span>
+              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white dark:bg-slate-900 text-[10px] font-mono text-slate-400 border border-slate-200 dark:border-slate-700">
                 <Command className="w-2.5 h-2.5" /> K
               </kbd>
             </button>
 
-            {/* Dashboard Workspace */}
+            {/* Workspace Link */}
             <Link
               href="/dashboard"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition-colors shadow-sm shadow-brand-600/30"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition-colors shadow-sm shadow-brand-600/25"
             >
               <Bookmark className="w-3.5 h-3.5" />
               <span>Workspace</span>
@@ -127,12 +126,11 @@ export function Header() {
             <button
               type="button"
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               aria-label="Toggle theme"
             >
-              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
             </button>
-
           </div>
         </div>
       </header>
