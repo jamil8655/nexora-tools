@@ -11,20 +11,18 @@ import {
   CheckCircle2,
   AlertCircle,
   Play,
-  Share2,
   RefreshCw,
   Clock,
   User,
   ShieldCheck,
   Zap,
-  ExternalLink,
-  Layers,
 } from 'lucide-react';
 import {
   MediaMetadata,
   MediaDownloadFormat,
   fetchMediaMetadata,
   detectPlatform,
+  downloadInSiteMedia,
 } from '@/lib/media/media-downloader';
 import { downloadSingleFile } from '@/lib/utils/download';
 
@@ -35,6 +33,8 @@ export function MediaDownloaderStudio() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'video' | 'audio' | 'image'>('video');
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadStatusText, setDownloadStatusText] = useState('');
 
   const handlePaste = async () => {
     try {
@@ -62,7 +62,7 @@ export function MediaDownloaderStudio() {
     setMetadata(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       const data = await fetchMediaMetadata(targetUrl);
       setMetadata(data);
     } catch (err: any) {
@@ -75,29 +75,30 @@ export function MediaDownloaderStudio() {
   const handleDownload = async (format: MediaDownloadFormat) => {
     if (!metadata) return;
     setDownloadingId(format.id);
+    setDownloadProgress(10);
+    setDownloadStatusText('Connecting to in-site stream...');
 
     try {
-      if (format.type === 'image' && format.streamUrl) {
-        const response = await fetch(format.streamUrl);
-        const blob = await response.blob();
-        downloadSingleFile(blob, `${metadata.platformName}_thumbnail.${format.extension}`);
-      } else if (format.directDownloadUrl) {
-        // Open high-speed direct stream downloader
-        const link = document.createElement('a');
-        link.href = format.directDownloadUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
+      const { blob, fileName } = await downloadInSiteMedia(
+        metadata,
+        format,
+        (pct, status) => {
+          setDownloadProgress(pct);
+          setDownloadStatusText(status);
+        }
+      );
+
+      // Trigger direct in-site download without redirecting
+      downloadSingleFile(blob, fileName);
     } catch (err) {
       console.error(err);
-      if (format.directDownloadUrl) {
-        window.open(format.directDownloadUrl, '_blank');
-      }
+      setError('Download failed. Please try again.');
     } finally {
-      setTimeout(() => setDownloadingId(null), 800);
+      setTimeout(() => {
+        setDownloadingId(null);
+        setDownloadProgress(0);
+        setDownloadStatusText('');
+      }, 600);
     }
   };
 
@@ -114,15 +115,15 @@ export function MediaDownloaderStudio() {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300">
       {/* 1. Header Banner */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shadow-sm">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-brand-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shadow-sm">
           <Sparkles className="w-3.5 h-3.5 text-purple-500 animate-pulse" />
-          <span>Universal Social Media Video & Audio Downloader</span>
+          <span>100% In-Site Direct Social Media Video & Audio Downloader</span>
         </div>
         <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
           Download Videos in 4K, 1080p & MP3 Audio
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
-          Paste any link from YouTube, Instagram, Facebook, TikTok, Twitter, or WhatsApp to extract real high-resolution videos and MP3 audio instantly.
+          Paste any link from YouTube, Instagram, Facebook, TikTok, Twitter, or WhatsApp to download high-resolution MP4 videos and MP3 audio directly on this site.
         </p>
       </div>
 
@@ -152,7 +153,7 @@ export function MediaDownloaderStudio() {
             type="button"
             onClick={() => handleAnalyze()}
             disabled={isLoading || !urlInput.trim()}
-            className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 transition-all shrink-0 active:scale-95"
+            className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 transition-all shrink-0 active:scale-95 cursor-pointer"
           >
             {isLoading ? (
               <>
@@ -162,7 +163,7 @@ export function MediaDownloaderStudio() {
             ) : (
               <>
                 <Zap className="w-4 h-4 fill-current" />
-                <span>Get Downloads</span>
+                <span>Fetch Streams</span>
               </>
             )}
           </button>
@@ -235,7 +236,7 @@ export function MediaDownloaderStudio() {
                 </div>
                 <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Direct High-Speed Download</span>
+                  <span>100% In-Site Private Download</span>
                 </div>
               </div>
             </div>
@@ -317,49 +318,23 @@ export function MediaDownloaderStudio() {
                       type="button"
                       onClick={() => handleDownload(fmt)}
                       disabled={downloadingId === fmt.id}
-                      className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-95 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-purple-600/25 flex items-center gap-1.5 transition-all shrink-0 cursor-pointer"
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-95 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-purple-600/25 flex items-center gap-2 transition-all shrink-0 cursor-pointer"
                     >
                       {downloadingId === fmt.id ? (
                         <>
                           <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                          <span>Connecting...</span>
+                          <span>{downloadStatusText || `Saving ${downloadProgress}%`}</span>
                         </>
                       ) : (
                         <>
                           <Download className="w-3.5 h-3.5" />
                           <span>Download {fmt.extension.toUpperCase()}</span>
-                          <ExternalLink className="w-3 h-3 opacity-70" />
                         </>
                       )}
                     </button>
                   </div>
                 ))}
             </div>
-
-            {/* Direct Multi-Mirror Servers */}
-            {metadata.directResolvers && metadata.directResolvers.length > 0 && (
-              <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/80 dark:border-purple-800/40 space-y-2 pt-3">
-                <div className="text-xs font-bold text-purple-900 dark:text-purple-300 flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 fill-current" />
-                  <span>Direct High-Speed Video Stream Servers:</span>
-                </div>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {metadata.directResolvers.map((res, i) => (
-                    <a
-                      key={i}
-                      href={res.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-purple-300 dark:border-purple-700 hover:border-purple-500 text-purple-700 dark:text-purple-300 text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:scale-105 transition-all"
-                    >
-                      <span>{res.icon}</span>
-                      <span>{res.name}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}

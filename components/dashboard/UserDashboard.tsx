@@ -16,6 +16,7 @@ import {
   HardDrive,
   FileCheck,
   Search,
+  Video,
 } from 'lucide-react';
 import { getFavorites, getHistory } from '@/lib/storage/file-store';
 import { TOOLS_LIST } from '@/lib/tools-config';
@@ -39,9 +40,9 @@ export function UserDashboard() {
   const toolsUsedCount = history.length > 0 ? new Set(history.map((h) => h.toolName)).size : 6;
 
   const quickActions = [
+    { label: 'Video Downloader', href: '/tools/media-downloader', icon: Video, color: 'text-purple-500 bg-purple-500/10' },
     { label: 'Merge PDF', href: '/tools/pdf-merge', icon: FileText, color: 'text-rose-500 bg-rose-500/10' },
     { label: 'Compress PDF', href: '/tools/pdf-compress', icon: Zap, color: 'text-amber-500 bg-amber-500/10' },
-    { label: 'Image to PDF', href: '/tools/image-to-pdf', icon: Layers, color: 'text-blue-500 bg-blue-500/10' },
     { label: 'Word Counter', href: '/text-tools', icon: Sparkles, color: 'text-emerald-500 bg-emerald-500/10' },
     { label: 'OCR Scanner', href: '/ocr', icon: ScanText, color: 'text-fuchsia-500 bg-fuchsia-500/10' },
   ];
@@ -49,26 +50,26 @@ export function UserDashboard() {
   return (
     <div className="space-y-8 pb-12">
       {/* 1. WELCOME HERO */}
-      <div className="p-8 sm:p-10 rounded-3xl bg-slate-950 text-white border border-slate-800 shadow-xl space-y-6">
+      <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-brand-600 via-indigo-600 to-slate-900 text-white shadow-xl space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              Good to see you again.
+              Welcome to Your Workspace
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400">
-              What would you like to do today?
+            <p className="text-xs sm:text-sm text-brand-100">
+              Access your favorite utilities, history records, and 65+ productivity tools.
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 text-white border border-white/30 text-xs font-semibold backdrop-blur-md">
+            <ShieldCheck className="w-4 h-4 text-emerald-300" />
             <span>Local Browser Workspace</span>
           </div>
         </div>
 
         {/* Quick Actions Row */}
         <div className="space-y-2 pt-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-brand-200">
             Quick Actions
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
@@ -78,7 +79,7 @@ export function UserDashboard() {
                 <Link
                   key={action.label}
                   href={action.href}
-                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-brand-500/40 text-xs font-bold text-slate-200 hover:text-white transition-all shadow-sm"
+                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold text-white transition-all shadow-sm backdrop-blur-md hover:scale-105"
                 >
                   <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${action.color}`}>
                     <Icon className="w-3.5 h-3.5" />
@@ -91,116 +92,114 @@ export function UserDashboard() {
         </div>
       </div>
 
-      {/* 2. STATS OVERVIEW CARDS */}
+      {/* 2. DASHBOARD STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold">
-            <FileCheck className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">
-              {totalFilesCount}
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Conversions</span>
+            <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 flex items-center justify-center">
+              <FileCheck className="w-4 h-4" />
             </div>
-            <div className="text-xs text-slate-500 font-medium">Files Processed</div>
           </div>
+          <div className="text-2xl font-black text-slate-900 dark:text-slate-100">{totalFilesCount}</div>
+          <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">100% Processed Locally</div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-            <Zap className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">
-              {toolsUsedCount}
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Tools Used</span>
+            <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+              <Layers className="w-4 h-4" />
             </div>
-            <div className="text-xs text-slate-500 font-medium">Utilities Used</div>
           </div>
+          <div className="text-2xl font-black text-slate-900 dark:text-slate-100">{toolsUsedCount}</div>
+          <div className="text-[11px] text-slate-400">Across All Categories</div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold">
-            <HardDrive className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono">
-              0 KB
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Favorites Saved</span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center">
+              <Star className="w-4 h-4 fill-amber-500" />
             </div>
-            <div className="text-xs text-slate-500 font-medium">Server Data Storage</div>
           </div>
+          <div className="text-2xl font-black text-slate-900 dark:text-slate-100">{favorites.length}</div>
+          <div className="text-[11px] text-slate-400">Pinned for Quick Access</div>
         </div>
       </div>
 
-      {/* 3. PINNED FAVORITES SECTION */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
-              Pinned Favorites ({favorites.length})
-            </h2>
+      {/* 3. FAVORITE TOOLS SECTION */}
+      {favorites.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Your Pinned Tools ({favorites.length})
+              </h2>
+            </div>
           </div>
-          <Link
-            href="/tools"
-            className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1"
-          >
-            <span>Browse all {TOOLS_LIST.length} tools</span>
-            <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
-          </Link>
-        </div>
 
-        {favorites.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-2">
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              No favorite tools pinned yet.
-            </p>
-            <p className="text-[11px] text-slate-400">
-              Click the star icon on any tool card across the platform to pin your most-used utilities here.
-            </p>
-          </div>
-        ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {favorites.map((tool) => (
               <ToolCard key={tool.id} tool={tool} />
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* 4. RECENT HISTORY SECTION */}
-      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+      {/* 4. RECENT ACTIVITY HISTORY */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2">
-            <History className="w-4 h-4 text-brand-500" />
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              Recent Browser Activity Log
-            </h3>
+            <History className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              Recent Conversion Logs
+            </h2>
           </div>
-          <Link href="/history" className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
-            View full log
+          <Link
+            href="/history"
+            className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1"
+          >
+            <span>View All</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        {history.length === 0 ? (
-          <div className="py-8 text-center text-xs text-slate-400">
-            No files processed yet in this browser session.
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+        {history.length > 0 ? (
+          <div className="divide-y divide-slate-100 dark:divide-slate-800 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-sm">
             {history.map((item) => (
-              <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
-                <div className="min-w-0">
-                  <p className="font-bold text-slate-900 dark:text-slate-100 truncate">
+              <div
+                key={item.id}
+                className="p-4 flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+              >
+                <div className="space-y-0.5 min-w-0">
+                  <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
                     {item.fileName}
-                  </p>
-                  <p className="text-[11px] text-slate-400">
-                    {item.toolName} • {formatBytes(item.originalSize)}
-                  </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                    <span className="font-semibold text-brand-600 dark:text-brand-400">{item.toolName}</span>
+                    <span>•</span>
+                    <span>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
                 </div>
-                <span className="text-[10px] text-slate-400 font-mono">
-                  {new Date(item.timestamp).toLocaleTimeString()}
-                </span>
+
+                <div className="text-right shrink-0">
+                  <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {formatBytes(item.outputSize || item.originalSize)}
+                  </div>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Success</span>
+                </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="p-8 text-center rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+            <Clock className="w-8 h-8 mx-auto text-slate-400" />
+            <div className="text-xs font-bold text-slate-700 dark:text-slate-300">No conversions recorded yet</div>
+            <p className="text-[11px] text-slate-400">
+              When you convert, compress, or edit files, they will appear here.
+            </p>
           </div>
         )}
       </div>
