@@ -47,6 +47,7 @@ export function Header() {
   }, []);
 
   const navLinks = [
+    { label: 'Video Downloader', href: '/tools/media-downloader', icon: Sparkles },
     { label: 'PDF Suite', href: '/tools?category=pdf', icon: FileText },
     { label: 'Image Tools', href: '/tools?category=image', icon: ImageIcon },
     { label: 'Documents', href: '/tools?category=document', icon: Layers },

@@ -44,6 +44,7 @@ import { ColorStudio } from '@/components/dev/ColorStudio';
 import { HashStudio } from '@/components/security/HashStudio';
 import { PasswordStudio } from '@/components/security/PasswordStudio';
 import { AiStudio } from '@/components/ai/AiStudio';
+import { MediaDownloaderStudio } from '@/components/media/MediaDownloaderStudio';
 
 export function ToolPageClient({ toolId }: { toolId: string }) {
   const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
@@ -94,6 +95,8 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
     customWorkspace = <PasswordStudio />;
   } else if (tool.id === 'ai-summarizer') {
     customWorkspace = <AiStudio />;
+  } else if (tool.category === 'media' || tool.id.includes('downloader') || tool.id === 'whatsapp-status-saver') {
+    customWorkspace = <MediaDownloaderStudio />;
   }
 
   // Centralized real processing dispatcher

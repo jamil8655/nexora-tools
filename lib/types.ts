@@ -11,6 +11,7 @@ export type ToolCategory =
   | 'security'
   | 'qr'
   | 'ai'
+  | 'media'
   | 'utility';
 
 export interface ToolDefinition {

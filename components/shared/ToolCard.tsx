@@ -14,9 +14,19 @@ interface CategoryTheme {
   badgeBg: string;
   badgeText: string;
   hoverBorder: string;
+  glowShadow: string;
 }
 
 const CATEGORY_THEMES: Record<string, CategoryTheme> = {
+  media: {
+    iconBg: 'bg-purple-500/10 dark:bg-purple-500/20',
+    iconColor: 'text-purple-600 dark:text-purple-400',
+    iconBorder: 'border-purple-200/80 dark:border-purple-800/60',
+    badgeBg: 'bg-purple-50 dark:bg-purple-950/50',
+    badgeText: 'text-purple-700 dark:text-purple-300',
+    hoverBorder: 'hover:border-purple-400 dark:hover:border-purple-600',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(168,85,247,0.12)]',
+  },
   pdf: {
     iconBg: 'bg-rose-500/10 dark:bg-rose-500/15',
     iconColor: 'text-rose-600 dark:text-rose-400',
@@ -24,6 +34,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-rose-50 dark:bg-rose-950/50',
     badgeText: 'text-rose-700 dark:text-rose-300',
     hoverBorder: 'hover:border-rose-400 dark:hover:border-rose-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(244,63,94,0.12)]',
   },
   image: {
     iconBg: 'bg-blue-500/10 dark:bg-blue-500/15',
@@ -32,6 +43,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-blue-50 dark:bg-blue-950/50',
     badgeText: 'text-blue-700 dark:text-blue-300',
     hoverBorder: 'hover:border-blue-400 dark:hover:border-blue-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)]',
   },
   document: {
     iconBg: 'bg-indigo-500/10 dark:bg-indigo-500/15',
@@ -40,6 +52,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-indigo-50 dark:bg-indigo-950/50',
     badgeText: 'text-indigo-700 dark:text-indigo-300',
     hoverBorder: 'hover:border-indigo-400 dark:hover:border-indigo-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(99,102,241,0.12)]',
   },
   text: {
     iconBg: 'bg-emerald-500/10 dark:bg-emerald-500/15',
@@ -48,6 +61,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-emerald-50 dark:bg-emerald-950/50',
     badgeText: 'text-emerald-700 dark:text-emerald-300',
     hoverBorder: 'hover:border-emerald-400 dark:hover:border-emerald-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(16,185,129,0.12)]',
   },
   compress: {
     iconBg: 'bg-amber-500/10 dark:bg-amber-500/15',
@@ -56,6 +70,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-amber-50 dark:bg-amber-950/50',
     badgeText: 'text-amber-700 dark:text-amber-300',
     hoverBorder: 'hover:border-amber-400 dark:hover:border-amber-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)]',
   },
   ocr: {
     iconBg: 'bg-fuchsia-500/10 dark:bg-fuchsia-500/15',
@@ -64,6 +79,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-fuchsia-50 dark:bg-fuchsia-950/50',
     badgeText: 'text-fuchsia-700 dark:text-fuchsia-300',
     hoverBorder: 'hover:border-fuchsia-400 dark:hover:border-fuchsia-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(217,70,239,0.12)]',
   },
   calculator: {
     iconBg: 'bg-cyan-500/10 dark:bg-cyan-500/15',
@@ -72,6 +88,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-cyan-50 dark:bg-cyan-950/50',
     badgeText: 'text-cyan-700 dark:text-cyan-300',
     hoverBorder: 'hover:border-cyan-400 dark:hover:border-cyan-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(6,182,212,0.12)]',
   },
   dev: {
     iconBg: 'bg-violet-500/10 dark:bg-violet-500/15',
@@ -80,6 +97,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-violet-50 dark:bg-violet-950/50',
     badgeText: 'text-violet-700 dark:text-violet-300',
     hoverBorder: 'hover:border-violet-400 dark:hover:border-violet-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(139,92,246,0.12)]',
   },
   security: {
     iconBg: 'bg-orange-500/10 dark:bg-orange-500/15',
@@ -88,6 +106,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-orange-50 dark:bg-orange-950/50',
     badgeText: 'text-orange-700 dark:text-orange-300',
     hoverBorder: 'hover:border-orange-400 dark:hover:border-orange-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(249,115,22,0.12)]',
   },
   qr: {
     iconBg: 'bg-teal-500/10 dark:bg-teal-500/15',
@@ -96,6 +115,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-teal-50 dark:bg-teal-950/50',
     badgeText: 'text-teal-700 dark:text-teal-300',
     hoverBorder: 'hover:border-teal-400 dark:hover:border-teal-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(20,184,166,0.12)]',
   },
   ai: {
     iconBg: 'bg-sky-500/10 dark:bg-sky-500/15',
@@ -104,6 +124,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     badgeBg: 'bg-sky-50 dark:bg-sky-950/50',
     badgeText: 'text-sky-700 dark:text-sky-300',
     hoverBorder: 'hover:border-sky-400 dark:hover:border-sky-700',
+    glowShadow: 'hover:shadow-[0_8px_30px_rgba(14,165,233,0.12)]',
   },
 };
 
@@ -114,6 +135,7 @@ const DEFAULT_THEME: CategoryTheme = {
   badgeBg: 'bg-slate-100 dark:bg-slate-800',
   badgeText: 'text-slate-600 dark:text-slate-400',
   hoverBorder: 'hover:border-slate-400 dark:hover:border-slate-600',
+  glowShadow: 'hover:shadow-md',
 };
 
 interface ToolCardProps {
@@ -125,7 +147,7 @@ export function ToolCard({ tool }: ToolCardProps) {
 
   return (
     <div
-      className={`group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-md hover:-translate-y-1 transition-all duration-200 ${theme.hoverBorder}`}
+      className={`group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:-translate-y-1.5 transition-all duration-300 ${theme.hoverBorder} ${theme.glowShadow}`}
     >
       <Link href={`/tools/${tool.id}`} className="absolute inset-0 z-0 rounded-2xl" aria-label={tool.name} />
 
@@ -133,7 +155,7 @@ export function ToolCard({ tool }: ToolCardProps) {
         {/* Header: Icon, Tags, Favorite */}
         <div className="flex items-start justify-between gap-2">
           <div
-            className={`w-11 h-11 rounded-xl ${theme.iconBg} ${theme.iconColor} border ${theme.iconBorder} flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm shrink-0`}
+            className={`w-11 h-11 rounded-xl ${theme.iconBg} ${theme.iconColor} border ${theme.iconBorder} flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm shrink-0`}
           >
             <ToolIcon name={tool.icon} className="w-5 h-5" />
           </div>
@@ -167,7 +189,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             : 'Fast Utility'}
         </span>
 
-        <div className="flex items-center gap-1 text-[11px] font-bold text-brand-600 dark:text-brand-400 group-hover:translate-x-0.5 transition-transform">
+        <div className="flex items-center gap-1 text-[11px] font-bold text-brand-600 dark:text-brand-400 group-hover:translate-x-1 transition-transform">
           <span>Open</span>
           <ArrowUpRight className="w-3.5 h-3.5" />
         </div>
