@@ -83,17 +83,17 @@ export const TOOLS_LIST: ToolDefinition[] = [
     options: [
       {
         id: 'level',
-        label: 'Compression Level',
+        label: 'Compression Level / Target Size',
         type: 'select',
         defaultValue: 'medium',
         options: [
-          { label: 'Extreme (High compression, smallest size)', value: 'extreme' },
-          { label: 'Recommended (Balanced quality & size)', value: 'medium' },
-          { label: 'Light (Minimal compression, maximum quality)', value: 'light' },
+          { label: 'Extreme (~75% size reduction - Smallest File)', value: 'extreme' },
+          { label: 'Recommended (~55% size reduction - Good Quality)', value: 'medium' },
+          { label: 'Light (~30% size reduction - Maximum Clarity)', value: 'light' },
         ],
       },
     ],
-    tags: ['compress', 'shrink', 'reduce size', 'optimize', 'pdf compress'],
+    tags: ['compress', 'shrink', 'reduce size', 'optimize', 'pdf compress', 'compress pdf to mb', 'reduce pdf size'],
   },
   {
     id: 'image-to-pdf',

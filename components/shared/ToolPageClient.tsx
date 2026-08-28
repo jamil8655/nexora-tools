@@ -16,6 +16,7 @@ import {
   textToPdf,
   markdownToPdf,
 } from '@/lib/pdf/pdf-manipulator';
+import { compressPdfAdvanced } from '@/lib/pdf/pdf-compressor';
 import {
   convertImage,
   resizeImage,
@@ -296,14 +297,22 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
     if (tool.id === 'pdf-compress') {
       const results = [];
       for (let i = 0; i < files.length; i++) {
-        onProgress(Math.round(((i + 1) / files.length) * 40), `Reading PDF (${files[i].name})...`);
-        const buffer = await files[i].arrayBuffer();
-        onProgress(Math.round(((i + 1) / files.length) * 80), `Rebuilding & compressing object streams...`);
-        const compressedBytes = await compressPdf(buffer, options.compressionLevel || 'medium');
+        const file = files[i];
+        const buffer = await file.arrayBuffer();
+        const compressedBytes = await compressPdfAdvanced(
+          buffer,
+          {
+            level: options.level || 'medium',
+          },
+          (pct, status) => {
+            const overallPct = Math.round(((i + pct / 100) / files.length) * 100);
+            onProgress(overallPct, status);
+          }
+        );
         const blob = new Blob([compressedBytes as any], { type: 'application/pdf' });
         results.push({
-          name: `compressed-${files[i].name}`,
-          originalSize: files[i].size,
+          name: `compressed-${file.name}`,
+          originalSize: file.size,
           processedSize: blob.size,
           blob,
         });
