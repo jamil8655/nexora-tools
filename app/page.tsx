@@ -19,12 +19,14 @@ import {
   Sliders,
   Filter,
   Smartphone,
+  Flame,
 } from 'lucide-react';
 import { TOOLS_LIST, CATEGORIES_CONFIG } from '@/lib/tools-config';
 import { siteConfig } from '@/config/site';
 import { ToolCard } from '@/components/shared/ToolCard';
 import { ToolIcon } from '@/components/shared/ToolIcon';
 import { QuickSearchModal } from '@/components/shared/QuickSearchModal';
+import { AdSlot } from '@/components/ads/AdSlot';
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -48,13 +50,13 @@ export default function HomePage() {
   return (
     <div className="space-y-12 sm:space-y-16 pb-20">
       {/* 1. BALANCED CRISP HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/60 via-slate-50 to-white dark:from-slate-900/90 dark:via-slate-900 dark:to-slate-950 pt-10 sm:pt-16 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80 dark:border-slate-800">
+      <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/70 via-slate-50 to-white dark:from-slate-900/90 dark:via-slate-900 dark:to-slate-950 pt-10 sm:pt-16 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80 dark:border-slate-800">
         <div className="absolute inset-0 bg-grid-soft opacity-60 pointer-events-none" />
 
         <div className="relative max-w-4xl mx-auto text-center space-y-6 z-10">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-brand-500" />
             <span>All-in-One Digital Productivity Suite</span>
           </div>
 
@@ -91,12 +93,17 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Responsive In-Feed Ad Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AdSlot placement="header" />
+      </div>
+
       {/* 2. POPULAR TOOLS WITH FEATURED SPOTLIGHT */}
       {!searchQuery && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <Flame className="w-4 h-4 text-amber-500 fill-amber-500" />
               <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
                 Popular Utilities
               </h2>
@@ -216,6 +223,11 @@ export default function HomePage() {
           })}
         </div>
       </section>
+
+      {/* In-Feed Ad Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AdSlot placement="in-feed" />
+      </div>
 
       {/* 4. ALL TOOLS EXPLORER GRID */}
       <section id="all-tools-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">

@@ -5,6 +5,7 @@ import { Download, RefreshCw, Copy, Check, CheckCircle2, Eye, Sparkles } from 'l
 import confetti from 'canvas-confetti';
 import { formatBytes, calculatePercentageSaved } from '@/lib/utils/formatters';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { AdSlot } from '@/components/ads/AdSlot';
 
 interface ResultPreviewProps {
   files: {
@@ -154,6 +155,9 @@ export function ResultPreview({
           );
         })}
       </div>
+
+      {/* Result Page Ad Placement */}
+      <AdSlot placement="result-page" />
 
       {/* Global Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">

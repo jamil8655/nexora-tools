@@ -11,6 +11,7 @@ import { Play, Settings2, HelpCircle } from 'lucide-react';
 import { downloadSingleFile, downloadAsZip } from '@/lib/utils/download';
 import { addHistoryItem } from '@/lib/storage/file-store';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { AdSlot } from '@/components/ads/AdSlot';
 
 interface ToolLayoutProps {
   tool: ToolDefinition;
@@ -303,6 +304,9 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
           </div>
         )}
       </div>
+
+      {/* Responsive Ad Space for Monetization */}
+      <AdSlot placement="tool-bottom" />
 
       {/* FAQ & Information Section */}
       {tool.faq && tool.faq.length > 0 && (

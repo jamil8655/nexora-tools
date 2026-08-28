@@ -14,7 +14,7 @@ export async function mergePdfs(pdfBuffers: ArrayBuffer[]): Promise<Uint8Array> 
     copiedPages.forEach((page) => mergedPdf.addPage(page));
   }
 
-  return await mergedPdf.save();
+  return await mergedPdf.save({ useObjectStreams: true });
 }
 
 /**
@@ -34,11 +34,10 @@ export async function splitPdf(
       const newDoc = await PDFDocument.create();
       const [copiedPage] = await newDoc.copyPages(srcDoc, [i]);
       newDoc.addPage(copiedPage);
-      const bytes = await newDoc.save();
+      const bytes = await newDoc.save({ useObjectStreams: true });
       results.push({ name: `page-${i + 1}.pdf`, bytes });
     }
   } else if (mode === 'range' && rangeStr) {
-    // Parse range e.g. "1-3, 5"
     const targetIndices = new Set<number>();
     const parts = rangeStr.split(',').map((p) => p.trim());
 
@@ -58,19 +57,13 @@ export async function splitPdf(
       }
     }
 
-    const newDoc = await PDFDocument.create();
-    const sorted = Array.from(targetIndices).sort((a, b) => a - b);
-    const copied = await newDoc.copyPages(srcDoc, sorted);
-    copied.forEach((p) => newDoc.addPage(p));
-    const bytes = await newDoc.save();
-    results.push({ name: `extracted-pages.pdf`, bytes });
-  } else {
-    // Default fallback: single pages
-    for (let i = 0; i < totalPages; i++) {
+    const sortedIndices = Array.from(targetIndices).sort((a, b) => a - b);
+    if (sortedIndices.length > 0) {
       const newDoc = await PDFDocument.create();
-      const [copiedPage] = await newDoc.copyPages(srcDoc, [i]);
-      newDoc.addPage(copiedPage);
-      results.push({ name: `page-${i + 1}.pdf`, bytes: await newDoc.save() });
+      const copiedPages = await newDoc.copyPages(srcDoc, sortedIndices);
+      copiedPages.forEach((page) => newDoc.addPage(page));
+      const bytes = await newDoc.save({ useObjectStreams: true });
+      results.push({ name: `extracted-pages.pdf`, bytes });
     }
   }
 
@@ -78,77 +71,106 @@ export async function splitPdf(
 }
 
 /**
- * Rotate all pages of a PDF by a given angle (90, 180, 270).
+ * Compress PDF document by stripping orphaned object streams, dead revisions,
+ * and saving using optimized object streams.
  */
-export async function rotatePdfPages(pdfBuffer: ArrayBuffer, angleDeg: number): Promise<Uint8Array> {
+export async function compressPdf(
+  pdfBuffer: ArrayBuffer,
+  level: 'low' | 'medium' | 'high' = 'medium'
+): Promise<Uint8Array> {
+  const srcDoc = await PDFDocument.load(pdfBuffer, {
+    ignoreEncryption: true,
+    updateMetadata: false,
+  });
+
+  const compressedDoc = await PDFDocument.create();
+  const pageIndices = srcDoc.getPageIndices();
+
+  const copiedPages = await compressedDoc.copyPages(srcDoc, pageIndices);
+  copiedPages.forEach((page) => compressedDoc.addPage(page));
+
+  compressedDoc.setProducer('NEXORA Optimized Engine');
+  compressedDoc.setCreator('NEXORA PDF Compressor');
+
+  const compressedBytes = await compressedDoc.save({
+    useObjectStreams: true,
+    addDefaultPage: false,
+    objectsPerTick: 50,
+  });
+
+  return compressedBytes;
+}
+
+/**
+ * Rotate all or specific pages of a PDF by a given angle (90, 180, 270).
+ */
+export async function rotatePdfPages(pdfBuffer: ArrayBuffer, angle: number): Promise<Uint8Array> {
   const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
   const pages = doc.getPages();
 
-  for (const page of pages) {
-    const currentAngle = page.getRotation().angle;
-    page.setRotation(degrees((currentAngle + angleDeg) % 360));
-  }
+  pages.forEach((page) => {
+    const currentRotation = page.getRotation().angle;
+    page.setRotation(degrees((currentRotation + angle) % 360));
+  });
 
-  return await doc.save();
+  return await doc.save({ useObjectStreams: true });
 }
 
 /**
- * Reorder and optionally remove pages from a PDF.
- * @param newIndices 0-indexed array of page orders to keep.
+ * Reorder PDF pages according to an array of 0-based page indices.
  */
-export async function reorderPdfPages(pdfBuffer: ArrayBuffer, newIndices: number[]): Promise<Uint8Array> {
+export async function reorderPdfPages(pdfBuffer: ArrayBuffer, newOrder: number[]): Promise<Uint8Array> {
   const srcDoc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
   const newDoc = await PDFDocument.create();
-  const copied = await newDoc.copyPages(srcDoc, newIndices);
-  copied.forEach((p) => newDoc.addPage(p));
-  return await newDoc.save();
+
+  const copiedPages = await newDoc.copyPages(srcDoc, newOrder);
+  copiedPages.forEach((page) => newDoc.addPage(page));
+
+  return await newDoc.save({ useObjectStreams: true });
 }
 
 /**
- * Add a diagonal or centered text watermark across all pages.
+ * Add a diagonal or centered text watermark stamp to all pages.
  */
 export async function watermarkPdf(
   pdfBuffer: ArrayBuffer,
-  text: string,
+  watermarkText: string,
   opacity: number = 0.3,
-  hexColor: string = '#ff0000'
+  colorHex: string = '#ff0000'
 ): Promise<Uint8Array> {
   const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
   const font = await doc.embedFont(StandardFonts.HelveticaBold);
   const pages = doc.getPages();
 
-  // Convert hex color to rgb
-  const r = parseInt(hexColor.slice(1, 3), 16) / 255 || 1;
-  const g = parseInt(hexColor.slice(3, 5), 16) / 255 || 0;
-  const b = parseInt(hexColor.slice(5, 7), 16) / 255 || 0;
+  const r = parseInt(colorHex.slice(1, 3), 16) / 255 || 0.8;
+  const g = parseInt(colorHex.slice(3, 5), 16) / 255 || 0.1;
+  const b = parseInt(colorHex.slice(5, 7), 16) / 255 || 0.1;
 
-  for (const page of pages) {
+  pages.forEach((page) => {
     const { width, height } = page.getSize();
     const textSize = Math.min(width, height) / 10;
-    const textWidth = font.widthOfTextAtSize(text, textSize);
-    const textHeight = font.heightAtSize(textSize);
 
-    page.drawText(text, {
-      x: width / 2 - textWidth / 2 + 50,
-      y: height / 2 - textHeight / 2 - 50,
+    page.drawText(watermarkText, {
+      x: width / 4,
+      y: height / 2,
       size: textSize,
       font,
       color: rgb(r, g, b),
       opacity,
       rotate: degrees(45),
     });
-  }
+  });
 
-  return await doc.save();
+  return await doc.save({ useObjectStreams: true });
 }
 
 /**
- * Add page numbering to header or footer.
+ * Add page numbers to header or footer of all pages in a PDF.
  */
 export async function addPageNumbers(
   pdfBuffer: ArrayBuffer,
-  position: 'bottom-center' | 'bottom-right' | 'bottom-left' | 'top-right' = 'bottom-center',
-  formatStr: string = 'Page {n} of {total}'
+  position: 'bottom-center' | 'bottom-right' | 'top-right' = 'bottom-center',
+  format: 'Page X of Y' | 'X/Y' | 'X' = 'Page X of Y'
 ): Promise<Uint8Array> {
   const doc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
   const font = await doc.embedFont(StandardFonts.Helvetica);
@@ -156,40 +178,37 @@ export async function addPageNumbers(
   const total = pages.length;
 
   pages.forEach((page, idx) => {
+    const pageNum = idx + 1;
     const { width, height } = page.getSize();
-    const n = idx + 1;
-    const label = formatStr.replace('{n}', String(n)).replace('{total}', String(total));
-    const fontSize = 10;
-    const textWidth = font.widthOfTextAtSize(label, fontSize);
+    let text = `${pageNum}`;
+    if (format === 'Page X of Y') text = `Page ${pageNum} of ${total}`;
+    if (format === 'X/Y') text = `${pageNum}/${total}`;
 
-    let x = width / 2 - textWidth / 2;
-    let y = 20;
+    let x = width / 2 - 25;
+    let y = 25;
 
     if (position === 'bottom-right') {
-      x = width - textWidth - 30;
-      y = 20;
-    } else if (position === 'bottom-left') {
-      x = 30;
-      y = 20;
+      x = width - 80;
+      y = 25;
     } else if (position === 'top-right') {
-      x = width - textWidth - 30;
+      x = width - 80;
       y = height - 30;
     }
 
-    page.drawText(label, {
+    page.drawText(text, {
       x,
       y,
-      size: fontSize,
+      size: 10,
       font,
       color: rgb(0.3, 0.3, 0.3),
     });
   });
 
-  return await doc.save();
+  return await doc.save({ useObjectStreams: true });
 }
 
 /**
- * Update document metadata tags (Title, Author, Subject, Keywords).
+ * Edit PDF metadata properties (Title, Author, Subject, Keywords).
  */
 export async function editPdfMetadata(
   pdfBuffer: ArrayBuffer,
@@ -200,8 +219,8 @@ export async function editPdfMetadata(
   if (meta.author) doc.setAuthor(meta.author);
   if (meta.subject) doc.setSubject(meta.subject);
   if (meta.keywords) doc.setKeywords(meta.keywords.split(',').map((k) => k.trim()));
-  doc.setProducer('DocuOmni Pro Engine');
-  return await doc.save();
+  doc.setProducer('NEXORA Pro Engine');
+  return await doc.save({ useObjectStreams: true });
 }
 
 /**
@@ -249,7 +268,7 @@ export async function imagesToPdf(
     });
   }
 
-  return await doc.save();
+  return await doc.save({ useObjectStreams: true });
 }
 
 /**
@@ -283,9 +302,5 @@ export async function textToPdf(text: string, options?: { fontSize?: number }): 
  * Convert Markdown string to PDF.
  */
 export async function markdownToPdf(markdown: string): Promise<Uint8Array> {
-  // Convert markdown to clean structured plain text or styled paragraphs
-  const parsedHtml = await marked.parse(markdown);
-  // Strip tags for clean structured rendering
-  const cleanText = markdown;
-  return await textToPdf(cleanText, { fontSize: 11 });
+  return await textToPdf(markdown, { fontSize: 11 });
 }

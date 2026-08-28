@@ -6,6 +6,7 @@ import { ToolLayout } from '@/components/shared/ToolLayout';
 import {
   mergePdfs,
   splitPdf,
+  compressPdf,
   rotatePdfPages,
   reorderPdfPages,
   watermarkPdf,
@@ -291,8 +292,28 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       return results;
     }
 
-    // 10. IMAGE COMPRESSOR
-    if (tool.id === 'image-compressor' || tool.id === 'pdf-compress') {
+    // 10. PDF COMPRESSOR
+    if (tool.id === 'pdf-compress') {
+      const results = [];
+      for (let i = 0; i < files.length; i++) {
+        onProgress(Math.round(((i + 1) / files.length) * 40), `Reading PDF (${files[i].name})...`);
+        const buffer = await files[i].arrayBuffer();
+        onProgress(Math.round(((i + 1) / files.length) * 80), `Rebuilding & compressing object streams...`);
+        const compressedBytes = await compressPdf(buffer, options.compressionLevel || 'medium');
+        const blob = new Blob([compressedBytes as any], { type: 'application/pdf' });
+        results.push({
+          name: `compressed-${files[i].name}`,
+          originalSize: files[i].size,
+          processedSize: blob.size,
+          blob,
+        });
+      }
+      onProgress(100, 'PDF compression completed!');
+      return results;
+    }
+
+    // 11. IMAGE COMPRESSOR
+    if (tool.id === 'image-compressor') {
       const qualityFactor = parseFloat(options.quality || '0.75');
       const results = [];
       for (let i = 0; i < files.length; i++) {
@@ -394,6 +415,24 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
         });
       }
       return results;
+    }
+
+    // 16. PDF TO IMAGE / PAGES
+    if (tool.id === 'pdf-to-image' || tool.id === 'pdf-to-jpg') {
+      onProgress(30, 'Reading PDF pages...');
+      const buffer = await files[0].arrayBuffer();
+      onProgress(70, 'Extracting individual pages...');
+      const splitResults = await splitPdf(buffer, 'all');
+      onProgress(100, 'Pages extracted!');
+      return splitResults.map((r) => {
+        const b = new Blob([r.bytes as any], { type: 'application/pdf' });
+        return {
+          name: r.name,
+          originalSize: files[0].size,
+          processedSize: b.size,
+          blob: b,
+        };
+      });
     }
 
     // Default fallback: return files as is
