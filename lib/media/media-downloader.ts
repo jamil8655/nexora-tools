@@ -25,10 +25,7 @@ export interface MediaMetadata {
 }
 
 // Configurable Video Streaming Backend URL
-const BACKEND_URL =
-  typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:3001'
-    : 'https://nexora-tools-api.onrender.com';
+const BACKEND_URL = 'https://nexora-tools-vgti.onrender.com';
 
 /**
  * Detect social media platform from link.
