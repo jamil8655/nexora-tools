@@ -63,14 +63,20 @@ export function ResultPreview({
         <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
           Your File is Ready!
         </h3>
-        {totalSavedPercent > 0 && (
+        {totalSavedPercent > 0 ? (
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold font-mono">
             <Sparkles className="w-3.5 h-3.5" />
             <span>
-              Saved {totalSavedPercent}% ({formatBytes(totalOriginal)} → {formatBytes(totalProcessed)})
+              Reduced by {totalSavedPercent}% ({formatBytes(totalOriginal)} → {formatBytes(totalProcessed)})
             </span>
           </div>
-        )}
+        ) : totalOriginal > 0 && totalProcessed > 0 ? (
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-medium font-mono">
+            <span>
+              Optimal Fidelity ({formatBytes(totalOriginal)} → {formatBytes(totalProcessed)})
+            </span>
+          </div>
+        ) : null}
       </div>
 
       {/* Files List */}

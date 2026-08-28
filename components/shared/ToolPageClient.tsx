@@ -299,7 +299,7 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const buffer = await file.arrayBuffer();
-        const compressedBytes = await compressPdfAdvanced(
+        const compressRes = await compressPdfAdvanced(
           buffer,
           {
             level: options.level || 'medium',
@@ -309,7 +309,7 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
             onProgress(overallPct, status);
           }
         );
-        const blob = new Blob([compressedBytes as any], { type: 'application/pdf' });
+        const blob = new Blob([compressRes.bytes as any], { type: 'application/pdf' });
         results.push({
           name: `compressed-${file.name}`,
           originalSize: file.size,
