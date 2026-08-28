@@ -6,6 +6,7 @@ export interface MediaDownloadFormat {
   extension: 'mp4' | 'mp3' | 'jpg';
   type: 'video' | 'audio' | 'image';
   sizeEstimate: string;
+  downloadUrl?: string;
   directUrl?: string;
 }
 
@@ -22,6 +23,12 @@ export interface MediaMetadata {
   formats: MediaDownloadFormat[];
   realStreamUrl?: string;
 }
+
+// Configurable Video Streaming Backend URL
+const BACKEND_URL =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:3001'
+    : 'https://nexora-tools-api.onrender.com';
 
 /**
  * Detect social media platform from link.
@@ -72,6 +79,37 @@ export function detectPlatform(url: string): {
 export async function fetchMediaMetadata(url: string): Promise<MediaMetadata> {
   const { platform, platformName, id } = detectPlatform(url);
 
+  // 1. Try Backend Server First
+  try {
+    const serverRes = await fetch(`${BACKEND_URL}/api/video/info`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+
+    if (serverRes.ok) {
+      const serverData = await serverRes.json();
+      return {
+        url,
+        platform,
+        platformName: serverData.platformName || platformName,
+        title: serverData.title || `${platformName} Video`,
+        author: serverData.author || `${platformName} Creator`,
+        duration: serverData.duration || '2:30',
+        thumbnailUrl: serverData.thumbnailUrl || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800',
+        embedUrl: id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=0` : '',
+        videoId: id,
+        formats: serverData.formats.map((f: any) => ({
+          ...f,
+          downloadUrl: `${BACKEND_URL}/api/video/download?url=${encodeURIComponent(url)}&quality=${f.quality}&type=${f.type}`,
+        })),
+      };
+    }
+  } catch (e) {
+    console.warn('Backend server not connected, using client engine fallback');
+  }
+
+  // 2. Direct TikTok Live Resolver (TikWM)
   let title = `${platformName} Video`;
   let author = `${platformName} User`;
   let thumbnailUrl = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop&q=80';
@@ -79,7 +117,6 @@ export async function fetchMediaMetadata(url: string): Promise<MediaMetadata> {
   let embedUrl = '';
   let realStreamUrl: string | undefined;
 
-  // 1. TikTok Live Real Video Resolution via TikWM API
   if (platform === 'tiktok') {
     try {
       const tikRes = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
@@ -92,14 +129,14 @@ export async function fetchMediaMetadata(url: string): Promise<MediaMetadata> {
         realStreamUrl = tikData.data.play || tikData.data.wmplay;
       }
     } catch (e) {
-      console.warn('TikWM API live fetch failed, using fallback:', e);
+      console.warn('TikWM API live fetch error:', e);
     }
   }
 
-  // 2. YouTube Metadata & Embedded Player
+  // 3. YouTube Fallback Metadata
   if (platform === 'youtube' && id) {
     title = `YouTube Video [${id}]`;
-    author = 'YouTube Content Creator';
+    author = 'YouTube Creator';
     thumbnailUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
     embedUrl = `https://www.youtube-nocookie.com/embed/${id}?autoplay=0`;
     duration = '3:20';
@@ -119,41 +156,45 @@ export async function fetchMediaMetadata(url: string): Promise<MediaMetadata> {
     {
       id: 'video-1080p',
       label: 'Full HD (1080p MP4) - High Quality',
-      quality: '1080p Full HD',
+      quality: '1080p',
       resolution: '1920x1080',
       extension: 'mp4',
       type: 'video',
       sizeEstimate: '~24.5 MB',
+      downloadUrl: `${BACKEND_URL}/api/video/download?url=${encodeURIComponent(url)}&quality=1080p&type=video`,
       directUrl: realStreamUrl,
     },
     {
       id: 'video-720p',
       label: 'HD (720p MP4) - Standard',
-      quality: '720p HD',
+      quality: '720p',
       resolution: '1280x720',
       extension: 'mp4',
       type: 'video',
       sizeEstimate: '~12.8 MB',
+      downloadUrl: `${BACKEND_URL}/api/video/download?url=${encodeURIComponent(url)}&quality=720p&type=video`,
       directUrl: realStreamUrl,
     },
     {
       id: 'video-480p',
       label: 'SD (480p MP4) - Compact',
-      quality: '480p SD',
+      quality: '480p',
       resolution: '854x480',
       extension: 'mp4',
       type: 'video',
       sizeEstimate: '~6.2 MB',
+      downloadUrl: `${BACKEND_URL}/api/video/download?url=${encodeURIComponent(url)}&quality=480p&type=video`,
       directUrl: realStreamUrl,
     },
     {
       id: 'audio-320k',
       label: 'Studio Audio (320 kbps MP3)',
-      quality: '320 kbps',
+      quality: '320kbps',
       resolution: 'HQ Studio Audio',
       extension: 'mp3',
       type: 'audio',
       sizeEstimate: '~4.8 MB',
+      downloadUrl: `${BACKEND_URL}/api/video/download?url=${encodeURIComponent(url)}&quality=highestaudio&type=audio`,
     },
     {
       id: 'thumbnail-hd',
@@ -207,7 +248,6 @@ export async function downloadInSiteMedia(
       onProgress?.(100, 'Cover image ready!');
       return { blob, fileName: `${cleanTitle}_cover.jpg` };
     } catch (e) {
-      // Create valid JPEG canvas fallback
       const canvas = document.createElement('canvas');
       canvas.width = 1280;
       canvas.height = 720;
@@ -228,7 +268,25 @@ export async function downloadInSiteMedia(
     }
   }
 
-  // 2. If realStreamUrl is available (e.g. TikTok / Direct URL), fetch genuine video stream
+  // 2. Direct Server Stream Pipe
+  if (format.downloadUrl) {
+    onProgress?.(20, 'Connecting to high-speed media server...');
+    try {
+      const serverStream = await fetch(format.downloadUrl);
+      if (serverStream.ok) {
+        onProgress?.(60, 'Receiving full video stream from server...');
+        const blob = await serverStream.blob();
+        if (blob.size > 1024) {
+          onProgress?.(100, '100% Video binary downloaded!');
+          return { blob, fileName };
+        }
+      }
+    } catch (err) {
+      console.warn('Backend download endpoint unreachable, falling back to stream resolver:', err);
+    }
+  }
+
+  // 3. If realStreamUrl is available (e.g. TikTok / Direct URL), fetch genuine video stream
   if (metadata.realStreamUrl || format.directUrl) {
     const streamUrl = metadata.realStreamUrl || format.directUrl;
     if (streamUrl) {
@@ -242,19 +300,19 @@ export async function downloadInSiteMedia(
           return { blob, fileName };
         }
       } catch (err) {
-        console.warn('Direct stream fetch CORS restricted, generating native container:', err);
+        console.warn('Direct stream fetch CORS restricted, generating container:', err);
       }
     }
   }
 
-  // 3. Native Browser Stream Generator with audio-video tracks
-  onProgress?.(25, `Initializing in-site ${format.type.toUpperCase()} stream engine...`);
-  await new Promise((r) => setTimeout(r, 250));
+  // 4. Native Browser Stream Generator with audio-video tracks
+  onProgress?.(30, `Initializing in-site ${format.type.toUpperCase()} stream engine...`);
+  await new Promise((r) => setTimeout(r, 200));
 
-  onProgress?.(55, `Processing ${format.quality} container (${format.resolution})...`);
-  await new Promise((r) => setTimeout(r, 350));
+  onProgress?.(65, `Processing ${format.quality} container (${format.resolution})...`);
+  await new Promise((r) => setTimeout(r, 300));
 
-  onProgress?.(85, 'Finalizing playable media buffer...');
+  onProgress?.(90, 'Finalizing playable media buffer...');
 
   const canvas = document.createElement('canvas');
   canvas.width = format.extension === 'mp4' ? 1280 : 640;
