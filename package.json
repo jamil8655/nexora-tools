@@ -39,7 +39,8 @@
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.4",
     "tesseract.js": "^5.1.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "youtube-dl-exec": "^3.1.13"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
