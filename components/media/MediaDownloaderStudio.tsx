@@ -94,10 +94,10 @@ export function MediaDownloaderStudio() {
     if (!metadata) return;
     setDownloadingId(format.id);
     setDownloadProgress(10);
-    setDownloadStatusText('Connecting to in-site stream...');
+    setDownloadStatusText('Connecting to stream engine...');
 
     try {
-      const { blob, fileName } = await downloadInSiteMedia(
+      const result = await downloadInSiteMedia(
         metadata,
         format,
         (pct, status) => {
@@ -106,11 +106,12 @@ export function MediaDownloaderStudio() {
         }
       );
 
-      // Trigger direct in-site download without redirecting
-      downloadSingleFile(blob, fileName);
-    } catch (err) {
+      if (result.blob && result.blob.size > 2000 && !result.blob.type.includes('text/html')) {
+        downloadSingleFile(result.blob, result.fileName);
+      }
+    } catch (err: any) {
       console.error(err);
-      setError('Download failed. Please try again.');
+      setError(err.message || 'Download failed. Please try again.');
     } finally {
       setTimeout(() => {
         setDownloadingId(null);
