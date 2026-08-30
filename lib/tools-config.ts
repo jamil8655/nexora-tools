@@ -82,8 +82,23 @@ export const TOOLS_LIST: ToolDefinition[] = [
     outputMimeType: 'application/pdf',
     options: [
       {
+        id: 'targetSizeLimit',
+        label: 'Target Size Requirement (KB / MB Limit)',
+        type: 'select',
+        defaultValue: 'auto',
+        options: [
+          { label: 'Auto Adaptive (Optimal Balance)', value: 'auto' },
+          { label: 'Under 100 KB (Govt Job & Exam Portals)', value: '100kb' },
+          { label: 'Under 200 KB (Passport / KYC Uploads)', value: '200kb' },
+          { label: 'Under 500 KB (Standard Web Portals)', value: '500kb' },
+          { label: 'Under 1 MB (Email Standard)', value: '1mb' },
+          { label: 'Under 2 MB (Max 2MB Official Upload Limit)', value: '2mb' },
+          { label: 'Under 5 MB (High Res Archival)', value: '5mb' },
+        ],
+      },
+      {
         id: 'level',
-        label: 'Compression Level / Target Size',
+        label: 'Compression Level & Quality',
         type: 'select',
         defaultValue: 'medium',
         options: [
@@ -424,8 +439,23 @@ export const TOOLS_LIST: ToolDefinition[] = [
     outputMimeType: 'image/jpeg',
     options: [
       {
+        id: 'targetSizeLimit',
+        label: 'Target Size Requirement (KB / MB Limit)',
+        type: 'select',
+        defaultValue: 'auto',
+        options: [
+          { label: 'Auto Adaptive (Optimal Balance)', value: 'auto' },
+          { label: 'Under 50 KB (Passport Photo & Signature)', value: '50kb' },
+          { label: 'Under 100 KB (Govt Job & Exam Portals)', value: '100kb' },
+          { label: 'Under 200 KB (Web Portal Uploads)', value: '200kb' },
+          { label: 'Under 500 KB (KYC & Documents)', value: '500kb' },
+          { label: 'Under 1 MB (Web & Email Images)', value: '1mb' },
+          { label: 'Under 2 MB (Max 2MB Official Upload Limit)', value: '2mb' },
+        ],
+      },
+      {
         id: 'quality',
-        label: 'Compression Strength',
+        label: 'Compression Strength & Quality',
         type: 'select',
         defaultValue: '0.75',
         options: [

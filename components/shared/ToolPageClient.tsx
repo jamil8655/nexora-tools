@@ -336,6 +336,7 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
           buffer,
           {
             level: options.level || 'medium',
+            targetSizeLimit: options.targetSizeLimit || 'auto',
           },
           (pct, status) => {
             const overallPct = Math.round(((i + pct / 100) / files.length) * 100);
@@ -356,7 +357,15 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
 
     // 11. IMAGE COMPRESSOR
     if (tool.id === 'image-compressor') {
-      const qualityFactor = parseFloat(options.quality || '0.75');
+      let qualityFactor = parseFloat(options.quality || '0.75');
+      const target = options.targetSizeLimit || 'auto';
+      if (target === '50kb') qualityFactor = 0.35;
+      else if (target === '100kb') qualityFactor = 0.50;
+      else if (target === '200kb') qualityFactor = 0.65;
+      else if (target === '500kb') qualityFactor = 0.75;
+      else if (target === '1mb') qualityFactor = 0.85;
+      else if (target === '2mb') qualityFactor = 0.90;
+
       const results = [];
       for (let i = 0; i < files.length; i++) {
         onProgress(Math.round(((i + 1) / files.length) * 90), `Compressing ${files[i].name}...`);

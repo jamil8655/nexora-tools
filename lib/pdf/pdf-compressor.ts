@@ -4,6 +4,7 @@ export interface CompressOptions {
   level?: 'extreme' | 'medium' | 'light' | 'custom';
   quality?: number; // 0.1 to 1.0
   scale?: number; // 0.5 to 2.0
+  targetSizeLimit?: string; // '100kb', '200kb', '500kb', '1mb', '2mb', '5mb', 'auto'
 }
 
 export interface CompressResult {
@@ -57,12 +58,31 @@ export async function compressPdfAdvanced(
 ): Promise<CompressResult> {
   const originalSize = pdfBuffer.byteLength;
   const level = options.level || 'medium';
+  const target = options.targetSizeLimit || 'auto';
 
   // Preset parameters for image-scanned documents
   let jpegQuality = 0.60;
   let renderScale = 1.20;
 
-  if (level === 'extreme') {
+  if (target === '100kb') {
+    jpegQuality = 0.35;
+    renderScale = 0.85;
+  } else if (target === '200kb') {
+    jpegQuality = 0.45;
+    renderScale = 0.95;
+  } else if (target === '500kb') {
+    jpegQuality = 0.60;
+    renderScale = 1.10;
+  } else if (target === '1mb') {
+    jpegQuality = 0.72;
+    renderScale = 1.30;
+  } else if (target === '2mb') {
+    jpegQuality = 0.80;
+    renderScale = 1.45;
+  } else if (target === '5mb') {
+    jpegQuality = 0.88;
+    renderScale = 1.60;
+  } else if (level === 'extreme') {
     jpegQuality = 0.40;
     renderScale = 0.95;
   } else if (level === 'medium') {
