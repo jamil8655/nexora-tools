@@ -6,12 +6,13 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { PwaInstallBanner } from '@/components/shared/PwaInstallBanner';
+import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister';
 import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} - Free All-in-One Online Productivity Tools & Converters`,
   description: 'NEXORA Tools Pro provides 75+ free high-performance client-side tools: PDF to Word OCR, 4K Video Downloader, Audio Volume Booster, Audio Cutter, Video to MP3, Image Compression, and Developer Utilities.',
-  manifest: '/manifest.json',
+  manifest: '/nexora-tools/manifest.json',
   keywords: [
     'nexora tools',
     'all in one utility',
@@ -106,8 +107,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/nexora-tools/manifest.json" />
+        <link rel="apple-touch-icon" href="/nexora-tools/icon-192.png" />
         <meta name="theme-color" content="#026fc7" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="NEXORA Tools" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -121,6 +127,7 @@ export default function RootLayout({
             <Footer />
             <MobileNav />
             <PwaInstallBanner />
+            <ServiceWorkerRegister />
           </I18nProvider>
         </ThemeProvider>
       </body>
