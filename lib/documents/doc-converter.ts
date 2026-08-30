@@ -41,20 +41,28 @@ async function loadPdfJsLibrary(): Promise<any> {
 
 /**
  * High-Fidelity Client-Side PDF to Word (DOCX) Converter Engine with Deep OCR.
- * Supports both digital PDFs and scanned paper documents (extracts text from scanned images).
+ * Monotonic progress guaranteed (never jumps backwards).
  */
 export async function pdfToDocx(
   file: File,
   onProgress?: (percent: number, status: string) => void
 ): Promise<Blob> {
-  onProgress?.(10, 'Initializing PDF parser and OCR engine...');
+  let currentMaxPercent = 5;
+  const updateProgress = (pct: number, status: string) => {
+    if (pct > currentMaxPercent) {
+      currentMaxPercent = Math.min(99, Math.round(pct));
+    }
+    onProgress?.(currentMaxPercent, status);
+  };
+
+  updateProgress(10, 'Initializing PDF parser engine...');
   const pdfjsLib = await loadPdfJsLibrary();
   if (!pdfjsLib) {
     throw new Error('PDF parsing library is unavailable in this environment.');
   }
 
   const arrayBuffer = await file.arrayBuffer();
-  onProgress?.(20, 'Loading PDF document structure...');
+  updateProgress(18, 'Reading document structure...');
   const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
   const pdfDoc = await loadingTask.promise;
   const totalPages = pdfDoc.numPages;
@@ -62,18 +70,19 @@ export async function pdfToDocx(
   const docChildren: Paragraph[] = [];
 
   for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-    const basePct = Math.floor(20 + ((pageNum - 1) / totalPages) * 70);
-    onProgress?.(basePct, `Processing page ${pageNum} of ${totalPages}...`);
+    const pageBasePct = 20 + Math.floor(((pageNum - 1) / totalPages) * 70);
+    const pageNextPct = 20 + Math.floor((pageNum / totalPages) * 70);
+    updateProgress(pageBasePct, `Processing page ${pageNum} of ${totalPages}...`);
 
     const page = await pdfDoc.getPage(pageNum);
     const textContent = await page.getTextContent();
     const items = (textContent.items || []) as any[];
 
-    // Extract any existing selectable text
-    let digitalText = items.map((i) => i.str || '').join(' ').trim();
+    // Extract existing digital text
+    const digitalText = items.map((i) => i.str || '').join(' ').trim();
 
     if (items.length > 0 && digitalText.length > 25) {
-      // 1. Digital PDF Layout Reconstruction
+      // 1. Digital PDF Vector Layout Reconstruction
       items.sort((a, b) => {
         const yDiff = b.transform[5] - a.transform[5];
         if (Math.abs(yDiff) > 4) return yDiff;
@@ -147,11 +156,12 @@ export async function pdfToDocx(
       if (paragraphBuffer.length > 0) {
         docChildren.push(buildParagraph(paragraphBuffer));
       }
+      updateProgress(pageNextPct, `Finished page ${pageNum} of ${totalPages}`);
     } else {
       // 2. SCANNED PAPER / IMAGE PDF -> RUN OPTICAL CHARACTER RECOGNITION (OCR)
-      onProgress?.(basePct + 2, `Scanned paper detected on page ${pageNum}. Running AI OCR to read text...`);
+      updateProgress(pageBasePct + 2, `Scanned paper detected (Page ${pageNum}). Scanning text with AI OCR...`);
 
-      const viewport = page.getViewport({ scale: 2.0 }); // 2x scale for sharp OCR reading
+      const viewport = page.getViewport({ scale: 2.0 });
       const canvas = document.createElement('canvas');
       canvas.width = viewport.width;
       canvas.height = viewport.height;
@@ -162,9 +172,8 @@ export async function pdfToDocx(
         const pageDataUrl = canvas.toDataURL('image/png');
 
         try {
-          const ocrResult = await runOcr(pageDataUrl, 'eng', (p, s) => {
-            onProgress?.(Math.min(90, basePct + Math.floor(p * 0.1)), `Reading scanned paper (Page ${pageNum}): ${s}`);
-          });
+          updateProgress(pageBasePct + 5, `Reading characters from scanned paper (Page ${pageNum})...`);
+          const ocrResult = await runOcr(pageDataUrl, 'eng');
 
           if (ocrResult.text && ocrResult.text.trim()) {
             const rawParagraphs = ocrResult.text.split(/\n\s*\n/);
@@ -189,7 +198,7 @@ export async function pdfToDocx(
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: `[Page ${pageNum} - Image / Graphic Content]`,
+                    text: `[Page ${pageNum} - Graphic / Non-Text Layout]`,
                     italics: true,
                     color: '888888',
                   }),
@@ -201,9 +210,10 @@ export async function pdfToDocx(
           console.error('OCR Error on page', pageNum, ocrErr);
         }
       }
+      updateProgress(pageNextPct, `Finished scanning page ${pageNum} of ${totalPages}`);
     }
 
-    // Page Break
+    // Page Break between pages
     if (pageNum < totalPages) {
       docChildren.push(
         new Paragraph({
@@ -213,7 +223,7 @@ export async function pdfToDocx(
     }
   }
 
-  onProgress?.(95, 'Generating native Microsoft Word (.docx) document...');
+  updateProgress(94, 'Assembling editable Microsoft Word document...');
 
   const doc = new Document({
     title: file.name.replace(/\.pdf$/i, ''),
@@ -227,7 +237,7 @@ export async function pdfToDocx(
   });
 
   const docxBlob = await Packer.toBlob(doc);
-  onProgress?.(100, 'Word document ready with all text recognized!');
+  onProgress?.(100, 'Word document successfully created!');
   return docxBlob;
 }
 
