@@ -45,6 +45,11 @@ import { HashStudio } from '@/components/security/HashStudio';
 import { PasswordStudio } from '@/components/security/PasswordStudio';
 import { AiStudio } from '@/components/ai/AiStudio';
 import { MediaDownloaderStudio } from '@/components/media/MediaDownloaderStudio';
+import { VideoToMp3Studio } from '@/components/media/VideoToMp3Studio';
+import { FaviconStudio } from '@/components/image/FaviconStudio';
+import { JwtStudio } from '@/components/dev/JwtStudio';
+import { UuidStudio } from '@/components/dev/UuidStudio';
+import { LoremIpsumStudio } from '@/components/dev/LoremIpsumStudio';
 
 export function ToolPageClient({ toolId }: { toolId: string }) {
   const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
@@ -95,6 +100,16 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
     customWorkspace = <PasswordStudio />;
   } else if (tool.id === 'ai-summarizer') {
     customWorkspace = <AiStudio />;
+  } else if (tool.id === 'video-to-mp3') {
+    customWorkspace = <VideoToMp3Studio />;
+  } else if (tool.id === 'favicon-generator') {
+    customWorkspace = <FaviconStudio />;
+  } else if (tool.id === 'jwt-decoder') {
+    customWorkspace = <JwtStudio />;
+  } else if (tool.id === 'uuid-generator') {
+    customWorkspace = <UuidStudio />;
+  } else if (tool.id === 'lorem-ipsum-generator') {
+    customWorkspace = <LoremIpsumStudio />;
   } else if (tool.category === 'media' || tool.id.includes('downloader') || tool.id === 'whatsapp-status-saver') {
     customWorkspace = <MediaDownloaderStudio />;
   }

@@ -62,6 +62,94 @@ export function decodeUrl(str: string, component: boolean = false): string {
   return component ? decodeURIComponent(str) : decodeURI(str);
 }
 
+/**
+ * Generate cryptographically random UUID v4 identifiers.
+ */
+export function generateUuidV4(count: number = 1, uppercase: boolean = false, hyphens: boolean = true): string[] {
+  const uuids: string[] = [];
+  for (let i = 0; i < count; i++) {
+    let id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+    if (!hyphens) id = id.replace(/-/g, '');
+    if (uppercase) id = id.toUpperCase();
+    uuids.push(id);
+  }
+  return uuids;
+}
+
+/**
+ * Decode and inspect JSON Web Tokens (JWT) client-side.
+ */
+export function decodeJwt(token: string): {
+  header: any;
+  payload: any;
+  isExpired: boolean;
+  issuedAt?: string;
+  expiresAt?: string;
+  error?: string;
+} {
+  try {
+    const parts = token.trim().split('.');
+    if (parts.length < 2) {
+      return { header: null, payload: null, isExpired: false, error: 'Invalid JWT structure. Expected 3 dot-separated parts.' };
+    }
+
+    const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+    const now = Math.floor(Date.now() / 1000);
+    const isExpired = payload.exp ? payload.exp < now : false;
+    const issuedAt = payload.iat ? new Date(payload.iat * 1000).toLocaleString() : undefined;
+    const expiresAt = payload.exp ? new Date(payload.exp * 1000).toLocaleString() : undefined;
+
+    return { header, payload, isExpired, issuedAt, expiresAt };
+  } catch (err: any) {
+    return { header: null, payload: null, isExpired: false, error: err.message || 'Failed to decode JWT' };
+  }
+}
+
+/**
+ * Generate realistic Lorem Ipsum dummy content.
+ */
+export function generateLoremIpsum(paragraphs: number = 3, format: 'paragraphs' | 'sentences' | 'words' = 'paragraphs'): string {
+  const dictionary = [
+    'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'curabitur', 'vel',
+    'hendrerit', 'libero', 'eleifend', 'blandit', 'nunc', 'ornare', 'odio', 'ut', 'orci', 'gravida',
+    'imperdiet', 'nullam', 'purus', 'lacinia', 'a', 'pretium', 'quis', 'congue', 'praesent', 'sagittis',
+    'laoreet', 'auctor', 'mauris', 'non', 'velit', 'eros', 'dictum', 'proin', 'accumsan', 'sapien',
+    'nec', 'massa', 'volutpat', 'venenatis', 'sed', 'eu', 'molestie', 'lacus', 'quisque', 'porttitor'
+  ];
+
+  if (format === 'words') {
+    const words: string[] = [];
+    for (let i = 0; i < paragraphs * 15; i++) {
+      words.push(dictionary[Math.floor(Math.random() * dictionary.length)]);
+    }
+    return words.join(' ');
+  }
+
+  const result: string[] = [];
+  for (let p = 0; p < paragraphs; p++) {
+    const numSentences = Math.floor(Math.random() * 3) + 4;
+    const sentences: string[] = [];
+    for (let s = 0; s < numSentences; s++) {
+      const numWords = Math.floor(Math.random() * 8) + 8;
+      const sentenceWords: string[] = [];
+      for (let w = 0; w < numWords; w++) {
+        sentenceWords.push(dictionary[Math.floor(Math.random() * dictionary.length)]);
+      }
+      const sentence = sentenceWords.join(' ');
+      sentences.push(sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.');
+    }
+    result.push(sentences.join(' '));
+  }
+
+  return result.join('\n\n');
+}
+
 export interface TimestampInfo {
   timestampSeconds: number;
   timestampMs: number;
@@ -127,7 +215,6 @@ export function parseHexColor(hex: string): ColorConversion | null {
 
   if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
 
-  // Calculate HSL
   const rNorm = r / 255;
   const gNorm = g / 255;
   const bNorm = b / 255;
@@ -154,7 +241,6 @@ export function parseHexColor(hex: string): ColorConversion | null {
     h /= 6;
   }
 
-  // Calculate CMYK
   const k = 1 - max;
   const c = k === 1 ? 0 : (1 - rNorm - k) / (1 - k);
   const m = k === 1 ? 0 : (1 - gNorm - k) / (1 - k);

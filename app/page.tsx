@@ -57,12 +57,14 @@ export default function HomePage() {
 
   const floatingChips = [
     { label: '📝 PDF to Word (DOCX)', href: '/tools/pdf-to-docx' },
+    { label: '🎵 Video to MP3', href: '/tools/video-to-mp3' },
+    { label: '✨ Favicon Pack Maker', href: '/tools/favicon-generator' },
     { label: '⚡ Compress PDF', href: '/tools/pdf-compress' },
     { label: '📄 Merge PDF', href: '/tools/pdf-merge' },
-    { label: '🖼️ JPG to PNG', href: '/tools/jpg-to-png' },
+    { label: '🔑 JWT Inspector', href: '/tools/jwt-decoder' },
     { label: '🎬 4K Video Downloader', href: '/tools/media-downloader' },
+    { label: '🆔 UUID Generator', href: '/tools/uuid-generator' },
     { label: '💬 WhatsApp Status', href: '/tools/whatsapp-status-saver' },
-    { label: '📊 JSON Validator', href: '/tools/json-formatter' },
   ];
 
   return (
