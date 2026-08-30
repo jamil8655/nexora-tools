@@ -55,6 +55,7 @@ import { AudioSpeedStudio } from '@/components/media/AudioSpeedStudio';
 import { ColorPaletteStudio } from '@/components/image/ColorPaletteStudio';
 import { PdfOrganizerStudio } from '@/components/pdf/PdfOrganizerStudio';
 import { MarkdownLiveStudio } from '@/components/dev/MarkdownLiveStudio';
+import { ImageResizerStudio } from '@/components/image/ImageResizerStudio';
 
 export function ToolPageClient({ toolId }: { toolId: string }) {
   const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
@@ -125,6 +126,8 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
     customWorkspace = <PdfOrganizerStudio />;
   } else if (tool.id === 'markdown-editor') {
     customWorkspace = <MarkdownLiveStudio />;
+  } else if (tool.id === 'image-resizer') {
+    customWorkspace = <ImageResizerStudio />;
   } else if (tool.category === 'media' || tool.id.includes('downloader') || tool.id === 'whatsapp-status-saver') {
     customWorkspace = <MediaDownloaderStudio />;
   }

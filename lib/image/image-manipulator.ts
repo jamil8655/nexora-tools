@@ -43,8 +43,10 @@ export async function resizeImage(
   file: File,
   targetWidth: number,
   targetHeight: number,
-  maintainAspect: boolean = true
-): Promise<{ blob: Blob; dataUrl: string }> {
+  maintainAspect: boolean = true,
+  format: 'image/jpeg' | 'image/png' | 'image/webp' = 'image/jpeg',
+  quality: number = 0.92
+): Promise<{ blob: Blob; dataUrl: string; width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -63,22 +65,127 @@ export async function resizeImage(
       }
 
       const canvas = document.createElement('canvas');
-      canvas.width = finalW;
-      canvas.height = finalH;
+      canvas.width = Math.max(1, finalW);
+      canvas.height = Math.max(1, finalH);
       const ctx = canvas.getContext('2d');
       if (!ctx) return reject(new Error('Canvas context not available'));
 
-      ctx.drawImage(img, 0, 0, finalW, finalH);
+      if (format === 'image/jpeg') {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       canvas.toBlob(
         (blob) => {
           if (!blob) return reject(new Error('Image resize failed'));
-          const dataUrl = canvas.toDataURL(file.type || 'image/png');
-          resolve({ blob, dataUrl });
+          const dataUrl = canvas.toDataURL(format, quality);
+          resolve({ blob, dataUrl, width: canvas.width, height: canvas.height });
         },
-        file.type || 'image/png',
-        0.95
+        format,
+        quality
       );
+    };
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = url;
+  });
+}
+
+/**
+ * Resizes and compresses an image to hit an exact Target File Size in KB (e.g. 50 KB, 100 KB, 500 KB, 2000 KB).
+ */
+export async function compressImageToTargetKB(
+  file: File,
+  targetKB: number,
+  format: 'image/jpeg' | 'image/png' | 'image/webp' = 'image/jpeg'
+): Promise<{ blob: Blob; dataUrl: string; width: number; height: number; finalKB: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = async () => {
+      URL.revokeObjectURL(url);
+      const targetBytes = targetKB * 1024;
+      let currentWidth = img.naturalWidth;
+      let currentHeight = img.naturalHeight;
+
+      // If original image is huge, downscale dimensions proportionally
+      const maxDim = targetKB <= 100 ? 1200 : targetKB <= 500 ? 1920 : 3840;
+      if (Math.max(currentWidth, currentHeight) > maxDim) {
+        const ratio = currentWidth / currentHeight;
+        if (currentWidth > currentHeight) {
+          currentWidth = maxDim;
+          currentHeight = Math.round(maxDim / ratio);
+        } else {
+          currentHeight = maxDim;
+          currentWidth = Math.round(maxDim * ratio);
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = currentWidth;
+      canvas.height = currentHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas context not available'));
+
+      if (format === 'image/jpeg') {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Binary search for optimal quality factor to fit target size
+      let low = 0.1;
+      let high = 0.95;
+      let bestBlob: Blob | null = null;
+      let bestQuality = 0.8;
+
+      for (let step = 0; step < 6; step++) {
+        const mid = (low + high) / 2;
+        const candidateBlob = await new Promise<Blob | null>((res) => {
+          canvas.toBlob((b) => res(b), format, mid);
+        });
+
+        if (!candidateBlob) break;
+
+        if (candidateBlob.size <= targetBytes) {
+          bestBlob = candidateBlob;
+          bestQuality = mid;
+          low = mid; // Try for higher quality while staying under limit
+        } else {
+          high = mid; // Too large, reduce quality
+        }
+      }
+
+      // If even lowest quality is larger than target, downscale resolution further
+      if (!bestBlob || bestBlob.size > targetBytes) {
+        const scaleFactor = Math.sqrt(targetBytes / (bestBlob?.size || file.size));
+        const scaledW = Math.max(100, Math.floor(currentWidth * Math.min(0.9, scaleFactor)));
+        const scaledH = Math.max(100, Math.floor(currentHeight * Math.min(0.9, scaleFactor)));
+
+        canvas.width = scaledW;
+        canvas.height = scaledH;
+        if (format === 'image/jpeg') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        bestBlob = await new Promise<Blob | null>((res) => {
+          canvas.toBlob((b) => res(b), format, 0.75);
+        });
+      }
+
+      const finalResultBlob = bestBlob || file;
+      const dataUrl = canvas.toDataURL(format, bestQuality);
+
+      resolve({
+        blob: finalResultBlob,
+        dataUrl,
+        width: canvas.width,
+        height: canvas.height,
+        finalKB: Math.round(finalResultBlob.size / 1024),
+      });
     };
     img.onerror = () => reject(new Error('Failed to load image'));
     img.src = url;
@@ -98,9 +205,9 @@ export async function rotateAndFlipImage(
       const ctx = canvas.getContext('2d');
       if (!ctx) return reject(new Error('Canvas context not available'));
 
-      const isQuarterTurn = action === 'rotate-90' || action === 'rotate-270';
-      canvas.width = isQuarterTurn ? img.naturalHeight : img.naturalWidth;
-      canvas.height = isQuarterTurn ? img.naturalWidth : img.naturalHeight;
+      const isRotated90or270 = action === 'rotate-90' || action === 'rotate-270';
+      canvas.width = isRotated90or270 ? img.naturalHeight : img.naturalWidth;
+      canvas.height = isRotated90or270 ? img.naturalWidth : img.naturalHeight;
 
       ctx.save();
       if (action === 'rotate-90') {
@@ -133,16 +240,16 @@ export async function rotateAndFlipImage(
         0.95
       );
     };
-    img.onerror = () => reject(new Error('Failed to load image'));
+    img.onerror = () => reject(new Error('Failed to transform image'));
     img.src = url;
   });
 }
 
 export async function watermarkImage(
   file: File,
-  text: string,
-  color: string = '#ffffff',
-  opacity: number = 0.5
+  text: string = 'NEXORA',
+  opacity: number = 0.5,
+  color: string = '#ffffff'
 ): Promise<{ blob: Blob; dataUrl: string }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
