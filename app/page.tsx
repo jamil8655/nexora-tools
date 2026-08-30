@@ -57,61 +57,60 @@ export default function HomePage() {
   const sideFeatured = popularTools.filter((t) => t.id !== featuredMedia?.id && t.id !== featuredPdfToWord?.id).slice(0, 4);
 
   const floatingChips = [
-    { label: '📝 PDF to Word (DOCX)', href: '/tools/pdf-to-docx', color: 'from-rose-500/20 to-orange-500/20 border-rose-500/30 text-rose-300' },
-    { label: '✂️ Audio Cutter & Trimmer', href: '/tools/audio-cutter', color: 'from-violet-500/20 to-purple-500/20 border-violet-500/30 text-violet-300' },
-    { label: '🎵 Video to MP3', href: '/tools/video-to-mp3', color: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/30 text-cyan-300' },
-    { label: '✨ Favicon Pack Maker', href: '/tools/favicon-generator', color: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30 text-amber-300' },
-    { label: '⚡ Compress PDF (500MB)', href: '/tools/pdf-compress', color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30 text-emerald-300' },
-    { label: '📄 Merge PDF', href: '/tools/pdf-merge', color: 'from-indigo-500/20 to-blue-500/20 border-indigo-500/30 text-indigo-300' },
-    { label: '🔑 JWT Inspector', href: '/tools/jwt-decoder', color: 'from-purple-500/20 to-pink-500/20 border-purple-500/30 text-purple-300' },
-    { label: '🎬 4K Video Downloader', href: '/tools/media-downloader', color: 'from-red-500/20 to-rose-500/20 border-red-500/30 text-rose-300' },
-    { label: '🆔 UUID Generator', href: '/tools/uuid-generator', color: 'from-sky-500/20 to-cyan-500/20 border-sky-500/30 text-sky-300' },
+    { label: '📝 PDF to Word (DOCX)', href: '/tools/pdf-to-docx', color: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 hover:border-rose-300' },
+    { label: '✂️ Audio Cutter & Trimmer', href: '/tools/audio-cutter', color: 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100 hover:border-violet-300' },
+    { label: '🎵 Video to MP3', href: '/tools/video-to-mp3', color: 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300' },
+    { label: '✨ Favicon Pack Maker', href: '/tools/favicon-generator', color: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:border-amber-300' },
+    { label: '⚡ Compress PDF (500MB)', href: '/tools/pdf-compress', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' },
+    { label: '📄 Merge PDF', href: '/tools/pdf-merge', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' },
+    { label: '🔑 JWT Inspector', href: '/tools/jwt-decoder', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 hover:border-purple-300' },
+    { label: '🎬 4K Video Downloader', href: '/tools/media-downloader', color: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100 hover:border-red-300' },
+    { label: '🆔 UUID Generator', href: '/tools/uuid-generator', color: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100 hover:border-sky-300' },
   ];
 
   return (
-    <div className="space-y-12 sm:space-y-16 pb-24 overflow-hidden bg-slate-950 text-slate-100 min-h-screen">
-      {/* 1. ANIMATED HIGH-TECH HERO SECTION */}
-      <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 border-b border-slate-800/80 bg-mesh-glow">
-        {/* Ambient Animated Mesh Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[850px] h-[360px] bg-gradient-to-tr from-brand-500/20 via-purple-600/20 to-pink-500/20 blur-3xl pointer-events-none rounded-full animate-pulse-glow" />
-        <div className="absolute inset-0 bg-grid-soft opacity-70 pointer-events-none" />
+    <div className="space-y-12 sm:space-y-16 pb-24 overflow-hidden bg-white text-slate-900 min-h-screen bg-light-pattern">
+      {/* 1. ANIMATED CLEAN HERO SECTION WITH AURORA GLOW */}
+      <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80 bg-aurora-glow">
+        {/* Subtle Geometric Background Grid */}
+        <div className="absolute inset-0 bg-grid-light opacity-60 pointer-events-none" />
 
-        <div className="relative max-w-4xl mx-auto text-center space-y-8 z-10">
-          {/* Animated Glowing Status Badge */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900/90 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10 backdrop-blur-xl hover:scale-105 transition-transform cursor-pointer">
+        <div className="relative max-w-4xl mx-auto text-center space-y-7 z-10">
+          {/* Animated Status Pill */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-brand-700 border border-brand-200 shadow-md shadow-brand-500/5 backdrop-blur-xl hover:scale-105 transition-transform cursor-pointer">
             <span className="flex h-2.5 w-2.5 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-600"></span>
             </span>
-            <span className="tracking-wide">70+ Pro Utilities • 500MB Size Limit • 100% Client-Side Private</span>
+            <span className="tracking-wide">70+ Powerful Utilities • 500MB Size Limit • 100% Free & Private</span>
           </div>
 
           {/* Main Headline */}
           <div className="space-y-3.5 max-w-3xl mx-auto">
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.12]">
-              The Ultimate Powerhouse for <br />
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.14]">
+              The Ultimate Suite for <br />
               <span className="shimmer-text">Files, Media & Productivity.</span>
             </h1>
-            <p className="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Convert PDF to editable Word with AI OCR, extract audio from videos, slice ringtones, download 4K media, compress heavy files up to 500MB with zero cloud logs.
+            <p className="text-xs sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Convert PDF to editable Word with AI OCR, extract audio from videos, trim ringtones, download 4K media, and compress large documents with zero server storage.
             </p>
           </div>
 
           {/* Large Hero Search Bar */}
           <div className="max-w-2xl mx-auto relative pt-1">
-            <div className="relative flex items-center bg-slate-900/90 rounded-2xl border-2 border-slate-700/80 shadow-2xl focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-500/20 backdrop-blur-xl transition-all">
-              <Search className="w-5 h-5 text-cyan-400 ml-4 shrink-0" />
+            <div className="relative flex items-center bg-white rounded-2xl border-2 border-slate-200 shadow-xl shadow-slate-200/50 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15 transition-all">
+              <Search className="w-5 h-5 text-brand-600 ml-4 shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search 70+ tools (PDF to Word, Audio Cutter, Video to MP3, 4K Downloader, Favicon)..."
-                className="w-full px-3.5 py-4 text-xs sm:text-sm bg-transparent text-white placeholder-slate-400 focus:outline-none"
+                className="w-full px-3.5 py-4 text-xs sm:text-sm bg-transparent text-slate-900 placeholder-slate-400 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => setIsSearchModalOpen(true)}
-                className="hidden sm:inline-flex items-center gap-1 mr-3 px-3 py-1.5 rounded-xl bg-slate-800 text-xs font-mono text-slate-300 border border-slate-700 hover:text-white hover:border-slate-600 shadow-sm"
+                className="hidden sm:inline-flex items-center gap-1 mr-3 px-3 py-1.5 rounded-xl bg-slate-100 text-xs font-mono text-slate-600 border border-slate-200 hover:text-slate-900 hover:bg-slate-200 shadow-sm"
               >
                 ⌘K Quick Search
               </button>
@@ -124,7 +123,7 @@ export default function HomePage() {
               <Link
                 key={chip.label}
                 href={chip.href}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r ${chip.color} border shadow-md backdrop-blur-md transition-all hover:scale-105 hover:-translate-y-1 ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold ${chip.color} border shadow-sm transition-all hover:scale-105 hover:-translate-y-1 ${
                   i % 2 === 0 ? 'animate-float' : 'animate-float-reverse'
                 }`}
               >
@@ -137,22 +136,22 @@ export default function HomePage() {
 
       {/* Live System Stats Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-2xl backdrop-blur-xl text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-3xl bg-white border border-slate-200 shadow-lg shadow-slate-100 text-center">
           <div className="space-y-1">
-            <div className="text-xl sm:text-2xl font-black text-cyan-400">70+ Tools</div>
-            <div className="text-xs text-slate-400 font-medium">100% Genuine Utilities</div>
+            <div className="text-xl sm:text-2xl font-black text-brand-600">70+ Tools</div>
+            <div className="text-xs text-slate-500 font-medium">100% Genuine Utilities</div>
           </div>
-          <div className="space-y-1 border-l border-slate-800">
-            <div className="text-xl sm:text-2xl font-black text-rose-400">500 MB</div>
-            <div className="text-xs text-slate-400 font-medium">Max Processing Limit</div>
+          <div className="space-y-1 border-l border-slate-200">
+            <div className="text-xl sm:text-2xl font-black text-rose-600">500 MB</div>
+            <div className="text-xs text-slate-500 font-medium">Max Processing Limit</div>
           </div>
-          <div className="space-y-1 border-l border-slate-800">
-            <div className="text-xl sm:text-2xl font-black text-emerald-400">100% Client-Side</div>
-            <div className="text-xs text-slate-400 font-medium">Total Document Privacy</div>
+          <div className="space-y-1 border-l border-slate-200">
+            <div className="text-xl sm:text-2xl font-black text-emerald-600">100% Client-Side</div>
+            <div className="text-xs text-slate-500 font-medium">Total Document Privacy</div>
           </div>
-          <div className="space-y-1 border-l border-slate-800">
-            <div className="text-xl sm:text-2xl font-black text-purple-400">4K & 1080p</div>
-            <div className="text-xs text-slate-400 font-medium">HD Media Downloader</div>
+          <div className="space-y-1 border-l border-slate-200">
+            <div className="text-xl sm:text-2xl font-black text-purple-600">4K & 1080p</div>
+            <div className="text-xs text-slate-500 font-medium">HD Media Downloader</div>
           </div>
         </div>
       </div>
@@ -165,21 +164,21 @@ export default function HomePage() {
       {/* 2. POPULAR TOOLS WITH FEATURED SPOTLIGHT */}
       {!searchQuery && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              <div className="p-2 rounded-xl bg-amber-100 text-amber-700 border border-amber-200">
                 <Flame className="w-5 h-5 fill-current animate-bounce" />
               </div>
               <div>
-                <h2 className="text-lg sm:text-xl font-bold text-white">
+                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
                   Trending & High-Power Utilities
                 </h2>
-                <p className="text-xs text-slate-400">Most popular tools used by creators, students, and engineers</p>
+                <p className="text-xs text-slate-500">Most popular tools used by creators, students, and engineers</p>
               </div>
             </div>
             <Link
               href="/tools"
-              className="text-xs font-bold text-cyan-400 hover:text-cyan-300 hover:underline flex items-center gap-1 group"
+              className="text-xs font-bold text-brand-600 hover:text-brand-700 hover:underline flex items-center gap-1 group"
             >
               <span>Explore all {TOOLS_LIST.length} tools</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -190,15 +189,13 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
             {/* 1 Large Spotlight Card for Social Media Video Downloader */}
             {featuredMedia && (
-              <div className="lg:col-span-1 p-7 rounded-3xl bg-gradient-to-br from-purple-900/90 via-indigo-950 to-slate-950 border border-purple-500/40 text-white shadow-2xl flex flex-col justify-between space-y-6 hover:shadow-purple-500/20 hover:border-purple-400/60 transition-all relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-36 h-36 bg-purple-500/20 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
-
+              <div className="lg:col-span-1 p-7 rounded-3xl bg-gradient-to-br from-purple-700 via-indigo-700 to-brand-700 text-white shadow-xl shadow-purple-500/20 flex flex-col justify-between space-y-6 hover:shadow-2xl transition-all relative overflow-hidden group">
                 <div className="space-y-4 relative z-10">
                   <div className="flex items-center justify-between">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white border border-purple-400/40 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 text-white border border-white/30 flex items-center justify-center shadow-lg">
                       <Video className="w-7 h-7" />
                     </div>
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/40 backdrop-blur-md">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/20 text-white border border-white/30 backdrop-blur-md">
                       🔥 4K ENGINE
                     </span>
                   </div>
@@ -207,18 +204,18 @@ export default function HomePage() {
                     <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                       {featuredMedia.name}
                     </h3>
-                    <p className="text-xs sm:text-sm text-purple-200/80 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-purple-100 leading-relaxed">
                       Download HD and 4K videos from YouTube, Instagram Reels, TikTok (no watermark), Facebook, and WhatsApp Status.
                     </p>
                   </div>
 
-                  <div className="space-y-2 pt-3 border-t border-purple-500/20 text-xs text-purple-200">
+                  <div className="space-y-2 pt-3 border-t border-white/20 text-xs text-purple-100">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
                       <span>4K Ultra HD & 1080p Full HD Downloads</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
                       <span>320kbps Studio Audio MP3 Extraction</span>
                     </div>
                   </div>
@@ -226,7 +223,7 @@ export default function HomePage() {
 
                 <Link
                   href={`/tools/${featuredMedia.id}`}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-bold text-center transition-all shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 relative z-10"
+                  className="w-full py-3.5 px-4 rounded-2xl bg-white hover:bg-purple-50 text-purple-800 text-xs font-bold text-center transition-all shadow-md flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 relative z-10"
                 >
                   <span>Launch Video Downloader</span>
                   <ArrowRight className="w-4 h-4" />
@@ -246,13 +243,13 @@ export default function HomePage() {
 
       {/* 3. CATEGORY SUITES NAVIGATION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <div className="border-b border-slate-800/80 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-white">
+            <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
               Specialized Tool Suites
             </h2>
-            <p className="text-xs text-slate-400">
-              Explore dedicated high-performance environments tailored for every workflow
+            <p className="text-xs text-slate-500">
+              Explore dedicated high-performance environments tailored for every document and media workflow
             </p>
           </div>
         </div>
@@ -267,27 +264,27 @@ export default function HomePage() {
                   setActiveCategory(cat.id);
                   document.getElementById('all-tools-section')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="group p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1.5 transition-all cursor-pointer flex flex-col justify-between space-y-4 backdrop-blur-xl relative overflow-hidden"
+                className="group p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-brand-400 shadow-md shadow-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative overflow-hidden"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 text-cyan-400 border border-slate-700 flex items-center justify-center font-bold group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-md">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-50 to-indigo-50 text-brand-600 border border-brand-100 flex items-center justify-center font-bold group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-sm">
                       <ToolIcon name={cat.icon} className="w-6 h-6" />
                     </div>
-                    <span className="text-xs font-bold text-cyan-400/80 font-mono px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                    <span className="text-xs font-bold text-slate-600 font-mono px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200">
                       {count} Tools
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors">
+                  <h3 className="text-base font-extrabold text-slate-900 group-hover:text-brand-600 transition-colors">
                     {cat.label}
                   </h3>
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                     {cat.desc}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-400 group-hover:text-cyan-300 group-hover:translate-x-1.5 transition-all pt-2 border-t border-slate-800/80">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-brand-600 group-hover:text-brand-700 group-hover:translate-x-1.5 transition-all pt-2 border-t border-slate-100">
                   <span>Browse Suite</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
@@ -304,12 +301,12 @@ export default function HomePage() {
 
       {/* 4. ALL TOOLS EXPLORER GRID */}
       <section id="all-tools-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-white">
+            <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
               All Available Tools
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               Showing {filteredTools.length} {filteredTools.length === 1 ? 'utility' : 'utilities'}
             </p>
           </div>
@@ -321,8 +318,8 @@ export default function HomePage() {
               onClick={() => setActiveCategory('all')}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${
                 activeCategory === 'all'
-                  ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/25'
-                  : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
+                  ? 'bg-slate-900 text-white font-extrabold shadow-md'
+                  : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900'
               }`}
             >
               All ({TOOLS_LIST.length})
@@ -337,8 +334,8 @@ export default function HomePage() {
                   onClick={() => setActiveCategory(cat.id)}
                   className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${
                     activeCategory === cat.id
-                      ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/25'
-                      : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
+                      ? 'bg-brand-600 text-white shadow-md'
+                      : 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900'
                   }`}
                 >
                   <span>{cat.label}</span>

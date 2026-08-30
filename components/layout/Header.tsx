@@ -9,17 +9,9 @@ import {
   Command,
   Sun,
   Moon,
-  LayoutGrid,
-  FileText,
-  Image as ImageIcon,
-  Layers,
-  Wrench,
   Bookmark,
-  Scissors,
-  Video,
 } from 'lucide-react';
 import { useTheme } from './ThemeContext';
-import { siteConfig } from '@/config/site';
 import { QuickSearchModal } from '@/components/shared/QuickSearchModal';
 
 export function Header() {
@@ -62,19 +54,19 @@ export function Header() {
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-300 ${
           isScrolled
-            ? 'glass-nav shadow-2xl shadow-cyan-500/5'
-            : 'bg-slate-950/90 border-b border-slate-800/80 backdrop-blur-xl'
+            ? 'glass-nav shadow-md shadow-slate-200/50'
+            : 'bg-white/90 border-b border-slate-200/80 backdrop-blur-md'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold shadow-lg shadow-cyan-500/25 group-hover:scale-105 transition-transform border border-cyan-400/30">
+              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-brand-500/25 group-hover:scale-105 transition-transform border border-brand-400/20">
                 <Sparkles className="w-4 h-4 fill-current" />
               </div>
-              <span className="text-lg font-black text-white tracking-tight">
-                NEXORA<span className="text-cyan-400 text-xs ml-1 font-mono uppercase">PRO</span>
+              <span className="text-lg font-black text-slate-900 tracking-tight">
+                NEXORA<span className="text-brand-600 text-xs ml-1 font-mono uppercase font-black">PRO</span>
               </span>
             </Link>
 
@@ -88,13 +80,13 @@ export function Header() {
                     href={link.href}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                       isActive
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80 border border-transparent'
+                        ? 'bg-brand-50 text-brand-700 border border-brand-200 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
                     }`}
                   >
                     <span>{link.label}</span>
                     {link.badge && (
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                      <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-100 text-rose-700 border border-rose-200">
                         {link.badge}
                       </span>
                     )}
@@ -110,12 +102,12 @@ export function Header() {
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/80 hover:border-cyan-500/50 text-xs font-semibold transition-all shadow-md"
+              className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 border border-slate-200 text-xs font-semibold transition-all shadow-sm"
               aria-label="Search tools"
             >
-              <Search className="w-3.5 h-3.5 text-cyan-400" />
+              <Search className="w-3.5 h-3.5 text-brand-600" />
               <span className="hidden sm:inline-block">Search 70+ tools...</span>
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400 border border-slate-700">
+              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white text-[10px] font-mono text-slate-500 border border-slate-200 shadow-xs">
                 <Command className="w-2.5 h-2.5" /> K
               </kbd>
             </button>
@@ -123,7 +115,7 @@ export function Header() {
             {/* Workspace Link */}
             <Link
               href="/dashboard"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-xs font-extrabold transition-all shadow-lg shadow-cyan-500/20 hover:scale-105 active:scale-95"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-extrabold transition-all shadow-md shadow-brand-500/20 hover:scale-105 active:scale-95"
             >
               <Bookmark className="w-3.5 h-3.5" />
               <span>Workspace</span>
@@ -133,10 +125,10 @@ export function Header() {
             <button
               type="button"
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800 transition-colors"
+              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-colors"
               aria-label="Toggle theme"
             >
-              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-300" />}
+              {isDark ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-slate-600" />}
             </button>
           </div>
         </div>

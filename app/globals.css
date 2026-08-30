@@ -4,93 +4,68 @@
 
 @layer base {
   :root {
-    --background: 220 35% 97%;
+    --background: 0 0% 100%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     --primary: 224 85% 55%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 215 25% 94%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 25% 95%;
     --secondary-foreground: 222 47% 11%;
-    --muted: 215 25% 94%;
+    --muted: 215 25% 95%;
     --muted-foreground: 215 16% 47%;
-    --accent: 215 25% 94%;
+    --accent: 215 25% 95%;
     --accent-foreground: 222 47% 11%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 90%;
-    --input: 214 32% 90%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
     --ring: 224 85% 55%;
     --radius: 1.25rem;
   }
 
-  .dark {
-    --background: 224 71% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 7%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 7%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 33% 12%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 12%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 12%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 14%;
-    --input: 217 33% 14%;
-    --ring: 224 76% 55%;
-  }
-
   body {
-    @apply bg-slate-950 text-slate-100 antialiased selection:bg-brand-500 selection:text-white;
+    @apply bg-white text-slate-900 antialiased selection:bg-brand-500 selection:text-white;
   }
 }
 
-/* Ambient Radial Mesh Gradients */
-.bg-mesh-glow {
-  background: 
-    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.14) 0%, transparent 50%),
-    radial-gradient(circle at 80% 85%, rgba(168, 85, 247, 0.12) 0%, transparent 40%);
-}
-
-.bg-card-gradient {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
-}
-
-/* Crisp subtle dot & grid patterns */
-.bg-grid-soft {
+/* Crisp Clean Light Dot & Grid Patterns */
+.bg-light-pattern {
+  background-color: #ffffff;
+  background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px), radial-gradient(#f1f5f9 1.2px, #ffffff 1.2px);
   background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+
+.bg-grid-light {
+  background-size: 36px 36px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
 }
 
-/* Glassmorphism Classes */
+/* Subtle Vibrant Aura Glows on Clean White */
+.bg-aurora-glow {
+  background: 
+    radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 90% 15%, rgba(236, 72, 153, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 50% 65%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.06) 0%, transparent 40%);
+}
+
+/* Glassmorphism Classes for Clean Light Theme */
 .glass-nav {
-  background: rgba(10, 15, 30, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-card {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
 }
 
-.glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.18);
+.card-pattern-overlay {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 /* Floating animation keyframes */
@@ -99,7 +74,7 @@
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px) rotate(1deg);
+    transform: translateY(-6px) rotate(0.5deg);
   }
 }
 
@@ -108,18 +83,18 @@
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(8px) rotate(-1deg);
+    transform: translateY(6px) rotate(-0.5deg);
   }
 }
 
 @keyframes pulse-glow {
   0%, 100% {
-    opacity: 0.35;
+    opacity: 0.4;
     transform: scale(1);
   }
   50% {
-    opacity: 0.75;
-    transform: scale(1.08);
+    opacity: 0.8;
+    transform: scale(1.05);
   }
 }
 
@@ -145,7 +120,7 @@
 }
 
 .shimmer-text {
-  background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc, #f472b6, #38bdf8);
+  background: linear-gradient(90deg, #2563eb, #7c3aed, #db2777, #2563eb);
   background-size: 200% auto;
   color: transparent;
   -webkit-background-clip: text;
@@ -159,14 +134,14 @@
   height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: #f8fafc;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
+  background: rgba(148, 163, 184, 0.5);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.55);
+  background: rgba(100, 116, 139, 0.7);
 }
 
 /* Hide scrollbar for tabs */
