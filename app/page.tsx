@@ -58,14 +58,14 @@ export default function HomePage() {
 
   const floatingChips = [
     { label: '📝 PDF to Word (DOCX)', href: '/tools/pdf-to-docx', color: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 hover:border-rose-300' },
-    { label: '✂️ Audio Cutter & Trimmer', href: '/tools/audio-cutter', color: 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100 hover:border-violet-300' },
-    { label: '🎵 Video to MP3', href: '/tools/video-to-mp3', color: 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300' },
-    { label: '✨ Favicon Pack Maker', href: '/tools/favicon-generator', color: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:border-amber-300' },
-    { label: '⚡ Compress PDF (500MB)', href: '/tools/pdf-compress', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' },
-    { label: '📄 Merge PDF', href: '/tools/pdf-merge', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' },
-    { label: '🔑 JWT Inspector', href: '/tools/jwt-decoder', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 hover:border-purple-300' },
-    { label: '🎬 4K Video Downloader', href: '/tools/media-downloader', color: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100 hover:border-red-300' },
-    { label: '🆔 UUID Generator', href: '/tools/uuid-generator', color: 'bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100 hover:border-sky-300' },
+    { label: '🔊 Audio Volume Booster', href: '/tools/audio-booster', color: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:border-amber-300' },
+    { label: '✂️ Audio Cutter', href: '/tools/audio-cutter', color: 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100 hover:border-violet-300' },
+    { label: '⏩ Audio Speed (2x)', href: '/tools/audio-speed', color: 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300' },
+    { label: '🎨 Color Palette Extractor', href: '/tools/image-palette', color: 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100 hover:border-pink-300' },
+    { label: '📑 PDF Page Organizer', href: '/tools/pdf-organizer', color: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100 hover:border-red-300' },
+    { label: '✍️ Live Markdown to PDF', href: '/tools/markdown-editor', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' },
+    { label: '🎵 Video to MP3', href: '/tools/video-to-mp3', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' },
+    { label: '🎬 4K Video Downloader', href: '/tools/media-downloader', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 hover:border-purple-300' },
   ];
 
   return (

@@ -1,5 +1,5 @@
 /**
- * Web Audio Engine for Client-Side Audio Extraction, Trimming, and Conversion
+ * Web Audio Engine for Client-Side Audio Extraction, Trimming, Volume Boosting, and Speed Manipulation
  */
 
 /**
@@ -59,6 +59,98 @@ export async function trimAudioFile(
   const blob = audioBufferToWavBlob(trimmedBuffer);
   audioContext.close();
   onProgress?.(100, 'Audio trimmed successfully!');
+
+  return { blob, duration: newLength / sampleRate };
+}
+
+/**
+ * Boosts audio volume / gain (e.g. 1.5x to 3.0x) with soft limiting to prevent harsh digital clipping.
+ */
+export async function boostAudioVolume(
+  audioFile: File,
+  gainMultiplier: number, // e.g. 1.5 to 3.0
+  onProgress?: (percent: number, status: string) => void
+): Promise<{ blob: Blob; duration: number }> {
+  onProgress?.(20, 'Reading audio into memory...');
+  const arrayBuffer = await audioFile.arrayBuffer();
+
+  onProgress?.(45, 'Decoding audio channels...');
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+  const sampleRate = audioBuffer.sampleRate;
+  const numChannels = audioBuffer.numberOfChannels;
+  const length = audioBuffer.length;
+
+  onProgress?.(70, `Applying +${Math.round((gainMultiplier - 1) * 100)}% acoustic gain boost...`);
+  const boostedBuffer = audioContext.createBuffer(numChannels, length, sampleRate);
+
+  for (let c = 0; c < numChannels; c++) {
+    const sourceData = audioBuffer.getChannelData(c);
+    const targetData = boostedBuffer.getChannelData(c);
+
+    for (let i = 0; i < length; i++) {
+      let sample = sourceData[i] * gainMultiplier;
+      // Soft saturation limit to prevent harsh square-wave clipping
+      if (sample > 1.0) {
+        sample = Math.tanh(sample);
+      } else if (sample < -1.0) {
+        sample = Math.tanh(sample);
+      }
+      targetData[i] = sample;
+    }
+  }
+
+  const blob = audioBufferToWavBlob(boostedBuffer);
+  audioContext.close();
+  onProgress?.(100, 'Volume boost applied successfully!');
+
+  return { blob, duration: length / sampleRate };
+}
+
+/**
+ * Changes playback speed of audio file (0.5x to 2.5x).
+ */
+export async function changeAudioSpeed(
+  audioFile: File,
+  speedRatio: number, // 0.5 to 2.5
+  onProgress?: (percent: number, status: string) => void
+): Promise<{ blob: Blob; duration: number }> {
+  onProgress?.(20, 'Reading audio track...');
+  const arrayBuffer = await audioFile.arrayBuffer();
+
+  onProgress?.(40, 'Decoding sample rate...');
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+  const originalLength = audioBuffer.length;
+  const numChannels = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+
+  // New length proportional to speed
+  const newLength = Math.floor(originalLength / speedRatio);
+
+  onProgress?.(70, `Resampling audio playback speed to ${speedRatio}x...`);
+  const newBuffer = audioContext.createBuffer(numChannels, newLength, sampleRate);
+
+  for (let c = 0; c < numChannels; c++) {
+    const srcData = audioBuffer.getChannelData(c);
+    const dstData = newBuffer.getChannelData(c);
+
+    for (let i = 0; i < newLength; i++) {
+      const srcIndex = i * speedRatio;
+      const indexFloor = Math.floor(srcIndex);
+      const indexCeil = Math.min(originalLength - 1, indexFloor + 1);
+      const frac = srcIndex - indexFloor;
+
+      // Linear interpolation between sample frames
+      dstData[i] = srcData[indexFloor] * (1 - frac) + srcData[indexCeil] * frac;
+    }
+  }
+
+  const blob = audioBufferToWavBlob(newBuffer);
+  audioContext.close();
+  onProgress?.(100, `Speed changed to ${speedRatio}x successfully!`);
 
   return { blob, duration: newLength / sampleRate };
 }

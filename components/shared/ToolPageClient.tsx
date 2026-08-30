@@ -50,6 +50,11 @@ import { FaviconStudio } from '@/components/image/FaviconStudio';
 import { JwtStudio } from '@/components/dev/JwtStudio';
 import { UuidStudio } from '@/components/dev/UuidStudio';
 import { AudioCutterStudio } from '@/components/media/AudioCutterStudio';
+import { AudioBoosterStudio } from '@/components/media/AudioBoosterStudio';
+import { AudioSpeedStudio } from '@/components/media/AudioSpeedStudio';
+import { ColorPaletteStudio } from '@/components/image/ColorPaletteStudio';
+import { PdfOrganizerStudio } from '@/components/pdf/PdfOrganizerStudio';
+import { MarkdownLiveStudio } from '@/components/dev/MarkdownLiveStudio';
 
 export function ToolPageClient({ toolId }: { toolId: string }) {
   const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
@@ -110,6 +115,16 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
     customWorkspace = <UuidStudio />;
   } else if (tool.id === 'audio-cutter') {
     customWorkspace = <AudioCutterStudio />;
+  } else if (tool.id === 'audio-booster') {
+    customWorkspace = <AudioBoosterStudio />;
+  } else if (tool.id === 'audio-speed') {
+    customWorkspace = <AudioSpeedStudio />;
+  } else if (tool.id === 'image-palette') {
+    customWorkspace = <ColorPaletteStudio />;
+  } else if (tool.id === 'pdf-organizer') {
+    customWorkspace = <PdfOrganizerStudio />;
+  } else if (tool.id === 'markdown-editor') {
+    customWorkspace = <MarkdownLiveStudio />;
   } else if (tool.category === 'media' || tool.id.includes('downloader') || tool.id === 'whatsapp-status-saver') {
     customWorkspace = <MediaDownloaderStudio />;
   }
