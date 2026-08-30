@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Download, RefreshCw, Copy, Check, CheckCircle2, Eye, Sparkles } from 'lucide-react';
+import { Download, RefreshCw, Copy, Check, CheckCircle2, Share2, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { formatBytes, calculatePercentageSaved } from '@/lib/utils/formatters';
 import { useI18n } from '@/lib/i18n/i18n-context';
@@ -30,6 +30,7 @@ export function ResultPreview({
 }: ResultPreviewProps) {
   const { t } = useI18n();
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [shared, setShared] = useState(false);
 
   useEffect(() => {
     try {
@@ -47,6 +48,27 @@ export function ResultPreview({
     navigator.clipboard.writeText(text);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
+  const handleShare = async () => {
+    if (typeof window !== 'undefined') {
+      const shareData = {
+        title: 'NEXORA Tools Pro',
+        text: 'Processed my files with NEXORA Tools Pro - Fast, private and free!',
+        url: window.location.href,
+      };
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (e) {
+          // ignore share cancel
+        }
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        setShared(true);
+        setTimeout(() => setShared(false), 2500);
+      }
+    }
   };
 
   const totalOriginal = files.reduce((acc, f) => acc + (f.originalSize || 0), 0);
@@ -88,19 +110,19 @@ export function ResultPreview({
           return (
             <div
               key={idx}
-              className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3"
+              className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1 min-w-0">
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                  <h4 className="text-sm font-bold text-slate-900 truncate">
                     {file.name}
                   </h4>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
                     {file.originalSize > 0 && <span>Original: {formatBytes(file.originalSize)}</span>}
                     {processedBytes !== undefined && (
                       <>
                         <span>•</span>
-                        <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                        <span className="font-bold text-emerald-600">
                           Final: {formatBytes(processedBytes)}
                         </span>
                       </>
@@ -113,17 +135,17 @@ export function ResultPreview({
                     <button
                       type="button"
                       onClick={() => handleCopyText(file.textResult!, idx)}
-                      className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center gap-1.5 transition-colors"
+                      className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5 transition-colors border border-slate-200"
                     >
                       {copiedIndex === idx ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
                           <span>Copied!</span>
                         </>
                       ) : (
                         <>
                           <Copy className="w-3.5 h-3.5" />
-                          <span>Copy</span>
+                          <span>Copy Text</span>
                         </>
                       )}
                     </button>
@@ -142,14 +164,14 @@ export function ResultPreview({
 
               {/* Text Result Preview */}
               {file.textResult && (
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 max-h-48 overflow-y-auto text-xs font-mono text-slate-800 dark:text-slate-200 whitespace-pre-wrap">
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 max-h-48 overflow-y-auto text-xs font-mono text-slate-800 whitespace-pre-wrap">
                   {file.textResult}
                 </div>
               )}
 
               {/* Image Preview */}
               {isImage && file.dataUrl && (
-                <div className="rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center p-2 max-h-60">
+                <div className="rounded-xl overflow-hidden bg-slate-50 border border-slate-200 flex items-center justify-center p-2 max-h-60">
                   <img
                     src={file.dataUrl}
                     alt={file.name}
@@ -166,15 +188,35 @@ export function ResultPreview({
       <AdSlot placement="result-page" />
 
       {/* Global Actions */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
-        <button
-          type="button"
-          onClick={onReset}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Process Another File</span>
-        </button>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={onReset}
+            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Process Another</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors"
+          >
+            {shared ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Link Copied!</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-3.5 h-3.5" />
+                <span>Share Tool</span>
+              </>
+            )}
+          </button>
+        </div>
 
         {files.length > 1 && onDownloadAllZip && (
           <button
