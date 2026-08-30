@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: nexora-media-server
+    name: nexora-tools-vgti
     env: node
     plan: free
     buildCommand: npm install
@@ -8,3 +8,5 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 3001
