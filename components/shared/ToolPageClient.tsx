@@ -25,7 +25,7 @@ import {
   stripExifAndMetadata,
   watermarkImage,
 } from '@/lib/image/image-manipulator';
-import { docxToPdf, spreadsheetToPdf } from '@/lib/documents/doc-converter';
+import { docxToPdf, pdfToDocx, spreadsheetToPdf } from '@/lib/documents/doc-converter';
 import { StorageUnitConverter } from '@/components/calculators/StorageUnitConverter';
 import { BandwidthCalculator } from '@/components/calculators/BandwidthCalculator';
 import { DpiCalculator } from '@/components/calculators/DpiCalculator';
@@ -395,7 +395,25 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       return results;
     }
 
-    // 14. WORD DOCX TO PDF
+    // 14. PDF TO WORD (DOCX)
+    if (tool.id === 'pdf-to-docx' || tool.id === 'pdf-to-word') {
+      const results = [];
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        onProgress(Math.round(((i + 1) / files.length) * 80), `Converting ${f.name} to editable Word document...`);
+        const docxBlob = await pdfToDocx(f, onProgress);
+        results.push({
+          name: `${f.name.replace(/\.pdf$/i, '')}.docx`,
+          originalSize: f.size,
+          processedSize: docxBlob.size,
+          blob: docxBlob,
+        });
+      }
+      onProgress(100, 'Word conversion completed!');
+      return results;
+    }
+
+    // 15. WORD DOCX TO PDF
     if (tool.id === 'docx-to-pdf') {
       onProgress(40, 'Parsing Word XML document structure...');
       const results = [];

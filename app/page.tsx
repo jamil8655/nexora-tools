@@ -56,11 +56,11 @@ export default function HomePage() {
   const sideFeatured = popularTools.filter((t) => t.id !== featuredMedia?.id && t.id !== featuredPdf?.id).slice(0, 4);
 
   const floatingChips = [
-    { label: '🎬 4K Video Downloader', href: '/tools/media-downloader' },
+    { label: '📝 PDF to Word (DOCX)', href: '/tools/pdf-to-docx' },
     { label: '⚡ Compress PDF', href: '/tools/pdf-compress' },
     { label: '📄 Merge PDF', href: '/tools/pdf-merge' },
     { label: '🖼️ JPG to PNG', href: '/tools/jpg-to-png' },
-    { label: '🎵 TikTok MP4', href: '/tools/tiktok-downloader' },
+    { label: '🎬 4K Video Downloader', href: '/tools/media-downloader' },
     { label: '💬 WhatsApp Status', href: '/tools/whatsapp-status-saver' },
     { label: '📊 JSON Validator', href: '/tools/json-formatter' },
   ];

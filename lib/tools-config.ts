@@ -512,6 +512,29 @@ export const TOOLS_LIST: ToolDefinition[] = [
 
   // ==================== 3. DOCUMENT TOOLS ====================
   {
+    id: 'pdf-to-docx',
+    slug: 'pdf-to-word',
+    name: 'PDF to Word (DOCX)',
+    shortDesc: 'Convert PDF documents into editable Microsoft Word (.docx) files.',
+    fullDesc: 'Extracts text, headings, and formatting from PDF files and converts them into native, fully editable Word (.docx) documents 100% in your browser.',
+    category: 'document',
+    icon: 'FileText',
+    popular: true,
+    featured: true,
+    isClientSide: true,
+    acceptedMimeTypes: ['application/pdf'],
+    acceptedExtensions: ['.pdf'],
+    maxFiles: 10,
+    maxFileSizeMB: 50,
+    outputExtension: 'docx',
+    outputMimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    tags: ['pdf to word', 'pdf to docx', 'convert pdf to word', 'pdf convert', 'pdf word'],
+    faq: [
+      { question: 'Will the Word document be editable?', answer: 'Yes! The resulting .docx file contains fully editable text, headings, and paragraphs compatible with Microsoft Word and Google Docs.' },
+      { question: 'Is my document private?', answer: 'Yes, your file is processed entirely in your browser memory and never uploaded to any server.' },
+    ],
+  },
+  {
     id: 'docx-to-pdf',
     slug: 'word-to-pdf',
     name: 'Word (DOCX) to PDF',
