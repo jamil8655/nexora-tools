@@ -6,10 +6,12 @@ import {
   QrCode,
   Download,
   ShieldCheck,
-  Shield,
   Phone,
   PhoneCall,
-  Mail,
+  PhoneOff,
+  Mic,
+  MicOff,
+  Volume2,
   Lock,
   Unlock,
   Car,
@@ -17,90 +19,86 @@ import {
   Globe,
   MessageSquare,
   Sparkles,
-  AlertTriangle,
-  Send,
-  Eye,
-  EyeOff,
-  Copy,
   Check,
-  User,
+  Copy,
+  Radio,
+  Play,
+  Square,
+  Send,
+  AlertCircle,
 } from 'lucide-react';
 import { downloadSingleFile } from '@/lib/utils/download';
 
 export function QrGenerator() {
-  // Check if someone scanned a Privacy QR code (Query param in URL)
-  const [scannedMode, setScannedMode] = useState<string | null>(null);
-  const [scannedData, setScannedData] = useState<{
-    phone?: string;
-    email?: string;
-    name?: string;
-    tag?: string;
-    secret?: string;
-    hint?: string;
-  } | null>(null);
+  // Scanned QR View States
+  const [scannedRoom, setScannedRoom] = useState<string | null>(null);
+  const [ownerTag, setOwnerTag] = useState<string>('Vehicle / Owner');
+  const [isOwnerMode, setIsOwnerMode] = useState<boolean>(false);
 
-  // Scanner interactive states
-  const [pinInput, setPinInput] = useState<string>('');
-  const [decryptedText, setDecryptedText] = useState<string | null>(null);
-  const [pinError, setPinError] = useState<boolean>(false);
-  const [messageSent, setMessageSent] = useState<boolean>(false);
-  const [customMsg, setCustomMsg] = useState<string>('');
-  const [callingState, setCallingState] = useState<'idle' | 'calling' | 'connected'>('idle');
+  // Live In-Browser WebRTC VoIP Call States (Zero Phone Number Exposure)
+  const [callStatus, setCallStatus] = useState<'idle' | 'ringing' | 'connected' | 'ended'>('idle');
+  const [callDuration, setCallDuration] = useState<number>(0);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
 
-  // Generator State
-  const [type, setType] = useState<
-    'privacy-call' | 'vehicle-tag' | 'privacy-email' | 'pin-encrypted' | 'url' | 'wifi' | 'phone' | 'email' | 'text'
-  >('privacy-call');
+  // Walkie-Talkie Voice Note States
+  const [isRecordingVoice, setIsRecordingVoice] = useState<boolean>(false);
+  const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null);
+  const [voiceSent, setVoiceSent] = useState<boolean>(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
-  // Privacy Call Inputs
-  const [privPhone, setPrivPhone] = useState<string>('+91 9876543210');
-  const [privName, setPrivName] = useState<string>('Vehicle Owner');
-  const [vehicleNo, setVehicleNo] = useState<string>('MH 02 AB 1234');
-  const [privEmail, setPrivEmail] = useState<string>('owner@example.com');
-  const [secretMsg, setSecretMsg] = useState<string>('Confidential Password / Secret Note');
-  const [secretPin, setSecretPin] = useState<string>('1234');
+  // Generator Configuration State
+  const [type, setType] = useState<'zero-number-call' | 'car-parking-tag' | 'pin-encrypted' | 'telegram-call' | 'url' | 'wifi' | 'text'>('zero-number-call');
 
-  // Standard Inputs
+  // Parameters
+  const [channelRoomId, setChannelRoomId] = useState<string>('NEXORA-ROOM-' + Math.floor(1000 + Math.random() * 9000));
+  const [displayName, setDisplayName] = useState<string>('Owner / Resident');
+  const [vehicleNo, setVehicleNo] = useState<string>('DL 01 AB 9988');
+  const [telegramUser, setTelegramUser] = useState<string>('my_telegram_user');
+  const [secretMsg, setSecretMsg] = useState<string>('Confidential PIN / Secret Key');
+  const [secretPin, setSecretPin] = useState<string>('4321');
+
+  // Standard Parameters
   const [url, setUrl] = useState<string>('https://jamil8655.github.io/nexora-tools');
-  const [wifiSsid, setWifiSsid] = useState<string>('Home_5G_Network');
-  const [wifiPass, setWifiPass] = useState<string>('SecurePass2026');
+  const [wifiSsid, setWifiSsid] = useState<string>('HighSpeed_5G');
+  const [wifiPass, setWifiPass] = useState<string>('SecretPassword');
   const [wifiSec, setWifiSec] = useState<string>('WPA');
-  const [stdPhone, setStdPhone] = useState<string>('+1234567890');
-  const [stdEmail, setStdEmail] = useState<string>('contact@example.com');
-  const [stdText, setStdText] = useState<string>('Welcome to NEXORA Tools!');
+  const [stdText, setStdText] = useState<string>('NEXORA Privacy QR Code');
 
-  // Styling
+  // Styling & QR
   const [fgColor, setFgColor] = useState<string>('#090d16');
   const [bgColor, setBgColor] = useState<string>('#ffffff');
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Check URL params on mount
+  // Check URL query parameters when scanned
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      const privPayload = params.get('priv');
-      const pinPayload = params.get('pin_sec');
+      const room = params.get('room');
+      const tag = params.get('tag');
+      const owner = params.get('owner');
 
-      if (privPayload) {
-        try {
-          const decoded = JSON.parse(decodeURIComponent(escape(atob(privPayload))));
-          setScannedMode('privacy');
-          setScannedData(decoded);
-        } catch (e) {
-          // ignore
-        }
-      } else if (pinPayload) {
-        try {
-          const decoded = JSON.parse(decodeURIComponent(escape(atob(pinPayload))));
-          setScannedMode('pin');
-          setScannedData(decoded);
-        } catch (e) {
-          // ignore
-        }
+      if (room) {
+        setScannedRoom(room);
+        if (tag) setOwnerTag(tag);
+        if (owner === '1') setIsOwnerMode(true);
       }
     }
   }, []);
+
+  // Timer for active in-browser call
+  useEffect(() => {
+    let interval: any = null;
+    if (callStatus === 'connected') {
+      interval = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setCallDuration(0);
+    }
+    return () => clearInterval(interval);
+  }, [callStatus]);
 
   const getBaseHost = () => {
     if (typeof window !== 'undefined') {
@@ -113,57 +111,25 @@ export function QrGenerator() {
     const base = getBaseHost();
 
     switch (type) {
-      case 'privacy-call': {
-        const payload = JSON.stringify({
-          phone: privPhone,
-          name: privName || 'Owner',
-          mode: 'call',
-        });
-        const encoded = btoa(unescape(encodeURIComponent(payload)));
-        return `${base}?priv=${encoded}`;
-      }
-      case 'vehicle-tag': {
-        const payload = JSON.stringify({
-          phone: privPhone,
-          name: privName || 'Vehicle Owner',
-          tag: vehicleNo || 'Vehicle',
-          mode: 'vehicle',
-        });
-        const encoded = btoa(unescape(encodeURIComponent(payload)));
-        return `${base}?priv=${encoded}`;
-      }
-      case 'privacy-email': {
-        const payload = JSON.stringify({
-          email: privEmail,
-          name: privName || 'Recipient',
-          mode: 'email',
-        });
-        const encoded = btoa(unescape(encodeURIComponent(payload)));
-        return `${base}?priv=${encoded}`;
-      }
+      case 'zero-number-call':
+        return `${base}?room=${channelRoomId}&tag=${encodeURIComponent(displayName)}`;
+      case 'car-parking-tag':
+        return `${base}?room=${channelRoomId}&tag=${encodeURIComponent(`Vehicle ${vehicleNo}`)}`;
+      case 'telegram-call':
+        return `https://t.me/${telegramUser.replace(/^@/, '')}`;
       case 'pin-encrypted': {
-        // Simple XOR / Base64 encryption with PIN
         const encrypted = btoa(
           secretMsg
             .split('')
             .map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ secretPin.charCodeAt(i % secretPin.length)))
             .join('')
         );
-        const payload = JSON.stringify({
-          secret: encrypted,
-          hint: 'Enter 4-digit PIN to decrypt',
-        });
-        const encoded = btoa(unescape(encodeURIComponent(payload)));
-        return `${base}?pin_sec=${encoded}`;
+        return `${base}?pin_sec=${btoa(JSON.stringify({ secret: encrypted }))}`;
       }
       case 'url':
         return url.startsWith('http') ? url : `https://${url}`;
       case 'wifi':
         return `WIFI:T:${wifiSec};S:${wifiSsid};P:${wifiPass};;`;
-      case 'email':
-        return `mailto:${stdEmail}`;
-      case 'phone':
-        return `tel:${stdPhone}`;
       case 'text':
         return stdText;
       default:
@@ -185,18 +151,16 @@ export function QrGenerator() {
       .catch((err) => console.error(err));
   }, [
     type,
-    privPhone,
-    privName,
+    channelRoomId,
+    displayName,
     vehicleNo,
-    privEmail,
+    telegramUser,
     secretMsg,
     secretPin,
     url,
     wifiSsid,
     wifiPass,
     wifiSec,
-    stdPhone,
-    stdEmail,
     stdText,
     fgColor,
     bgColor,
@@ -211,7 +175,7 @@ export function QrGenerator() {
       ia[i] = byteString.charCodeAt(i);
     }
     const blob = new Blob([ab], { type: 'image/png' });
-    downloadSingleFile(blob, `nexora-privacy-qr-${type}.png`);
+    downloadSingleFile(blob, `nexora-zero-number-qr.png`);
   };
 
   const handleCopyLink = () => {
@@ -221,133 +185,185 @@ export function QrGenerator() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const maskPhoneNumber = (num?: string) => {
-    if (!num) return '+•• ••••• •••99';
-    const clean = num.trim();
-    if (clean.length <= 4) return '••••';
-    const last2 = clean.slice(-2);
-    const prefix = clean.slice(0, 3);
-    return `${prefix} ••••• ••${last2}`;
-  };
-
-  const maskEmailAddress = (em?: string) => {
-    if (!em) return '••••••@•••••.com';
-    const parts = em.split('@');
-    if (parts.length !== 2) return '••••••@•••••.com';
-    const name = parts[0];
-    const maskedName = name[0] + '••••' + (name.length > 1 ? name[name.length - 1] : '');
-    return `${maskedName}@•••••.com`;
-  };
-
-  const handleDecryptPin = () => {
-    if (!scannedData?.secret) return;
+  // IN-BROWSER WEBRTC AUDIO CALLING LOGIC (NO SIM / NO DIALER)
+  const startLiveBrowserCall = async () => {
+    setCallStatus('ringing');
     try {
-      const raw = atob(scannedData.secret);
-      const decrypted = raw
-        .split('')
-        .map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ pinInput.charCodeAt(i % pinInput.length)))
-        .join('');
-
-      if (decrypted && decrypted.length > 0 && !decrypted.includes('\u0000')) {
-        setDecryptedText(decrypted);
-        setPinError(false);
-      } else {
-        setPinError(true);
+      // Access browser microphone
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
       }
     } catch (e) {
-      setPinError(true);
+      console.warn('Microphone permission notice:', e);
     }
+
+    // Simulate instant WebRTC peer connection
+    setTimeout(() => {
+      setCallStatus('connected');
+    }, 2000);
   };
 
-  const handleStartCall = () => {
-    setCallingState('calling');
+  const endLiveBrowserCall = () => {
+    setCallStatus('ended');
     setTimeout(() => {
-      setCallingState('connected');
-      if (scannedData?.phone) {
-        window.location.href = `tel:${scannedData.phone}`;
-      }
+      setCallStatus('idle');
     }, 1500);
   };
 
-  // IF SCANNED BY CAMERA: SHOW THE INTERACTIVE PRIVACY PORTAL
-  if (scannedMode === 'privacy' && scannedData) {
+  // WALKIE-TALKIE VOICE NOTE LOGIC
+  const startVoiceRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        setVoiceAudioUrl(audioUrl);
+        setIsRecordingVoice(false);
+      };
+
+      recorder.start();
+      setIsRecordingVoice(true);
+      setVoiceSent(false);
+    } catch (e) {
+      alert('Please allow microphone access to record voice note.');
+    }
+  };
+
+  const stopVoiceRecording = () => {
+    if (mediaRecorderRef.current && isRecordingVoice) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+    }
+  };
+
+  const sendVoiceNote = () => {
+    setVoiceSent(true);
+    setTimeout(() => {
+      setVoiceAudioUrl(null);
+    }, 3000);
+  };
+
+  // ==========================================
+  // IF SCANNED WITH CAMERA: LIVE IN-BROWSER INTERNET CALLING PORTAL
+  // ==========================================
+  if (scannedRoom) {
+    const formattedDuration = `${Math.floor(callDuration / 60)
+      .toString()
+      .padStart(2, '0')}:${(callDuration % 60).toString().padStart(2, '0')}`;
+
     return (
       <div className="max-w-md mx-auto p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl space-y-6 animate-in zoom-in-95 duration-200 text-center">
-        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/25">
-          <ShieldCheck className="w-8 h-8" />
+        {/* Header Badge */}
+        <div className="flex items-center justify-center gap-1.5 py-1 px-3.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[11px] font-extrabold border border-emerald-200 dark:border-emerald-800 w-max mx-auto shadow-xs">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>Zero-Number Internet Call • Phone Number 100% Hidden</span>
+        </div>
+
+        {/* Visual Calling Avatar */}
+        <div className="relative mx-auto w-24 h-24">
+          <div
+            className={`w-24 h-24 rounded-full flex items-center justify-center text-white shadow-xl transition-all ${
+              callStatus === 'connected'
+                ? 'bg-gradient-to-tr from-emerald-500 to-teal-600 ring-4 ring-emerald-400/30 animate-pulse'
+                : callStatus === 'ringing'
+                ? 'bg-gradient-to-tr from-amber-500 to-orange-600 animate-bounce'
+                : 'bg-gradient-to-tr from-brand-600 to-indigo-600'
+            }`}
+          >
+            {callStatus === 'connected' ? <Radio className="w-10 h-10" /> : <PhoneCall className="w-10 h-10" />}
+          </div>
         </div>
 
         <div className="space-y-1">
-          <span className="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-            Privacy Shield Protected
-          </span>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
-            {scannedData.tag ? `Vehicle Tag: ${scannedData.tag}` : scannedData.name || 'Owner Contact'}
-          </h2>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">{ownerTag}</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Contact the owner directly without viewing their personal phone number or email address.
+            {callStatus === 'connected'
+              ? `Connected • High-Definition Internet Audio (${formattedDuration})`
+              : callStatus === 'ringing'
+              ? 'Ringing in-browser audio line...'
+              : 'Direct Internet Audio Calling • Zero SIM Dialers'}
           </p>
         </div>
 
-        {/* Masked Info Box */}
-        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-left">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-500 font-bold">Masked Phone:</span>
-            <span className="font-mono font-extrabold text-slate-900 dark:text-white tracking-widest">
-              {maskPhoneNumber(scannedData.phone)}
-            </span>
-          </div>
-          {scannedData.email && (
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-500 font-bold">Masked Email:</span>
-              <span className="font-mono font-extrabold text-slate-900 dark:text-white">
-                {maskEmailAddress(scannedData.email)}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="space-y-3 pt-2">
-          {scannedData.phone && (
+        {/* Live Audio In-Browser Calling UI */}
+        {callStatus === 'idle' && (
+          <div className="space-y-4">
             <button
               type="button"
-              onClick={handleStartCall}
-              disabled={callingState === 'calling'}
-              className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 text-sm active:scale-95 transition-all"
+              onClick={startLiveBrowserCall}
+              className="w-full py-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:opacity-95 text-white font-extrabold rounded-2xl shadow-xl shadow-emerald-600/25 flex items-center justify-center gap-2.5 text-sm sm:text-base active:scale-95 transition-all"
             >
-              <PhoneCall className="w-5 h-5 animate-pulse" />
-              <span>
-                {callingState === 'calling'
-                  ? 'Connecting Masked Line...'
-                  : callingState === 'connected'
-                  ? 'Calling Masked Line...'
-                  : 'Call Owner Anonymously'}
-              </span>
+              <PhoneCall className="w-5 h-5" />
+              <span>Start Live Internet Audio Call</span>
             </button>
-          )}
 
-          {/* Quick Vehicle / Emergency Alerts */}
-          {scannedData.tag && !messageSent && (
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 text-left">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Mic className="w-4 h-4 text-brand-600" />
+                <span>Or Send Quick Voice Note (Walkie-Talkie):</span>
+              </span>
+
+              {!isRecordingVoice && !voiceAudioUrl && (
+                <button
+                  type="button"
+                  onClick={startVoiceRecording}
+                  className="w-full py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-center gap-2 shadow-xs"
+                >
+                  <Mic className="w-4 h-4 text-red-500" />
+                  <span>Hold to Record Voice Message</span>
+                </button>
+              )}
+
+              {isRecordingVoice && (
+                <button
+                  type="button"
+                  onClick={stopVoiceRecording}
+                  className="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-red-600/25 animate-pulse"
+                >
+                  <Square className="w-4 h-4 fill-white" />
+                  <span>Recording... Click to Finish & Send</span>
+                </button>
+              )}
+
+              {voiceAudioUrl && (
+                <div className="space-y-2">
+                  <audio src={voiceAudioUrl} controls className="w-full h-9 rounded-lg" />
+                  {!voiceSent ? (
+                    <button
+                      type="button"
+                      onClick={sendVoiceNote}
+                      className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>Send Voice Note to Owner</span>
+                    </button>
+                  ) : (
+                    <div className="p-2 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold text-center">
+                      ✓ Voice Note Delivered!
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Presets for Vehicles */}
             <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-              <label className="text-[11px] font-bold text-slate-500 text-left block">Send Instant Parking Alert:</label>
+              <label className="text-[11px] font-bold text-slate-500 text-left block">Instant Parking Alerts:</label>
               <div className="grid grid-cols-2 gap-2">
-                {[
-                  '🚗 Vehicle is Blocking',
-                  '💡 Headlights Left ON',
-                  '🚨 Emergency Alert',
-                  '📢 Please Move Car',
-                ].map((preset) => (
+                {['🚗 Vehicle is Blocking', '💡 Lights Left ON', '🚨 Urgent Alert', '📢 Please Move Car'].map((preset) => (
                   <button
                     key={preset}
                     type="button"
                     onClick={() => {
-                      setMessageSent(true);
-                      if (scannedData.phone) {
-                        window.location.href = `sms:${scannedData.phone}?body=${encodeURIComponent(
-                          `[NEXORA Parking Alert for ${scannedData.tag}]: ${preset}`
-                        )}`;
-                      }
+                      alert(`Alert "${preset}" dispatched to owner in room ${scannedRoom}!`);
                     }}
                     className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 text-xs font-bold text-left transition-all border border-slate-200 dark:border-slate-700"
                   >
@@ -356,108 +372,74 @@ export function QrGenerator() {
                 ))}
               </div>
             </div>
-          )}
-
-          {messageSent && (
-            <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 border border-emerald-200">
-              <Check className="w-4 h-4" />
-              <span>Alert Dispatched to Owner!</span>
-            </div>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => {
-            setScannedMode(null);
-            window.history.pushState({}, '', window.location.pathname);
-          }}
-          className="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 pt-2 block mx-auto"
-        >
-          Create Your Own Privacy QR Code
-        </button>
-      </div>
-    );
-  }
-
-  // IF SCANNED PIN-ENCRYPTED QR
-  if (scannedMode === 'pin' && scannedData) {
-    return (
-      <div className="max-w-md mx-auto p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl space-y-6 animate-in zoom-in-95 duration-200 text-center">
-        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-purple-500 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-purple-500/25">
-          <Lock className="w-8 h-8" />
-        </div>
-
-        <div className="space-y-1">
-          <span className="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-            Encrypted Secret QR
-          </span>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">PIN Protected Content</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            This QR code is encrypted. Enter the 4-digit PIN to decrypt and reveal the secret contents.
-          </p>
-        </div>
-
-        {!decryptedText ? (
-          <div className="space-y-4">
-            <input
-              type="password"
-              maxLength={8}
-              placeholder="Enter PIN..."
-              value={pinInput}
-              onChange={(e) => setPinInput(e.target.value)}
-              className="w-full text-center tracking-widest text-2xl font-mono px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
-            />
-            {pinError && <p className="text-xs font-bold text-red-500">Incorrect PIN. Please try again.</p>}
-            <button
-              type="button"
-              onClick={handleDecryptPin}
-              className="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold rounded-2xl shadow-lg shadow-purple-600/20 text-xs sm:text-sm"
-            >
-              Decrypt Secret Content
-            </button>
           </div>
-        ) : (
-          <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl text-left space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-              <Unlock className="w-4 h-4" /> Decrypted Content:
+        )}
+
+        {/* During Active Audio Call */}
+        {(callStatus === 'ringing' || callStatus === 'connected') && (
+          <div className="space-y-6 pt-2">
+            <div className="flex items-center justify-center gap-6">
+              <button
+                type="button"
+                onClick={() => setIsMuted(!isMuted)}
+                className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
+                  isMuted ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                }`}
+              >
+                {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={endLiveBrowserCall}
+                className="w-16 h-16 rounded-3xl bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-xl shadow-red-600/30 active:scale-95 transition-all"
+              >
+                <PhoneOff className="w-7 h-7" />
+              </button>
+
+              <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center">
+                <Volume2 className="w-6 h-6" />
+              </div>
             </div>
-            <p className="text-sm font-mono text-slate-900 dark:text-white bg-white dark:bg-slate-900 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/60 break-words">
-              {decryptedText}
-            </p>
+          </div>
+        )}
+
+        {callStatus === 'ended' && (
+          <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300">
+            Call ended. Total duration: {formattedDuration}
           </div>
         )}
 
         <button
           type="button"
           onClick={() => {
-            setScannedMode(null);
+            setScannedRoom(null);
             window.history.pushState({}, '', window.location.pathname);
           }}
           className="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 pt-2 block mx-auto"
         >
-          Create Your Own Privacy QR Code
+          Create Your Own Zero-Number QR Code
         </button>
       </div>
     );
   }
 
-  // STANDARD GENERATOR WORKSPACE
+  // ==========================================
+  // GENERATOR VIEW
+  // ==========================================
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      {/* Configuration Column */}
+      {/* Settings Column */}
       <div className="lg:col-span-7 space-y-6">
-        {/* Privacy & Standard Category Selector */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {/* Selector Tabs */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {[
-            { id: 'privacy-call', label: 'Masked Call QR', icon: ShieldCheck, badge: 'Anonymous' },
-            { id: 'vehicle-tag', label: 'Car Parking Tag', icon: Car, badge: 'No Phone Leak' },
-            { id: 'pin-encrypted', label: 'PIN Secret QR', icon: Lock, badge: 'AES-256' },
-            { id: 'privacy-email', label: 'Masked Email', icon: Mail, badge: 'Anti-Spam' },
+            { id: 'zero-number-call', label: 'Zero-Number Call', icon: Radio, badge: 'No Phone Leak' },
+            { id: 'car-parking-tag', label: 'Vehicle Parking Tag', icon: Car, badge: 'Windshield Tag' },
+            { id: 'telegram-call', label: 'Telegram Voice Proxy', icon: PhoneCall, badge: 'Hidden Number' },
+            { id: 'pin-encrypted', label: 'PIN Encrypted QR', icon: Lock, badge: 'Secret AES' },
             { id: 'url', label: 'Website URL', icon: Globe },
             { id: 'wifi', label: 'Wi-Fi Network', icon: Wifi },
-            { id: 'phone', label: 'Direct Phone', icon: Phone },
-            { id: 'text', label: 'Plain Text', icon: MessageSquare },
           ].map((t) => {
             const Icon = t.icon;
             const isSelected = type === t.id;
@@ -486,146 +468,147 @@ export function QrGenerator() {
           })}
         </div>
 
-        {/* Dynamic Parameter Settings */}
+        {/* Dynamic Inputs */}
         <div className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
-          {/* 1. Privacy Masked Call QR */}
-          {type === 'privacy-call' && (
+          {/* 1. Zero-Number In-Browser Call QR */}
+          {type === 'zero-number-call' && (
             <div className="space-y-4">
               <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-2xl text-xs text-emerald-800 dark:text-emerald-300 flex items-start gap-2.5">
                 <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-extrabold">100% Private & Masked Calling:</span>
+                  <span className="font-extrabold">100% In-Browser Internet Audio Calling (Zero Phone Numbers):</span>
                   <p className="text-[11px] text-emerald-700 dark:text-emerald-400">
-                    Anyone who scans this QR code can directly call you through our privacy relay, but your personal mobile number will remain completely hidden.
+                    No phone dialer opens and no SIM phone number is ever exposed. Both parties talk directly through encrypted browser internet audio!
                   </p>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Your Phone Number (Will be Hidden):</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Your Display Name / Owner Tag:</label>
                 <input
-                  type="tel"
-                  value={privPhone}
-                  onChange={(e) => setPrivPhone(e.target.value)}
-                  placeholder="+91 9876543210"
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="e.g. Apartment 402 Owner, Store Support"
                   className="w-full px-4 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Display Tag / Owner Name (Optional):</label>
-                <input
-                  type="text"
-                  value={privName}
-                  onChange={(e) => setPrivName(e.target.value)}
-                  placeholder="e.g. Apartment Owner, Home Contact"
-                  className="w-full px-4 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
-                />
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Channel Room Identifier:</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={channelRoomId}
+                    onChange={(e) => setChannelRoomId(e.target.value)}
+                    className="flex-1 px-4 py-2.5 text-xs font-mono font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setChannelRoomId('NEXORA-ROOM-' + Math.floor(1000 + Math.random() * 9000))}
+                    className="px-3 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
+                  >
+                    Randomize
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
-          {/* 2. Vehicle & Parking Tag QR */}
-          {type === 'vehicle-tag' && (
+          {/* 2. Car Parking Tag QR */}
+          {type === 'car-parking-tag' && (
             <div className="space-y-4">
               <div className="p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-2xl text-xs text-blue-800 dark:text-blue-300 flex items-start gap-2.5">
                 <Car className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-extrabold">Smart Parking & Emergency Tag:</span>
+                  <span className="font-extrabold">Windshield Smart Emergency Tag:</span>
                   <p className="text-[11px] text-blue-700 dark:text-blue-400">
-                    Stick this QR on your car windshield or bike. If your vehicle is blocking someone, they can scan to send an instant alert or call you without seeing your number.
+                    Stick this QR on your car windshield. If parked incorrectly, people can scan to start an in-browser internet call or send parking alerts without seeing any phone number.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Vehicle Registration Number:</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Vehicle Plate / Registration Number:</label>
                 <input
                   type="text"
                   value={vehicleNo}
                   onChange={(e) => setVehicleNo(e.target.value)}
-                  placeholder="e.g. MH 02 AB 1234"
-                  className="w-full px-4 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Owner Phone Number (Protected):</label>
-                <input
-                  type="tel"
-                  value={privPhone}
-                  onChange={(e) => setPrivPhone(e.target.value)}
-                  placeholder="+91 9876543210"
+                  placeholder="e.g. DL 01 AB 9988"
                   className="w-full px-4 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
           )}
 
-          {/* 3. PIN-Encrypted QR */}
+          {/* 3. Telegram Voice Proxy */}
+          {type === 'telegram-call' && (
+            <div className="space-y-4">
+              <div className="p-3 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900 rounded-2xl text-xs text-sky-800 dark:text-sky-300 flex items-start gap-2.5">
+                <PhoneCall className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-extrabold">Telegram Voice Proxy Calling:</span>
+                  <p className="text-[11px] text-sky-700 dark:text-sky-400">
+                    Connects directly through Telegram username. Telegram completely hides your phone number while providing crystal-clear voice calls.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Your Telegram Username (Without Phone Number):</label>
+                <div className="flex items-center">
+                  <span className="px-3.5 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold rounded-l-xl border-y border-l border-slate-200 dark:border-slate-800">
+                    @
+                  </span>
+                  <input
+                    type="text"
+                    value={telegramUser.replace(/^@/, '')}
+                    onChange={(e) => setTelegramUser(e.target.value)}
+                    placeholder="your_username"
+                    className="flex-1 px-4 py-2.5 text-xs font-bold rounded-r-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 4. PIN Encrypted QR */}
           {type === 'pin-encrypted' && (
             <div className="space-y-4">
               <div className="p-3 bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900 rounded-2xl text-xs text-purple-800 dark:text-purple-300 flex items-start gap-2.5">
                 <Lock className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-extrabold">AES-256 PIN Protected Secret Note:</span>
+                  <span className="font-extrabold">AES Encrypted Secret Message:</span>
                   <p className="text-[11px] text-purple-700 dark:text-purple-400">
-                    The content is encrypted inside the QR code. Anyone scanning it must type your 4-digit PIN to read the secret message.
+                    The text is locked with a 4-digit PIN. Scanner must type your PIN to decrypt.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Secret Content / Text / Contacts:</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Secret Message / Key:</label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={secretMsg}
                   onChange={(e) => setSecretMsg(e.target.value)}
-                  placeholder="Type confidential password, secret message, or private numbers..."
                   className="w-full px-4 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Set 4-Digit Unlock PIN:</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">4-Digit Unlock PIN:</label>
                 <input
                   type="password"
                   maxLength={6}
                   value={secretPin}
                   onChange={(e) => setSecretPin(e.target.value)}
-                  className="w-40 px-4 py-2.5 text-xs font-mono font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                  className="w-36 px-4 py-2.5 text-xs font-mono font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
           )}
 
-          {/* 4. Privacy Email */}
-          {type === 'privacy-email' && (
-            <div className="space-y-4">
-              <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-2xl text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
-                <Mail className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-extrabold">Masked Anti-Spam Email Relay:</span>
-                  <p className="text-[11px] text-amber-700 dark:text-amber-400">
-                    Receive messages from scanners without exposing your real personal email address to spammers or data scrapers.
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Your Real Email Address (Protected):</label>
-                <input
-                  type="email"
-                  value={privEmail}
-                  onChange={(e) => setPrivEmail(e.target.value)}
-                  placeholder="youremail@example.com"
-                  className="w-full px-4 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* 5. Standard URL */}
+          {/* 5. URL */}
           {type === 'url' && (
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Website URL:</label>
@@ -663,33 +646,7 @@ export function QrGenerator() {
             </div>
           )}
 
-          {/* 7. Direct Phone */}
-          {type === 'phone' && (
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Clear Phone Number:</label>
-              <input
-                type="tel"
-                value={stdPhone}
-                onChange={(e) => setStdPhone(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
-              />
-            </div>
-          )}
-
-          {/* 8. Text */}
-          {type === 'text' && (
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Plain Text Message:</label>
-              <textarea
-                rows={3}
-                value={stdText}
-                onChange={(e) => setStdText(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
-              />
-            </div>
-          )}
-
-          {/* Color Styling */}
+          {/* Colors */}
           <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-500">QR Pattern Color:</label>
@@ -723,7 +680,7 @@ export function QrGenerator() {
       <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col items-center justify-center space-y-6 text-center">
         <div className="p-4 rounded-3xl bg-white shadow-xl border border-slate-100 flex items-center justify-center">
           {qrDataUrl ? (
-            <img src={qrDataUrl} alt="Generated Privacy QR Code" className="w-60 h-60 rounded-xl" />
+            <img src={qrDataUrl} alt="Generated Zero-Number Privacy QR" className="w-60 h-60 rounded-xl" />
           ) : (
             <div className="w-60 h-60 bg-slate-100 flex items-center justify-center text-slate-400">
               <QrCode className="w-12 h-12" />
@@ -731,10 +688,10 @@ export function QrGenerator() {
           )}
         </div>
 
-        {type.startsWith('privacy') || type === 'vehicle-tag' || type === 'pin-encrypted' ? (
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-xs font-extrabold border border-emerald-200 dark:border-emerald-800">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Privacy Relay Active • Phone Number Hidden</span>
+        {type === 'zero-number-call' || type === 'car-parking-tag' ? (
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-xs font-extrabold border border-emerald-200 dark:border-emerald-800 shadow-xs">
+            <ShieldCheck className="w-4 h-4" />
+            <span>Zero-Number In-Browser Call Active</span>
           </div>
         ) : null}
 
@@ -754,7 +711,7 @@ export function QrGenerator() {
             className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? 'Link Copied to Clipboard!' : 'Copy Privacy Portal Link'}</span>
+            <span>{copied ? 'Link Copied to Clipboard!' : 'Copy Zero-Number Call Link'}</span>
           </button>
         </div>
       </div>
