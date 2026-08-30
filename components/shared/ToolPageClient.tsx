@@ -49,7 +49,7 @@ import { VideoToMp3Studio } from '@/components/media/VideoToMp3Studio';
 import { FaviconStudio } from '@/components/image/FaviconStudio';
 import { JwtStudio } from '@/components/dev/JwtStudio';
 import { UuidStudio } from '@/components/dev/UuidStudio';
-import { LoremIpsumStudio } from '@/components/dev/LoremIpsumStudio';
+import { AudioCutterStudio } from '@/components/media/AudioCutterStudio';
 
 export function ToolPageClient({ toolId }: { toolId: string }) {
   const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
@@ -108,8 +108,8 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
     customWorkspace = <JwtStudio />;
   } else if (tool.id === 'uuid-generator') {
     customWorkspace = <UuidStudio />;
-  } else if (tool.id === 'lorem-ipsum-generator') {
-    customWorkspace = <LoremIpsumStudio />;
+  } else if (tool.id === 'audio-cutter') {
+    customWorkspace = <AudioCutterStudio />;
   } else if (tool.category === 'media' || tool.id.includes('downloader') || tool.id === 'whatsapp-status-saver') {
     customWorkspace = <MediaDownloaderStudio />;
   }

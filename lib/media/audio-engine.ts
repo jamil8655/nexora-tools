@@ -1,5 +1,5 @@
 /**
- * Web Audio Engine for Client-Side Audio Extraction and Conversion
+ * Web Audio Engine for Client-Side Audio Extraction, Trimming, and Conversion
  */
 
 /**
@@ -23,6 +23,44 @@ export async function extractAudioFromVideo(
   audioContext.close();
   onProgress?.(100, 'Audio extraction completed!');
   return wavBlob;
+}
+
+/**
+ * Trims audio from start time to end time with sub-millisecond precision.
+ */
+export async function trimAudioFile(
+  audioFile: File,
+  startSec: number,
+  endSec: number,
+  onProgress?: (percent: number, status: string) => void
+): Promise<{ blob: Blob; duration: number }> {
+  onProgress?.(20, 'Reading audio file into memory...');
+  const arrayBuffer = await audioFile.arrayBuffer();
+
+  onProgress?.(45, 'Decoding audio samples...');
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+  const sampleRate = audioBuffer.sampleRate;
+  const numChannels = audioBuffer.numberOfChannels;
+  const startSample = Math.floor(Math.max(0, startSec) * sampleRate);
+  const endSample = Math.min(audioBuffer.length, Math.floor(Math.max(startSec + 0.1, endSec) * sampleRate));
+  const newLength = endSample - startSample;
+
+  onProgress?.(75, 'Extracting audio slice...');
+  const trimmedBuffer = audioContext.createBuffer(numChannels, newLength, sampleRate);
+
+  for (let c = 0; c < numChannels; c++) {
+    const channelData = audioBuffer.getChannelData(c);
+    const subData = channelData.subarray(startSample, endSample);
+    trimmedBuffer.copyToChannel(subData, c);
+  }
+
+  const blob = audioBufferToWavBlob(trimmedBuffer);
+  audioContext.close();
+  onProgress?.(100, 'Audio trimmed successfully!');
+
+  return { blob, duration: newLength / sampleRate };
 }
 
 /**
