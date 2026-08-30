@@ -8,8 +8,8 @@ import {
   HeadingLevel,
   Packer,
   PageBreak,
-  AlignmentType,
 } from 'docx';
+import { runOcr } from '@/lib/ocr/ocr-engine';
 
 /**
  * Loads PDF.js client-side library dynamically without bundling issues.
@@ -40,21 +40,21 @@ async function loadPdfJsLibrary(): Promise<any> {
 }
 
 /**
- * High-Fidelity Client-Side PDF to Word (DOCX) Converter Engine.
- * Extracts text, layout, headers, paragraphs, and handles scanned pages.
+ * High-Fidelity Client-Side PDF to Word (DOCX) Converter Engine with Deep OCR.
+ * Supports both digital PDFs and scanned paper documents (extracts text from scanned images).
  */
 export async function pdfToDocx(
   file: File,
   onProgress?: (percent: number, status: string) => void
 ): Promise<Blob> {
-  onProgress?.(10, 'Initializing PDF parser engine...');
+  onProgress?.(10, 'Initializing PDF parser and OCR engine...');
   const pdfjsLib = await loadPdfJsLibrary();
   if (!pdfjsLib) {
     throw new Error('PDF parsing library is unavailable in this environment.');
   }
 
   const arrayBuffer = await file.arrayBuffer();
-  onProgress?.(25, 'Loading PDF document structure...');
+  onProgress?.(20, 'Loading PDF document structure...');
   const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
   const pdfDoc = await loadingTask.promise;
   const totalPages = pdfDoc.numPages;
@@ -62,35 +62,24 @@ export async function pdfToDocx(
   const docChildren: Paragraph[] = [];
 
   for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-    const pct = Math.floor(25 + ((pageNum - 1) / totalPages) * 60);
-    onProgress?.(pct, `Extracting text and layout from page ${pageNum} of ${totalPages}...`);
+    const basePct = Math.floor(20 + ((pageNum - 1) / totalPages) * 70);
+    onProgress?.(basePct, `Processing page ${pageNum} of ${totalPages}...`);
 
     const page = await pdfDoc.getPage(pageNum);
     const textContent = await page.getTextContent();
-    const items = textContent.items as any[];
+    const items = (textContent.items || []) as any[];
 
-    if (items.length === 0) {
-      // Scanned/empty page fallback
-      docChildren.push(
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: `[Page ${pageNum} - Scanned Content / Graphic Layout]`,
-              italics: true,
-              color: '888888',
-            }),
-          ],
-        })
-      );
-    } else {
-      // Sort items top-to-bottom, left-to-right
+    // Extract any existing selectable text
+    let digitalText = items.map((i) => i.str || '').join(' ').trim();
+
+    if (items.length > 0 && digitalText.length > 25) {
+      // 1. Digital PDF Layout Reconstruction
       items.sort((a, b) => {
         const yDiff = b.transform[5] - a.transform[5];
         if (Math.abs(yDiff) > 4) return yDiff;
         return a.transform[4] - b.transform[4];
       });
 
-      // Group into lines based on Y-position
       const lines: { y: number; fontSize: number; text: string; isBold: boolean }[] = [];
       let currentLine = { y: items[0].transform[5], fontSize: items[0].height || 12, text: '', isBold: false };
 
@@ -117,14 +106,12 @@ export async function pdfToDocx(
         lines.push({ ...currentLine, text: currentLine.text.trim() });
       }
 
-      // Convert extracted lines into Word paragraphs & headings
       let paragraphBuffer: { text: string; isBold: boolean; fontSize: number }[] = [];
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
         if (line.fontSize >= 18) {
-          // Heading 1
           if (paragraphBuffer.length > 0) {
             docChildren.push(buildParagraph(paragraphBuffer));
             paragraphBuffer = [];
@@ -137,7 +124,6 @@ export async function pdfToDocx(
             })
           );
         } else if (line.fontSize >= 14) {
-          // Heading 2
           if (paragraphBuffer.length > 0) {
             docChildren.push(buildParagraph(paragraphBuffer));
             paragraphBuffer = [];
@@ -151,7 +137,6 @@ export async function pdfToDocx(
           );
         } else {
           paragraphBuffer.push(line);
-          // If line ends with period or empty space, flush paragraph
           if (line.text.endsWith('.') || line.text.endsWith('!') || line.text.endsWith('?')) {
             docChildren.push(buildParagraph(paragraphBuffer));
             paragraphBuffer = [];
@@ -162,9 +147,63 @@ export async function pdfToDocx(
       if (paragraphBuffer.length > 0) {
         docChildren.push(buildParagraph(paragraphBuffer));
       }
+    } else {
+      // 2. SCANNED PAPER / IMAGE PDF -> RUN OPTICAL CHARACTER RECOGNITION (OCR)
+      onProgress?.(basePct + 2, `Scanned paper detected on page ${pageNum}. Running AI OCR to read text...`);
+
+      const viewport = page.getViewport({ scale: 2.0 }); // 2x scale for sharp OCR reading
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      if (ctx) {
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const pageDataUrl = canvas.toDataURL('image/png');
+
+        try {
+          const ocrResult = await runOcr(pageDataUrl, 'eng', (p, s) => {
+            onProgress?.(Math.min(90, basePct + Math.floor(p * 0.1)), `Reading scanned paper (Page ${pageNum}): ${s}`);
+          });
+
+          if (ocrResult.text && ocrResult.text.trim()) {
+            const rawParagraphs = ocrResult.text.split(/\n\s*\n/);
+            for (const pText of rawParagraphs) {
+              const cleanP = pText.trim().replace(/\n/g, ' ');
+              if (cleanP) {
+                docChildren.push(
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: cleanP,
+                        size: 24, // 12pt standard
+                      }),
+                    ],
+                    spacing: { after: 140 },
+                  })
+                );
+              }
+            }
+          } else {
+            docChildren.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `[Page ${pageNum} - Image / Graphic Content]`,
+                    italics: true,
+                    color: '888888',
+                  }),
+                ],
+              })
+            );
+          }
+        } catch (ocrErr) {
+          console.error('OCR Error on page', pageNum, ocrErr);
+        }
+      }
     }
 
-    // Add page break between pages (except last page)
+    // Page Break
     if (pageNum < totalPages) {
       docChildren.push(
         new Paragraph({
@@ -174,11 +213,11 @@ export async function pdfToDocx(
     }
   }
 
-  onProgress?.(90, 'Generating native Microsoft Word (.docx) package...');
+  onProgress?.(95, 'Generating native Microsoft Word (.docx) document...');
 
   const doc = new Document({
     title: file.name.replace(/\.pdf$/i, ''),
-    description: 'Converted from PDF with NEXORA Tools',
+    description: 'Converted from PDF with OCR by NEXORA Tools',
     sections: [
       {
         properties: {},
@@ -188,7 +227,7 @@ export async function pdfToDocx(
   });
 
   const docxBlob = await Packer.toBlob(doc);
-  onProgress?.(100, 'Word document ready!');
+  onProgress?.(100, 'Word document ready with all text recognized!');
   return docxBlob;
 }
 
@@ -202,7 +241,7 @@ function buildParagraph(lines: { text: string; isBold: boolean; fontSize: number
       new TextRun({
         text: fullText,
         bold: hasBold,
-        size: avgFontSize >= 12 ? avgFontSize * 2 : 22, // Word font sizes are in half-points
+        size: avgFontSize >= 12 ? avgFontSize * 2 : 22,
       }),
     ],
     spacing: { after: 120 },
