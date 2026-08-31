@@ -11,6 +11,7 @@ service cloud.firestore {
       return isSignedIn() && (
         request.auth.token.admin == true ||
         request.auth.token.role == 'admin' ||
+        request.auth.token.super_admin == true ||
         request.auth.token.email == 'jrahmanansari132@gmail.com' ||
         request.auth.token.email == 'jamil8655@gmail.com' ||
         request.auth.token.email == 'hafizjamilurrahman@gmail.com' ||
@@ -22,10 +23,16 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Users Collection
+    // Users Collection (Strict User Data Isolation)
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow write: if isOwner(userId) || isAdmin();
+    }
+
+    // Courses Collection
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     // Admins Collection

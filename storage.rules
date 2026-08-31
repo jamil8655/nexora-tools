@@ -10,13 +10,15 @@ service firebase.storage {
       return isSignedIn() && (
         request.auth.token.admin == true ||
         request.auth.token.super_admin == true ||
+        request.auth.token.role == 'admin' ||
+        request.auth.token.email == 'jrahmanansari132@gmail.com' ||
         request.auth.token.email == 'jamil8655@gmail.com' ||
         request.auth.token.email == 'hafizjamilurrahman@gmail.com' ||
         request.auth.token.email == 'jamilurrahman@gmail.com'
       );
     }
 
-    // User Private Storage (PDFs, Images, Conversion outputs)
+    // User Private Storage (Profile photos, PDFs, Images)
     match /users/{userId}/{allPaths=**} {
       allow read, write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
     }

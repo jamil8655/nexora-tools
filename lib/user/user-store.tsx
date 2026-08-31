@@ -49,6 +49,16 @@ export interface AppNotification {
 }
 
 interface UserStoreContextType {
+  profilePhoto: string | null;
+  updateProfilePhoto: (dataUrl: string | null) => void;
+
+  pinnedTools: string[];
+  togglePinTool: (toolId: string) => void;
+  isToolPinned: (toolId: string) => boolean;
+
+  lastStudiedCourseId: string | null;
+  setLastStudiedCourseId: (courseId: string) => void;
+
   enrolledCourses: Record<string, EnrolledCourseState>;
   enrollInCourse: (courseId: string) => void;
   unenrollCourse: (courseId: string) => void;
@@ -111,6 +121,9 @@ const DEFAULT_NOTIFICATIONS: AppNotification[] = [
 ];
 
 export function UserStoreProvider({ children }: { children: React.ReactNode }) {
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [pinnedTools, setPinnedTools] = useState<string[]>(['pdf-to-docx', 'pdf-compress', 'image-studio', 'ocr']);
+  const [lastStudiedCourseId, setLastStudiedCourseIdState] = useState<string | null>('modern-fullstack-web-mastery');
   const [enrolledCourses, setEnrolledCourses] = useState<Record<string, EnrolledCourseState>>({});
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [history, setHistory] = useState<ActivityHistoryItem[]>([]);
@@ -119,6 +132,15 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
+      const savedPhoto = localStorage.getItem('nexora_user_avatar');
+      if (savedPhoto) setProfilePhoto(savedPhoto);
+
+      const savedPinned = localStorage.getItem('nexora_pinned_tools');
+      if (savedPinned) setPinnedTools(JSON.parse(savedPinned));
+
+      const savedLastCourse = localStorage.getItem('nexora_last_studied_course');
+      if (savedLastCourse) setLastStudiedCourseIdState(savedLastCourse);
+
       const savedEnrolled = localStorage.getItem('nexora_enrolled_courses');
       if (savedEnrolled) setEnrolledCourses(JSON.parse(savedEnrolled));
 
@@ -137,6 +159,31 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
       console.warn('Error loading user store from storage:', e);
     }
   }, []);
+
+  const updateProfilePhoto = (dataUrl: string | null) => {
+    setProfilePhoto(dataUrl);
+    if (dataUrl) {
+      localStorage.setItem('nexora_user_avatar', dataUrl);
+    } else {
+      localStorage.removeItem('nexora_user_avatar');
+    }
+  };
+
+  const togglePinTool = (toolId: string) => {
+    setPinnedTools((prev) => {
+      const exists = prev.includes(toolId);
+      const updated = exists ? prev.filter((id) => id !== toolId) : [...prev, toolId];
+      localStorage.setItem('nexora_pinned_tools', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const isToolPinned = (toolId: string) => pinnedTools.includes(toolId);
+
+  const setLastStudiedCourseId = (courseId: string) => {
+    setLastStudiedCourseIdState(courseId);
+    localStorage.setItem('nexora_last_studied_course', courseId);
+  };
 
   useEffect(() => {
     localStorage.setItem('nexora_enrolled_courses', JSON.stringify(enrolledCourses));
@@ -172,6 +219,7 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
         },
       };
     });
+    setLastStudiedCourseId(courseId);
   };
 
   const unenrollCourse = (courseId: string) => {
@@ -207,6 +255,7 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
         },
       };
     });
+    setLastStudiedCourseId(courseId);
   };
 
   const isEnrolled = (courseId: string) => !!enrolledCourses[courseId];
@@ -270,6 +319,14 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
   return (
     <UserStoreContext.Provider
       value={{
+        profilePhoto,
+        updateProfilePhoto,
+        pinnedTools,
+        togglePinTool,
+        isToolPinned,
+        lastStudiedCourseId,
+        setLastStudiedCourseId,
+
         enrolledCourses,
         enrollInCourse,
         unenrollCourse,

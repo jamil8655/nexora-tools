@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { useTheme } from '@/components/layout/ThemeContext';
@@ -35,16 +35,29 @@ import {
   Laptop,
   Check,
   Send,
+  Camera,
+  Upload,
+  Pin,
+  PinOff,
+  FileDown,
+  Play,
+  RotateCcw,
 } from 'lucide-react';
 import { sendEmailVerification } from 'firebase/auth';
 
-type TabKey = 'profile' | 'courses' | 'tools' | 'favorites' | 'history' | 'downloads' | 'notifications' | 'settings' | 'plan';
+type TabKey = 'dashboard' | 'profile' | 'courses' | 'tools' | 'favorites' | 'history' | 'downloads' | 'notifications' | 'settings' | 'privacy' | 'plan';
 
 export default function AccountPage() {
   const { user, firebaseUser, isAuthenticated, isAdmin, logout } = useAuth();
-  const { theme, setTheme, isDark } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { language, setLanguage, t, isRtl } = useI18n();
   const {
+    profilePhoto,
+    updateProfilePhoto,
+    pinnedTools,
+    togglePinTool,
+    isToolPinned,
+    lastStudiedCourseId,
     enrolledCourses,
     favorites,
     removeFavorite,
@@ -61,12 +74,14 @@ export default function AccountPage() {
     clearNotifications,
   } = useUserStore();
 
-  const [activeTab, setActiveTab] = useState<TabKey>('profile');
+  const [activeTab, setActiveTab] = useState<TabKey>('dashboard');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [bio, setBio] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [profileSaved, setProfileSaved] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
+  const [photoError, setPhotoError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user?.name) setDisplayName(user.name);
@@ -93,7 +108,92 @@ export default function AccountPage() {
     }
   };
 
+  // Profile Photo Upload with client-side compression and 256x256 resizing
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhotoError('');
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // MIME Validation
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!validTypes.includes(file.type)) {
+      setPhotoError('Invalid image format. Please select a JPG, PNG, or WEBP file.');
+      return;
+    }
+
+    // Size Validation (Max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setPhotoError('Image size exceeds 5 MB. Please choose a smaller photo.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const size = 256;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Crop and center
+          const minDim = Math.min(img.width, img.height);
+          const sx = (img.width - minDim) / 2;
+          const sy = (img.height - minDim) / 2;
+          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          updateProfilePhoto(compressedDataUrl);
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = () => {
+    updateProfilePhoto(null);
+  };
+
+  // Export User Data as JSON
+  const handleDownloadMyData = () => {
+    const exportData = {
+      profile: {
+        name: user?.name,
+        email: user?.email,
+        bio,
+        role: user?.role,
+        exportedAt: new Date().toISOString(),
+      },
+      enrolledCourses,
+      favorites,
+      history,
+      downloads,
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `nexora-user-data-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Delete Account Confirmation
+  const handleDeleteAccount = () => {
+    if (confirm('Are you sure you want to delete your local profile, history, and preferences? This action is permanent.')) {
+      localStorage.clear();
+      logout();
+      window.location.href = '/';
+    }
+  };
+
+  const lastCourse = COURSES_CATALOG.find((c) => c.slug === lastStudiedCourseId || c.id === lastStudiedCourseId) || COURSES_CATALOG[0];
+  const lastCourseState = enrolledCourses[lastCourse?.id];
+
   const tabs: { id: TabKey; label: string; icon: any; count?: number }[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: Sparkles },
     { id: 'profile', label: t.userDashboard.profileTitle, icon: User },
     { id: 'courses', label: t.courses.myCourses, icon: GraduationCap, count: Object.keys(enrolledCourses).length },
     { id: 'tools', label: t.userDashboard.myToolsTitle, icon: Wrench },
@@ -101,6 +201,7 @@ export default function AccountPage() {
     { id: 'history', label: t.userDashboard.historyTitle, icon: Clock, count: history.length },
     { id: 'downloads', label: t.userDashboard.downloadsTitle, icon: Download, count: downloads.length },
     { id: 'notifications', label: t.userDashboard.notificationsTitle, icon: Bell, count: unreadCount },
+    { id: 'privacy', label: 'Privacy & Data', icon: ShieldCheck },
     { id: 'settings', label: t.nav.settings, icon: SettingsIcon },
     { id: 'plan', label: 'Plan & Tier', icon: Sparkles },
   ];
@@ -112,9 +213,34 @@ export default function AccountPage() {
       {/* Header Profile Summary */}
       <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4 min-w-0">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-brand-500/20 shrink-0">
-            {isAuthenticated ? (user?.name?.charAt(0).toUpperCase() || 'U') : <User className="w-8 h-8" />}
+          <div className="relative group shrink-0">
+            {profilePhoto ? (
+              <img
+                src={profilePhoto}
+                alt="Profile Avatar"
+                className="w-16 h-16 rounded-2xl object-cover border-2 border-brand-500 shadow-lg shadow-brand-500/20"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-brand-500/20">
+                {isAuthenticated ? (user?.name?.charAt(0).toUpperCase() || 'U') : <User className="w-8 h-8" />}
+              </div>
+            )}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 p-1.5 rounded-xl bg-slate-900 text-white hover:bg-brand-600 transition-colors shadow-md text-xs"
+              title="Change Profile Photo"
+            >
+              <Camera className="w-3.5 h-3.5" />
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handlePhotoUpload}
+              accept="image/png, image/jpeg, image/webp"
+              className="hidden"
+            />
           </div>
+
           <div className="space-y-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white truncate">
@@ -170,6 +296,13 @@ export default function AccountPage() {
         </div>
       </div>
 
+      {photoError && (
+        <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950 text-rose-600 text-xs font-bold flex items-center gap-2">
+          <AlertCircle className="w-4 h-4" />
+          {photoError}
+        </div>
+      )}
+
       {/* Tabs Navigation Bar */}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-slate-200 dark:border-slate-800">
         {tabs.map((tab) => {
@@ -200,13 +333,158 @@ export default function AccountPage() {
         })}
       </div>
 
-      {/* Tab 1: Profile & Account */}
+      {/* Tab 0: Personal Dashboard Hub */}
+      {activeTab === 'dashboard' && (
+        <div className="space-y-6">
+          {/* Continue Where You Left Off */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-linear-to-r from-brand-600 via-indigo-600 to-purple-600 text-white shadow-xl shadow-brand-500/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-2 max-w-xl">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-[10px] font-black uppercase tracking-wider">
+                Continue Where You Left Off
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black">{lastCourse?.title}</h2>
+              <p className="text-xs text-brand-100 line-clamp-2">{lastCourse?.description}</p>
+              {lastCourseState && (
+                <div className="pt-2">
+                  <div className="flex items-center justify-between text-[11px] font-bold pb-1">
+                    <span>{lastCourseState.progress}% Completed</span>
+                    <span>{lastCourseState.completedLessons.length} / {lastCourse.lessonsCount} lessons</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-white/20 overflow-hidden">
+                    <div className="h-full bg-white transition-all" style={{ width: `${lastCourseState.progress}%` }} />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Link
+              href={`/courses/${lastCourse?.slug}`}
+              className="px-6 py-3 rounded-2xl bg-white text-brand-600 font-bold text-xs shadow-md hover:bg-brand-50 transition-all shrink-0 flex items-center gap-2"
+            >
+              <Play className="w-4 h-4 fill-current" />
+              <span>{t.courses.resume}</span>
+            </Link>
+          </div>
+
+          {/* Quick Metrics Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-1 shadow-xs">
+              <span className="text-xs text-slate-400 font-bold">Enrolled Courses</span>
+              <p className="text-2xl font-black text-brand-600 dark:text-brand-400">
+                {Object.keys(enrolledCourses).length}
+              </p>
+            </div>
+            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-1 shadow-xs">
+              <span className="text-xs text-slate-400 font-bold">Favorites</span>
+              <p className="text-2xl font-black text-amber-500">
+                {favorites.length}
+              </p>
+            </div>
+            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-1 shadow-xs">
+              <span className="text-xs text-slate-400 font-bold">Activity Logs</span>
+              <p className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
+                {history.length}
+              </p>
+            </div>
+            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-1 shadow-xs">
+              <span className="text-xs text-slate-400 font-bold">Generated Files</span>
+              <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                {downloads.length}
+              </p>
+            </div>
+          </div>
+
+          {/* Pinned & Recommended Tools */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Pin className="w-4 h-4 text-brand-600" />
+                Pinned & Quick Utilities
+              </h3>
+              <Link href="/tools" className="text-xs font-bold text-brand-600 hover:underline">
+                {t.common.viewAll} (75+) →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                { id: 'pdf-to-docx', title: 'PDF to Word OCR', href: '/tools/pdf-to-docx', cat: 'PDF' },
+                { id: 'pdf-compress', title: 'Compress PDF', href: '/tools/pdf-compress', cat: 'PDF' },
+                { id: 'image-studio', title: 'Image Studio', href: '/image-studio', cat: 'Image' },
+                { id: 'ocr', title: 'OCR Image to Text', href: '/ocr', cat: 'OCR' },
+              ].map((tool) => (
+                <div
+                  key={tool.id}
+                  className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-brand-500/40 hover:shadow-md transition-all space-y-2 relative group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 flex items-center justify-center font-bold text-xs">
+                      <Wrench className="w-4 h-4" />
+                    </div>
+                    <button
+                      onClick={() => togglePinTool(tool.id)}
+                      className="text-slate-300 hover:text-brand-600 transition-colors"
+                      title={isToolPinned(tool.id) ? 'Unpin' : 'Pin'}
+                    >
+                      <Pin className={`w-3.5 h-3.5 ${isToolPinned(tool.id) ? 'text-brand-600 fill-current' : ''}`} />
+                    </button>
+                  </div>
+                  <Link href={tool.href} className="block space-y-0.5">
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-brand-600 transition-colors truncate">
+                      {tool.title}
+                    </h4>
+                    <span className="text-[10px] text-slate-400 font-mono">{tool.cat}</span>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 1: Profile */}
       {activeTab === 'profile' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-6">
             <div className="space-y-1">
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t.userDashboard.profileTitle}</h2>
               <p className="text-xs text-slate-500">Manage your public information and profile bio.</p>
+            </div>
+
+            {/* Photo Manage Actions */}
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+              {profilePhoto ? (
+                <img
+                  src={profilePhoto}
+                  alt="Profile"
+                  className="w-12 h-12 rounded-xl object-cover border border-brand-500 shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 shrink-0">
+                  <User className="w-6 h-6" />
+                </div>
+              )}
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-slate-900 dark:text-white">Profile Photo</p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[11px] font-bold text-brand-600 hover:underline flex items-center gap-1"
+                  >
+                    <Upload className="w-3 h-3" />
+                    Upload Image
+                  </button>
+                  {profilePhoto && (
+                    <button
+                      onClick={handleRemovePhoto}
+                      className="text-[11px] font-bold text-rose-600 hover:underline flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
             <form onSubmit={handleSaveProfile} className="space-y-4">
@@ -394,30 +672,37 @@ export default function AccountPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {[
-              { title: 'PDF to Word OCR', href: '/tools/pdf-to-docx', cat: 'PDF' },
-              { title: 'PDF Editor Pro', href: '/pdf-editor', cat: 'PDF' },
-              { title: 'Compress PDF', href: '/tools/pdf-compress', cat: 'PDF' },
-              { title: 'Image Studio', href: '/image-studio', cat: 'Image' },
-              { title: 'OCR Image to Text', href: '/ocr', cat: 'OCR' },
-              { title: 'JSON Formatter', href: '/tools/json-formatter', cat: 'Dev' },
-              { title: 'Password Generator', href: '/tools/password-generator', cat: 'Security' },
-              { title: 'QR Code Studio', href: '/qr-barcode', cat: 'QR' },
+              { id: 'pdf-to-docx', title: 'PDF to Word OCR', href: '/tools/pdf-to-docx', cat: 'PDF' },
+              { id: 'pdf-compress', title: 'Compress PDF', href: '/tools/pdf-compress', cat: 'PDF' },
+              { id: 'image-studio', title: 'Image Studio', href: '/image-studio', cat: 'Image' },
+              { id: 'ocr', title: 'OCR Image to Text', href: '/ocr', cat: 'OCR' },
+              { id: 'json-formatter', title: 'JSON Formatter', href: '/tools/json-formatter', cat: 'Dev' },
+              { id: 'password-generator', title: 'Password Generator', href: '/tools/password-generator', cat: 'Security' },
+              { id: 'qr-barcode', title: 'QR Code Studio', href: '/qr-barcode', cat: 'QR' },
+              { id: 'pdf-editor', title: 'PDF Editor Pro', href: '/pdf-editor', cat: 'PDF' },
             ].map((tool, idx) => (
-              <Link
+              <div
                 key={idx}
-                href={tool.href}
-                className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-brand-500/40 hover:shadow-md transition-all space-y-2 group"
+                className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-brand-500/40 hover:shadow-md transition-all space-y-2 group relative"
               >
-                <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 flex items-center justify-center font-bold text-xs group-hover:scale-105 transition-transform">
-                  <Wrench className="w-4 h-4" />
+                <div className="flex items-center justify-between">
+                  <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 flex items-center justify-center font-bold text-xs group-hover:scale-105 transition-transform">
+                    <Wrench className="w-4 h-4" />
+                  </div>
+                  <button
+                    onClick={() => togglePinTool(tool.id)}
+                    className="text-slate-300 hover:text-brand-600 transition-colors"
+                  >
+                    <Pin className={`w-3.5 h-3.5 ${isToolPinned(tool.id) ? 'text-brand-600 fill-current' : ''}`} />
+                  </button>
                 </div>
-                <div>
+                <Link href={tool.href} className="block">
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-brand-600 transition-colors line-clamp-1">
                     {tool.title}
                   </h4>
                   <span className="text-[10px] text-slate-400 font-mono">{tool.cat}</span>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -620,7 +905,51 @@ export default function AccountPage() {
         </div>
       )}
 
-      {/* Tab 8: Settings */}
+      {/* Tab 8: Privacy & Data Controls */}
+      {activeTab === 'privacy' && (
+        <div className="space-y-6">
+          <div className="space-y-1">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Privacy & Data Management</h2>
+            <p className="text-xs text-slate-500">Export your local workspace records or permanently delete your account.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-3 shadow-xs">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <FileDown className="w-4 h-4 text-brand-600" />
+                Download My Data (JSON)
+              </h4>
+              <p className="text-xs text-slate-500">
+                Export all your enrolled course progress, bookmarked favorite tools, and activity logs into a portable JSON file.
+              </p>
+              <button
+                onClick={handleDownloadMyData}
+                className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-xs"
+              >
+                Export JSON Archive
+              </button>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/50 space-y-3 shadow-xs">
+              <h4 className="text-sm font-bold text-rose-600 flex items-center gap-2">
+                <Trash2 className="w-4 h-4" />
+                Delete Account & Purge Data
+              </h4>
+              <p className="text-xs text-slate-500">
+                Permanently remove all local data, clear stored credentials, and sign out from this device.
+              </p>
+              <button
+                onClick={handleDeleteAccount}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all shadow-xs"
+              >
+                Delete Everything & Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 9: Settings */}
       {activeTab === 'settings' && (
         <div className="space-y-6">
           <div className="space-y-1">
@@ -630,12 +959,12 @@ export default function AccountPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Language Box */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Languages className="w-4 h-4 text-brand-600" />
                 {t.settings.selectLanguage}
               </h3>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
                 {[
                   { id: 'en', label: 'English', native: 'English' },
                   { id: 'ur', label: 'Urdu', native: 'اردو' },
@@ -645,21 +974,21 @@ export default function AccountPage() {
                   <button
                     key={lang.id}
                     onClick={() => setLanguage(lang.id as any)}
-                    className={`p-3 rounded-2xl border text-xs font-bold transition-all text-left ${
+                    className={`p-3.5 rounded-2xl border text-xs font-bold transition-all text-left ${
                       language === lang.id
                         ? 'bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-500/20'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-brand-500'
                     }`}
                   >
-                    <p>{lang.native}</p>
-                    <p className="text-[10px] opacity-75">{lang.label}</p>
+                    <p className="text-sm">{lang.native}</p>
+                    <p className="text-[10px] opacity-75 font-normal">{lang.label}</p>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Theme Box */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Sun className="w-4 h-4 text-amber-500" />
                 {t.settings.themeMode}
@@ -667,36 +996,36 @@ export default function AccountPage() {
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setTheme('light')}
-                  className={`p-3 rounded-2xl border text-xs font-bold text-center space-y-1 transition-all ${
+                  className={`p-3.5 rounded-2xl border text-xs font-bold text-center space-y-1.5 transition-all ${
                     theme === 'light'
-                      ? 'bg-brand-600 text-white border-brand-600'
+                      ? 'bg-brand-600 text-white border-brand-600 shadow-md'
                       : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                   }`}
                 >
                   <Sun className="w-4 h-4 mx-auto" />
-                  <span>{t.settings.lightTheme}</span>
+                  <p>{t.settings.lightTheme}</p>
                 </button>
                 <button
                   onClick={() => setTheme('dark')}
-                  className={`p-3 rounded-2xl border text-xs font-bold text-center space-y-1 transition-all ${
+                  className={`p-3.5 rounded-2xl border text-xs font-bold text-center space-y-1.5 transition-all ${
                     theme === 'dark'
-                      ? 'bg-brand-600 text-white border-brand-600'
-                      : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                  ? 'bg-brand-600 text-white border-brand-600 shadow-md'
+                  : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                   }`}
                 >
                   <Moon className="w-4 h-4 mx-auto" />
-                  <span>{t.settings.darkTheme}</span>
+                  <p>{t.settings.darkTheme}</p>
                 </button>
                 <button
                   onClick={() => setTheme('system')}
-                  className={`p-3 rounded-2xl border text-xs font-bold text-center space-y-1 transition-all ${
+                  className={`p-3.5 rounded-2xl border text-xs font-bold text-center space-y-1.5 transition-all ${
                     theme === 'system'
-                      ? 'bg-brand-600 text-white border-brand-600'
+                      ? 'bg-brand-600 text-white border-brand-600 shadow-md'
                       : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                   }`}
                 >
                   <Laptop className="w-4 h-4 mx-auto" />
-                  <span>{t.settings.systemTheme}</span>
+                  <p>{t.settings.systemTheme}</p>
                 </button>
               </div>
             </div>
@@ -704,7 +1033,7 @@ export default function AccountPage() {
         </div>
       )}
 
-      {/* Tab 9: Plan & Tier Architecture */}
+      {/* Tab 10: Plan & Tier */}
       {activeTab === 'plan' && (
         <div className="space-y-6">
           <div className="space-y-1">
@@ -713,7 +1042,6 @@ export default function AccountPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Free Tier */}
             <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-brand-600 shadow-md space-y-4">
               <div className="space-y-1">
                 <span className="px-2.5 py-0.5 rounded-md bg-brand-50 dark:bg-brand-950 text-brand-600 text-[10px] font-bold">CURRENT ACTIVE TIER</span>
@@ -728,7 +1056,6 @@ export default function AccountPage() {
               </ul>
             </div>
 
-            {/* Pro Tier (Architecture Ready) */}
             <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 opacity-80">
               <div className="space-y-1">
                 <span className="px-2.5 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950 text-purple-600 text-[10px] font-bold">FUTURE EXPANSION</span>
@@ -742,7 +1069,6 @@ export default function AccountPage() {
               </ul>
             </div>
 
-            {/* Enterprise Tier */}
             <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 opacity-80">
               <div className="space-y-1">
                 <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-600 text-[10px] font-bold">CUSTOM INTEGRATIONS</span>
