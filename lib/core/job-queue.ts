@@ -89,6 +89,11 @@ export class JobQueueManager {
     this.notify();
   }
 
+  public clearAll(): void {
+    this.jobs.clear();
+    this.notify();
+  }
+
   public getAllJobs(): ProcessingJob[] {
     return Array.from(this.jobs.values()).sort((a, b) => b.createdAt - a.createdAt);
   }
