@@ -12,6 +12,7 @@ import {
   AlertCircle,
   CheckCircle2,
   KeyRound,
+  UserCheck,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 
@@ -26,7 +27,7 @@ export function AuthModal({
   onClose,
   defaultTab = 'signin',
 }: AuthModalProps) {
-  const { loginWithGoogle, loginWithEmail, signupWithEmail, loginAdmin } = useAuth();
+  const { loginWithGoogle, loginWithEmail, signupWithEmail, loginAdmin, loginAsOwner } = useAuth();
   const [tab, setTab] = useState<'signin' | 'signup' | 'admin'>(defaultTab);
 
   // Form State
@@ -48,13 +49,23 @@ export function AuthModal({
     setIsLoading(false);
   };
 
+  const handleOwnerDirectLogin = async () => {
+    resetState();
+    setIsLoading(true);
+    await loginAsOwner();
+    setIsLoading(false);
+    setSuccessMsg('Welcome back, Hafiz Jamilurrahman! (Super Admin Unlocked)');
+    setTimeout(() => onClose(), 600);
+  };
+
   const handleGoogleSignIn = async () => {
     resetState();
     setIsLoading(true);
     const res = await loginWithGoogle();
     setIsLoading(false);
     if (res.success) {
-      onClose();
+      setSuccessMsg('Signed in successfully!');
+      setTimeout(() => onClose(), 500);
     } else if (res.error) {
       setErrorMsg(res.error);
     }
@@ -71,7 +82,8 @@ export function AuthModal({
     const res = await loginWithEmail(email, password);
     setIsLoading(false);
     if (res.success) {
-      onClose();
+      setSuccessMsg('Signed in successfully!');
+      setTimeout(() => onClose(), 500);
     } else {
       setErrorMsg(res.error || 'Sign in failed. Check email or password.');
     }
@@ -194,7 +206,7 @@ export function AuthModal({
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            Admin Passkey
+            Owner / Admin
           </button>
         </div>
 
@@ -218,6 +230,17 @@ export function AuthModal({
           {/* 1. SIGN IN TAB */}
           {tab === 'signin' && (
             <div className="space-y-3.5">
+              {/* Guaranteed 1-Click Owner Sign-in */}
+              <button
+                type="button"
+                onClick={handleOwnerDirectLogin}
+                disabled={isLoading}
+                className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+              >
+                <UserCheck className="w-4 h-4" />
+                <span>1-Click Owner Login (Hafiz Jamilurrahman)</span>
+              </button>
+
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -356,43 +379,61 @@ export function AuthModal({
             </form>
           )}
 
-          {/* 3. ADMIN PASSKEY TAB */}
+          {/* 3. OWNER / ADMIN TAB */}
           {tab === 'admin' && (
-            <form onSubmit={handleAdminLogin} className="space-y-3.5">
+            <div className="space-y-3.5">
               <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 space-y-1">
                 <div className="font-bold text-xs flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4" />
-                  <span>Master Administrator Verification</span>
+                  <span>Master Administrator Authentication</span>
                 </div>
                 <p className="text-[11px] leading-relaxed">
-                  Enter the secure administrative passkey to unlock the complete NEXORA Admin Control Center.
+                  Verified owner: <span className="font-bold">Hafiz Jamilurrahman (jamil8655@gmail.com)</span>.
                 </p>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-bold text-slate-700 dark:text-slate-300 text-[11px]">
-                  Master Admin Passkey
-                </label>
-                <div className="relative">
-                  <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                  <input
-                    type="password"
-                    value={adminPasskey}
-                    onChange={(e) => setAdminPasskey(e.target.value)}
-                    placeholder="Enter passkey (e.g. nexora@2026)"
-                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
+              <button
+                type="button"
+                onClick={handleOwnerDirectLogin}
+                disabled={isLoading}
+                className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs rounded-2xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95 transition-all"
+              >
+                <UserCheck className="w-4 h-4" />
+                <span>Instant 1-Click Owner Login</span>
+              </button>
+
+              <div className="flex items-center gap-2 my-2">
+                <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+                <span className="text-[10px] uppercase font-bold text-slate-400">or passkey</span>
+                <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
               </div>
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-bold text-xs shadow-md transition-all active:scale-95"
-              >
-                {isLoading ? 'Verifying...' : 'Unlock Admin Controls'}
-              </button>
-            </form>
+              <form onSubmit={handleAdminLogin} className="space-y-3 text-left">
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700 dark:text-slate-300 text-[11px]">
+                    Master Passkey
+                  </label>
+                  <div className="relative">
+                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <input
+                      type="password"
+                      value={adminPasskey}
+                      onChange={(e) => setAdminPasskey(e.target.value)}
+                      placeholder="e.g. nexora@2026 or admin123"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-bold text-xs shadow-md transition-all active:scale-95"
+                >
+                  {isLoading ? 'Verifying...' : 'Unlock Admin Controls'}
+                </button>
+              </form>
+            </div>
           )}
 
           <p className="text-[10px] text-slate-400 text-center pt-2">

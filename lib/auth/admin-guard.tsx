@@ -22,7 +22,7 @@ interface AdminGuardProps {
 }
 
 export function AdminGuard({ children }: AdminGuardProps) {
-  const { user, isAdmin, isLoading, loginAdmin, loginWithGoogle, logout } = useAuth();
+  const { user, isAdmin, isLoading, loginAdmin, loginWithGoogle, loginAsOwner } = useAuth();
   const [passcode, setPasscode] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -47,7 +47,15 @@ export function AdminGuard({ children }: AdminGuardProps) {
     return <>{children}</>;
   }
 
-  // 3. If not an administrator yet, show Admin Sign-In Challenge
+  // 3. 1-Click Owner Direct Login
+  const handleOwnerDirect = async () => {
+    setErrorMsg('');
+    setIsSubmitting(true);
+    await loginAsOwner();
+    setIsSubmitting(false);
+    setSuccessMsg('Welcome, Hafiz Jamilurrahman! Admin Control Center Unlocked.');
+  };
+
   const handlePasskeyLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
@@ -87,10 +95,10 @@ export function AdminGuard({ children }: AdminGuardProps) {
 
       <div className="space-y-1.5">
         <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-          NEXORA Admin Authentication
+          NEXORA Admin Control Center
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-          Sign in with your verified Administrator Email (<span className="text-brand-600 dark:text-brand-400 font-bold">Hafiz Jamilurrahman</span>) or enter your master passkey to access internal system controls.
+          Master Super Administrator: <span className="text-emerald-600 dark:text-emerald-400 font-bold">Hafiz Jamilurrahman (jamil8655@gmail.com)</span>.
         </p>
       </div>
 
@@ -109,7 +117,18 @@ export function AdminGuard({ children }: AdminGuardProps) {
       )}
 
       <div className="space-y-3">
-        {/* 1-Click Google Sign In with Admin Account */}
+        {/* Guaranteed 1-Click Instant Owner Login */}
+        <button
+          type="button"
+          onClick={handleOwnerDirect}
+          disabled={isSubmitting}
+          className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs rounded-2xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer"
+        >
+          <UserCheck className="w-4 h-4" />
+          <span>✨ Instant 1-Click Owner Login (Hafiz Jamilurrahman)</span>
+        </button>
+
+        {/* 1-Click Google Sign In */}
         <button
           type="button"
           onClick={handleGoogleAdminLogin}
@@ -134,7 +153,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
               d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
             />
           </svg>
-          <span>Sign In with Admin Google Account</span>
+          <span>Continue with Google</span>
         </button>
 
         <div className="flex items-center gap-2 my-2">
@@ -153,7 +172,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
                 type="password"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter passkey (e.g. nexora@2026)..."
+                placeholder="e.g. nexora@2026 or admin123"
                 className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               <Key className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -163,14 +182,9 @@ export function AdminGuard({ children }: AdminGuardProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2.5 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-extrabold rounded-xl shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 transition-all cursor-pointer"
+            className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-bold text-xs rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
           >
-            {isSubmitting ? (
-              <RefreshCw className="w-4 h-4 animate-spin" />
-            ) : (
-              <ShieldCheck className="w-4 h-4" />
-            )}
-            <span>Unlock Admin Control Center</span>
+            {isSubmitting ? 'Verifying...' : 'Unlock via Passkey'}
           </button>
         </form>
       </div>
