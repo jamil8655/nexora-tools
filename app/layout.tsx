@@ -8,6 +8,7 @@ import { MobileNav } from '@/components/layout/MobileNav';
 import { PwaInstallBanner } from '@/components/shared/PwaInstallBanner';
 import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister';
 import { siteConfig } from '@/config/site';
+import { adConfig } from '@/config/ads';
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} - Free All-in-One Online Productivity Tools & Converters`,
@@ -83,7 +84,7 @@ export default function RootLayout({
         aggregateRating: {
           '@type': 'AggregateRating',
           ratingValue: '4.9',
-          ratingCount: '24890',
+          reviewCount: '24890',
           bestRating: '5',
           worstRating: '1',
         },
@@ -114,6 +115,16 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="NEXORA Tools" />
+
+        {/* Google AdSense / AdMob Web Integration Tag */}
+        {adConfig.enabled && adConfig.adsense.client && (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adConfig.adsense.client}`}
+            crossOrigin="anonymous"
+          />
+        )}
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
