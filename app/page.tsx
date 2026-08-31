@@ -38,6 +38,7 @@ import { siteConfig } from '@/config/site';
 import { ToolCard } from '@/components/shared/ToolCard';
 import { ToolIcon } from '@/components/shared/ToolIcon';
 import { UniversalSearchEngine } from '@/components/search/UniversalSearchEngine';
+import { NexoraAiAssistant } from '@/components/ai/NexoraAiAssistant';
 import { AdSlot } from '@/components/ads/AdSlot';
 
 export default function HomePage() {
@@ -159,6 +160,11 @@ export default function HomePage() {
             <div className="text-xs text-slate-500 font-medium">HD Multi-Engine Downloader</div>
           </div>
         </div>
+      </div>
+
+      {/* Interactive AI Tool Finder & Assistant */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <NexoraAiAssistant />
       </div>
 
       {/* Smart Workflow Pipeline Banner */}
