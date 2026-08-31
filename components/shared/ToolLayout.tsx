@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ToolDefinition } from '@/lib/types';
 import { Breadcrumbs } from './Breadcrumbs';
 import { PrivacyBadge } from './PrivacyBadge';
@@ -34,6 +34,7 @@ interface ToolLayoutProps {
 
 export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps) {
   const { t } = useI18n();
+  const [isMounted, setIsMounted] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [options, setOptions] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {};
@@ -58,6 +59,10 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
     }[]
     | null
   >(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleStartProcess = async () => {
     if (selectedFiles.length === 0 && tool.maxFiles > 0) return;
@@ -124,8 +129,22 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
     setErrorMessage(null);
   };
 
+  if (!isMounted) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-pulse">
+        <div className="h-6 w-36 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+        <div className="text-center space-y-3">
+          <div className="h-5 w-28 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto" />
+          <div className="h-8 w-64 bg-slate-200 dark:bg-slate-800 rounded-xl mx-auto" />
+          <div className="h-4 w-96 bg-slate-100 dark:bg-slate-800/60 rounded-lg mx-auto" />
+        </div>
+        <div className="h-64 rounded-3xl bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800" />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-300">
       {/* Breadcrumbs */}
       <Breadcrumbs
         items={[
