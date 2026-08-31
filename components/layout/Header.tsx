@@ -12,9 +12,13 @@ import {
   Bookmark,
   Download,
   Smartphone,
+  Workflow,
+  ShieldCheck,
+  Code,
+  FileCheck,
 } from 'lucide-react';
 import { useTheme } from './ThemeContext';
-import { QuickSearchModal } from '@/components/shared/QuickSearchModal';
+import { UniversalSearchEngine } from '@/components/search/UniversalSearchEngine';
 
 export function Header() {
   const pathname = usePathname();
@@ -68,14 +72,14 @@ export function Header() {
   }, []);
 
   const navLinks = [
+    { label: 'Workflows', href: '/workflows', badge: 'NEW' },
     { label: 'Passport Photo', href: '/tools/passport-photo-maker', badge: 'AI' },
     { label: 'PDF to Word', href: '/tools/pdf-to-docx', badge: 'OCR' },
-    { label: 'Image Resizer', href: '/tools/image-resizer', badge: 'KB/MB' },
-    { label: 'Audio Cutter', href: '/tools/audio-cutter', badge: 'NEW' },
-    { label: 'Video to MP3', href: '/tools/video-to-mp3' },
+    { label: 'PDF Editor', href: '/pdf-editor' },
     { label: '4K Downloader', href: '/tools/media-downloader' },
-    { label: 'PDF Suite', href: '/tools?category=pdf' },
-    { label: 'Privacy QR', href: '/qr-barcode' },
+    { label: 'Dev Toolkit', href: '/dev-tools' },
+    { label: 'Privacy Center', href: '/privacy-center' },
+    { label: 'My Files', href: '/dashboard' },
   ];
 
   return (
@@ -100,7 +104,7 @@ export function Header() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden xl:flex items-center gap-1.5">
+            <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -138,44 +142,24 @@ export function Header() {
               <span className="hidden xs:inline">Install App</span>
             </button>
 
-            {/* Quick Search Bar Trigger (Ctrl+K) */}
+            {/* Global Search Button */}
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 text-slate-700 border border-slate-200 text-xs font-semibold transition-all shadow-sm"
-              aria-label="Search tools"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-all flex items-center gap-1.5 text-xs font-mono"
             >
-              <Search className="w-3.5 h-3.5 text-brand-600" />
-              <span className="hidden sm:inline-block">Search 70+ tools...</span>
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white text-[10px] font-mono text-slate-500 border border-slate-200 shadow-xs">
-                <Command className="w-2.5 h-2.5" /> K
-              </kbd>
-            </button>
-
-            {/* Workspace Link */}
-            <Link
-              href="/dashboard"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-xs font-extrabold transition-all shadow-md shadow-brand-500/20 hover:scale-105 active:scale-95"
-            >
-              <Bookmark className="w-3.5 h-3.5" />
-              <span>Workspace</span>
-            </Link>
-
-            {/* Theme Toggle */}
-            <button
-              type="button"
-              onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {isDark ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-slate-600" />}
+              <Search className="w-4 h-4" />
+              <span className="hidden md:inline font-bold">⌘K Search</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Command Palette Modal */}
-      <QuickSearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      {/* Universal Search Modal */}
+      <UniversalSearchEngine
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
     </>
   );
 }

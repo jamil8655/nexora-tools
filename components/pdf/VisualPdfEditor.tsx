@@ -1,30 +1,37 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Type,
   PenTool,
   Highlighter,
   Square,
   Circle,
-  CheckSquare,
-  Stamp,
   Download,
   RotateCw,
   Undo2,
+  Redo2,
   Trash2,
   FileUp,
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  ZoomIn,
+  ZoomOut,
+  PenLine,
+  Save,
+  Layers,
+  FileCheck,
 } from 'lucide-react';
 import { downloadSingleFile } from '@/lib/utils/download';
+import { PDFDocument, rgb } from 'pdf-lib';
 
-type EditorTool = 'select' | 'text' | 'draw' | 'highlight' | 'rectangle' | 'circle' | 'signature' | 'stamp';
+type EditorTool = 'select' | 'text' | 'draw' | 'highlight' | 'rectangle' | 'circle' | 'signature';
 
 interface AnnotationItem {
   id: string;
   type: EditorTool;
+  page: number;
   x: number;
   y: number;
   width?: number;
@@ -36,44 +43,100 @@ interface AnnotationItem {
 }
 
 export function VisualPdfEditor() {
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfBytes, setPdfBytes] = useState<ArrayBuffer | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [activeTool, setActiveTool] = useState<EditorTool>('text');
   const [selectedColor, setSelectedColor] = useState<string>('#026fc7');
   const [brushSize, setBrushSize] = useState<number>(3);
+  const [scale, setScale] = useState<number>(1.0);
+
+  // History Stacks for Multi-Level Undo / Redo
   const [annotations, setAnnotations] = useState<AnnotationItem[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [textInput, setTextInput] = useState<string>('Sample Text');
+  const [undoStack, setUndoStack] = useState<AnnotationItem[][]>([]);
+  const [redoStack, setRedoStack] = useState<AnnotationItem[][]>([]);
+
+  const [textInput, setTextInput] = useState<string>('Your Text Here');
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [currentPath, setCurrentPath] = useState<{ x: number; y: number }[]>([]);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pageImageCache = useRef<Map<number, HTMLImageElement>>(new Map());
 
-  // Redraw canvas whenever annotations change
-  const redrawCanvas = () => {
+  // 1. Load Real PDF and render pages with pdfjs-dist
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setPdfFile(file);
+      const buffer = await file.arrayBuffer();
+      setPdfBytes(buffer);
+
+      try {
+        const pdfjsLib = await import('pdfjs-dist');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+        const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+        setTotalPages(pdf.numPages);
+        setCurrentPage(1);
+        pageImageCache.current.clear();
+
+        // Render Page 1
+        await renderPdfPageImage(pdf, 1);
+      } catch (err) {
+        console.error('PDF load error:', err);
+      }
+    }
+  };
+
+  const renderPdfPageImage = async (pdfDoc: any, pageNum: number) => {
+    if (pageImageCache.current.has(pageNum)) {
+      redrawCanvas();
+      return;
+    }
+
+    const page = await pdfDoc.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 1.5 });
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = viewport.width;
+    offCanvas.height = viewport.height;
+    const offCtx = offCanvas.getContext('2d');
+
+    if (offCtx) {
+      await page.render({ canvasContext: offCtx, viewport }).promise;
+      const img = new Image();
+      img.onload = () => {
+        pageImageCache.current.set(pageNum, img);
+        redrawCanvas();
+      };
+      img.src = offCanvas.toDataURL();
+    }
+  };
+
+  // 2. Redraw Canvas with background page image + vector annotations
+  const redrawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear and draw page background (white paper simulation)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw document grid/page outline
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    // Draw background PDF page image or white canvas simulation
+    const pageImg = pageImageCache.current.get(currentPage);
+    if (pageImg) {
+      ctx.drawImage(pageImg, 0, 0, canvas.width, canvas.height);
+    } else {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    }
 
-    // Draw simulated page lines or placeholder content
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(40, 40, canvas.width - 80, 40);
-    ctx.fillStyle = '#64748b';
-    ctx.font = 'bold 16px sans-serif';
-    ctx.fillText(`DocuOmni PDF Document - Page ${currentPage}`, 50, 65);
-
-    // Render all user annotations
-    annotations.forEach((item) => {
+    // Render annotations for current page
+    const pageAnnotations = annotations.filter((a) => a.page === currentPage);
+    pageAnnotations.forEach((item) => {
       ctx.save();
       if (item.type === 'draw' && item.points && item.points.length > 1) {
         ctx.strokeStyle = item.color || '#000000';
@@ -99,41 +162,26 @@ export function VisualPdfEditor() {
         ctx.stroke();
       } else if (item.type === 'text') {
         ctx.fillStyle = item.color || '#000000';
-        ctx.font = `bold ${item.size || 16}px sans-serif`;
+        ctx.font = 'bold 18px sans-serif';
         ctx.fillText(item.text || '', item.x, item.y);
       } else if (item.type === 'rectangle') {
-        ctx.strokeStyle = item.color || '#000000';
-        ctx.lineWidth = item.size || 2;
-        ctx.strokeRect(item.x, item.y, item.width || 100, item.height || 60);
-      } else if (item.type === 'circle') {
-        ctx.strokeStyle = item.color || '#000000';
-        ctx.lineWidth = item.size || 2;
-        ctx.beginPath();
-        ctx.arc(item.x, item.y, (item.width || 80) / 2, 0, Math.PI * 2);
-        ctx.stroke();
-      } else if (item.type === 'stamp') {
-        ctx.strokeStyle = item.color || '#dc2626';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(item.x - 60, item.y - 25, 120, 50);
-        ctx.fillStyle = item.color || '#dc2626';
-        ctx.font = 'bold 16px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(item.text || 'APPROVED', item.x, item.y + 6);
+        ctx.strokeStyle = item.color || '#026fc7';
+        ctx.lineWidth = item.size || 3;
+        ctx.strokeRect(item.x, item.y, item.width || 120, item.height || 60);
+      } else if (item.type === 'signature') {
+        ctx.fillStyle = item.color || '#000000';
+        ctx.font = 'italic bold 22px cursive, sans-serif';
+        ctx.fillText(item.text || 'Signature', item.x, item.y);
       }
       ctx.restore();
     });
 
-    // Render live drawing line
+    // Draw live path during active drawing
     if (isDrawing && currentPath.length > 1) {
       ctx.save();
-      if (activeTool === 'highlight') {
-        ctx.strokeStyle = selectedColor;
-        ctx.globalAlpha = 0.45;
-        ctx.lineWidth = 18;
-      } else {
-        ctx.strokeStyle = selectedColor;
-        ctx.lineWidth = brushSize;
-      }
+      ctx.strokeStyle = selectedColor;
+      ctx.lineWidth = activeTool === 'highlight' ? 18 : brushSize;
+      ctx.globalAlpha = activeTool === 'highlight' ? 0.45 : 1.0;
       ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(currentPath[0].x, currentPath[0].y);
@@ -143,50 +191,62 @@ export function VisualPdfEditor() {
       ctx.stroke();
       ctx.restore();
     }
-  };
+  }, [currentPage, annotations, isDrawing, currentPath, selectedColor, activeTool, brushSize]);
 
   useEffect(() => {
     redrawCanvas();
-  }, [annotations, isDrawing, currentPath, currentPage]);
+  }, [redrawCanvas]);
 
+  // 3. Canvas Mouse & Touch Drawing Handlers
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
-    if (activeTool === 'draw' || activeTool === 'highlight') {
+    // Save state to undo stack before mutation
+    setUndoStack((prev) => [...prev, [...annotations]]);
+    setRedoStack([]); // Clear redo stack on new action
+
+    if (activeTool === 'text') {
+      const newAnn: AnnotationItem = {
+        id: 'ann_' + Date.now(),
+        type: 'text',
+        page: currentPage,
+        x,
+        y,
+        text: textInput,
+        color: selectedColor,
+      };
+      setAnnotations((prev) => [...prev, newAnn]);
+    } else if (activeTool === 'rectangle') {
+      const newAnn: AnnotationItem = {
+        id: 'ann_' + Date.now(),
+        type: 'rectangle',
+        page: currentPage,
+        x,
+        y,
+        width: 140,
+        height: 70,
+        color: selectedColor,
+        size: brushSize,
+      };
+      setAnnotations((prev) => [...prev, newAnn]);
+    } else if (activeTool === 'signature') {
+      const newAnn: AnnotationItem = {
+        id: 'ann_' + Date.now(),
+        type: 'signature',
+        page: currentPage,
+        x,
+        y,
+        text: textInput || 'Verified Signature',
+        color: selectedColor,
+      };
+      setAnnotations((prev) => [...prev, newAnn]);
+    } else if (activeTool === 'draw' || activeTool === 'highlight') {
       setIsDrawing(true);
       setCurrentPath([{ x, y }]);
-    } else if (activeTool === 'text') {
-      setAnnotations((prev) => [
-        ...prev,
-        {
-          id: Math.random().toString(),
-          type: 'text',
-          x,
-          y,
-          text: textInput,
-          color: selectedColor,
-          size: brushSize * 5 + 10,
-        },
-      ]);
-    } else if (activeTool === 'rectangle') {
-      setAnnotations((prev) => [
-        ...prev,
-        { id: Math.random().toString(), type: 'rectangle', x, y, width: 120, height: 70, color: selectedColor, size: brushSize },
-      ]);
-    } else if (activeTool === 'circle') {
-      setAnnotations((prev) => [
-        ...prev,
-        { id: Math.random().toString(), type: 'circle', x, y, width: 80, height: 80, color: selectedColor, size: brushSize },
-      ]);
-    } else if (activeTool === 'stamp') {
-      setAnnotations((prev) => [
-        ...prev,
-        { id: Math.random().toString(), type: 'stamp', x, y, text: 'APPROVED', color: '#16a34a' },
-      ]);
     }
   };
 
@@ -195,164 +255,252 @@ export function VisualPdfEditor() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const y = (e.clientY - rect.top) * (canvas.height / rect.height);
     setCurrentPath((prev) => [...prev, { x, y }]);
   };
 
   const handleCanvasMouseUp = () => {
-    if (isDrawing && currentPath.length > 0) {
-      setAnnotations((prev) => [
-        ...prev,
-        {
-          id: Math.random().toString(),
-          type: activeTool,
-          x: currentPath[0].x,
-          y: currentPath[0].y,
-          points: currentPath,
-          color: selectedColor,
-          size: brushSize,
-        },
-      ]);
+    if (isDrawing && currentPath.length > 1) {
+      const newAnn: AnnotationItem = {
+        id: 'ann_' + Date.now(),
+        type: activeTool,
+        page: currentPage,
+        x: currentPath[0].x,
+        y: currentPath[0].y,
+        points: currentPath,
+        color: selectedColor,
+        size: brushSize,
+      };
+      setAnnotations((prev) => [...prev, newAnn]);
     }
     setIsDrawing(false);
     setCurrentPath([]);
   };
 
-  const handleExport = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvas.toBlob((blob) => {
-      if (blob) downloadSingleFile(blob, `edited-document-page-${currentPage}.png`);
-    });
+  // 4. Multi-Level Undo & Redo Handlers
+  const handleUndo = () => {
+    if (undoStack.length === 0) return;
+    const previous = undoStack[undoStack.length - 1];
+    setRedoStack((prev) => [...prev, [...annotations]]);
+    setAnnotations(previous);
+    setUndoStack((prev) => prev.slice(0, prev.length - 1));
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const next = redoStack[redoStack.length - 1];
+    setUndoStack((prev) => [...prev, [...annotations]]);
+    setAnnotations(next);
+    setRedoStack((prev) => prev.slice(0, prev.length - 1));
+  };
+
+  // 5. Real Export with pdf-lib
+  const handleExportPdf = async () => {
+    setIsExporting(true);
+    try {
+      let doc: PDFDocument;
+      if (pdfBytes) {
+        doc = await PDFDocument.load(pdfBytes);
+      } else {
+        doc = await PDFDocument.create();
+        doc.addPage([595, 842]);
+      }
+
+      const pages = doc.getPages();
+
+      // Render annotations onto pages
+      annotations.forEach((ann) => {
+        const pageIdx = ann.page - 1;
+        if (pageIdx >= 0 && pageIdx < pages.length) {
+          const page = pages[pageIdx];
+          const { height } = page.getSize();
+
+          if (ann.type === 'text' || ann.type === 'signature') {
+            page.drawText(ann.text || '', {
+              x: ann.x * (page.getWidth() / 600),
+              y: height - ann.y * (height / 800),
+              size: ann.type === 'signature' ? 18 : 14,
+              color: rgb(0.1, 0.1, 0.1),
+            });
+          }
+        }
+      });
+
+      const modifiedBytes = await doc.save();
+      const blob = new Blob([modifiedBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
+      const name = (pdfFile?.name || 'document').replace(/\.pdf$/i, '') + '_edited.pdf';
+      downloadSingleFile(blob, name);
+    } catch (err) {
+      console.error('Export error:', err);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Editor Top Toolbar */}
-      <div className="p-4 rounded-2xl bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3 shadow-xl">
-        {/* Tools */}
-        <div className="flex flex-wrap items-center gap-1.5">
+    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300 pb-16">
+      {/* Top Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
+        <div className="space-y-0.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200">
+            <Sparkles className="w-3 h-3 text-brand-600" />
+            <span>PDF Editor Pro • Vector Annotations & Undo/Redo</span>
+          </div>
+          <h2 className="text-xl font-black text-slate-900 dark:text-white">
+            {pdfFile ? pdfFile.name : 'Visual PDF Document Editor'}
+          </h2>
+        </div>
+
+        {/* Upload & Export Action Buttons */}
+        <div className="flex items-center gap-2.5">
+          <input
+            id="pdf-editor-upload"
+            type="file"
+            accept="application/pdf"
+            className="hidden"
+            onChange={handlePdfUpload}
+          />
+          <button
+            type="button"
+            onClick={() => document.getElementById('pdf-editor-upload')?.click()}
+            className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl flex items-center gap-1.5"
+          >
+            <FileUp className="w-4 h-4" />
+            <span>{pdfFile ? 'Change PDF' : 'Open PDF'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportPdf}
+            disabled={isExporting}
+            className="px-5 py-2.5 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 text-white text-xs font-extrabold rounded-xl shadow-md shadow-brand-500/25 flex items-center gap-2 active:scale-95 disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            <span>{isExporting ? 'Saving PDF...' : 'Export Edited PDF'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Toolbar & Tools Bar */}
+      <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-3">
+        {/* Tool Selectors */}
+        <div className="flex items-center gap-1">
           {[
-            { id: 'text', icon: Type, label: 'Text' },
-            { id: 'draw', icon: PenTool, label: 'Draw' },
-            { id: 'highlight', icon: Highlighter, label: 'Highlight' },
-            { id: 'rectangle', icon: Square, label: 'Rectangle' },
-            { id: 'circle', icon: Circle, label: 'Circle' },
-            { id: 'stamp', icon: Stamp, label: 'Stamp' },
-          ].map((tool) => {
-            const Icon = tool.icon;
-            const isActive = activeTool === tool.id;
+            { id: 'text', label: 'Text', icon: Type },
+            { id: 'draw', label: 'Pen', icon: PenTool },
+            { id: 'highlight', label: 'Highlight', icon: Highlighter },
+            { id: 'rectangle', label: 'Box', icon: Square },
+            { id: 'signature', label: 'Sign', icon: PenLine },
+          ].map((t) => {
+            const Icon = t.icon;
+            const isSelected = activeTool === t.id;
             return (
               <button
-                key={tool.id}
+                key={t.id}
                 type="button"
-                onClick={() => setActiveTool(tool.id as EditorTool)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                  isActive
-                    ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                onClick={() => setActiveTool(t.id as any)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  isSelected
+                    ? 'bg-brand-600 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
-                <span>{tool.label}</span>
+                <span>{t.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Color Palette & Brush Size */}
+        {/* Color Picker & Text Input for Stamps */}
         <div className="flex items-center gap-3">
-          {activeTool === 'text' && (
+          {(activeTool === 'text' || activeTool === 'signature') && (
             <input
               type="text"
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
-              placeholder="Text to insert..."
-              className="px-2.5 py-1 text-xs rounded-lg bg-slate-800 border border-slate-700 text-white"
+              placeholder="Enter text..."
+              className="px-3 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 w-36"
             />
           )}
 
-          <div className="flex items-center gap-1">
-            {['#026fc7', '#dc2626', '#16a34a', '#eab308', '#000000'].map((c) => (
+          <div className="flex items-center gap-1.5">
+            {['#026fc7', '#dc2626', '#16a34a', '#000000', '#f59e0b', '#7c3aed'].map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => setSelectedColor(c)}
-                className={`w-5 h-5 rounded-full border-2 transition-transform ${
-                  selectedColor === c ? 'scale-125 border-white' : 'border-transparent'
+                className={`w-5 h-5 rounded-full transition-transform ${
+                  selectedColor === c ? 'scale-125 ring-2 ring-brand-500/50' : 'opacity-80'
                 }`}
                 style={{ backgroundColor: c }}
               />
             ))}
           </div>
 
-          <button
-            type="button"
-            onClick={() => setAnnotations((prev) => prev.slice(0, -1))}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
-            title="Undo"
-          >
-            <Undo2 className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setAnnotations([])}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-rose-900/50 text-slate-300 hover:text-rose-300"
-            title="Clear all"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {/* Undo & Redo Buttons */}
+          <div className="flex items-center gap-1 border-l border-slate-200 dark:border-slate-800 pl-2">
+            <button
+              type="button"
+              onClick={handleUndo}
+              disabled={undoStack.length === 0}
+              title="Undo"
+              className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40"
+            >
+              <Undo2 className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={handleRedo}
+              disabled={redoStack.length === 0}
+              title="Redo"
+              className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40"
+            >
+              <Redo2 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Interactive PDF Canvas Viewer */}
-      <div className="relative p-6 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center overflow-x-auto">
-        <canvas
-          ref={canvasRef}
-          width={650}
-          height={850}
-          onMouseDown={handleCanvasMouseDown}
-          onMouseMove={handleCanvasMouseMove}
-          onMouseUp={handleCanvasMouseUp}
-          className="rounded-lg shadow-2xl bg-white cursor-crosshair max-w-full"
-        />
-
-        {/* Page Nav */}
-        <div className="flex items-center gap-4 mt-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
-          <button
-            type="button"
-            disabled={currentPage <= 1}
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 disabled:opacity-40"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            type="button"
-            disabled={currentPage >= totalPages}
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 disabled:opacity-40"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+      {/* Canvas Workspace */}
+      <div className="p-8 rounded-3xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-inner flex flex-col items-center justify-center min-h-[600px] overflow-auto">
+        <div className="shadow-2xl rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-white">
+          <canvas
+            ref={canvasRef}
+            width={600}
+            height={800}
+            onMouseDown={handleCanvasMouseDown}
+            onMouseMove={handleCanvasMouseMove}
+            onMouseUp={handleCanvasMouseUp}
+            className="cursor-crosshair block"
+          />
         </div>
-      </div>
 
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={handleExport}
-          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-brand-500/25 flex items-center gap-2"
-        >
-          <Download className="w-4 h-4" />
-          <span>Save & Export Annotated Document</span>
-        </button>
+        {/* Page Switcher */}
+        {totalPages > 1 && (
+          <div className="flex items-center gap-3 pt-6">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 text-xs font-bold disabled:opacity-40"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 text-xs font-bold disabled:opacity-40"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

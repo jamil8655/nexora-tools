@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, ShieldCheck, Zap, Lock, Heart } from 'lucide-react';
+import { Sparkles, ShieldCheck, Zap, Lock, Heart, Workflow, Terminal } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 export function Footer() {
@@ -53,11 +53,11 @@ export function Footer() {
                 <Sparkles className="w-4 h-4 fill-current" />
               </div>
               <span className="text-lg font-black text-slate-900">
-                NEXORA<span className="text-brand-600 text-xs ml-1 font-mono">TOOLS</span>
+                NEXORA<span className="text-brand-600 text-xs ml-1 font-mono uppercase font-black">PRO</span>
               </span>
             </Link>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              The all-in-one suite for PDF editing, video downloading, audio extraction, image conversion, and high-performance developer tools.
+              The high-performance suite for multi-tool workflows, PDF editing, 4K video downloading, passport studio photos, audio extraction, and privacy utilities.
             </p>
           </div>
 
@@ -73,91 +73,91 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/pdf-editor" className="hover:text-brand-600 transition-colors">
+                  PDF Editor Pro
+                </Link>
+              </li>
+              <li>
                 <Link href="/tools/pdf-merge" className="hover:text-brand-600 transition-colors">
                   Merge PDF
                 </Link>
               </li>
               <li>
-                <Link href="/tools/pdf-split" className="hover:text-brand-600 transition-colors">
-                  Split PDF
-                </Link>
-              </li>
-              <li>
                 <Link href="/tools/pdf-compress" className="hover:text-brand-600 transition-colors">
-                  Compress PDF (500MB)
+                  Compress PDF
                 </Link>
               </li>
               <li>
-                <Link href="/tools/image-to-pdf" className="hover:text-brand-600 transition-colors">
-                  Image to PDF
+                <Link href="/tools/pdf-to-image" className="hover:text-brand-600 transition-colors">
+                  PDF to 300 DPI Images
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Media & Audio */}
+          {/* AI & Media */}
           <div className="space-y-3">
             <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
-              Media & Audio
+              AI & Media Studio
             </h4>
             <ul className="space-y-2 text-xs text-slate-500">
               <li>
+                <Link href="/tools/passport-photo-maker" className="hover:text-brand-600 transition-colors font-bold text-brand-600">
+                  📸 Passport Photo Studio
+                </Link>
+              </li>
+              <li>
+                <Link href="/tools/background-remover" className="hover:text-brand-600 transition-colors">
+                  ✨ Background Cutout
+                </Link>
+              </li>
+              <li>
                 <Link href="/tools/audio-cutter" className="hover:text-brand-600 transition-colors">
-                  Audio Cutter & Trimmer
+                  ✂️ Audio Cutter & Trimmer
                 </Link>
               </li>
               <li>
                 <Link href="/tools/video-to-mp3" className="hover:text-brand-600 transition-colors">
-                  Video to Audio (MP3)
+                  🎵 Video to MP3
                 </Link>
               </li>
               <li>
                 <Link href="/tools/media-downloader" className="hover:text-brand-600 transition-colors">
-                  4K Video Downloader
-                </Link>
-              </li>
-              <li>
-                <Link href="/tools/favicon-generator" className="hover:text-brand-600 transition-colors">
-                  Favicon Icon Generator
-                </Link>
-              </li>
-              <li>
-                <Link href="/tools/image-compressor" className="hover:text-brand-600 transition-colors">
-                  Image Compressor
+                  🎬 4K Video Downloader
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Dev & Security */}
+          {/* Workflows & Privacy */}
           <div className="space-y-3">
             <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
-              Dev & Security
+              Workflows & Privacy
             </h4>
             <ul className="space-y-2 text-xs text-slate-500">
               <li>
-                <Link href="/tools/jwt-decoder" className="hover:text-brand-600 transition-colors">
-                  JWT Token Inspector
+                <Link href="/workflows" className="hover:text-brand-600 transition-colors font-bold text-purple-600">
+                  ⚡ Smart Workflows
                 </Link>
               </li>
               <li>
-                <Link href="/tools/uuid-generator" className="hover:text-brand-600 transition-colors">
-                  UUID/GUID Generator
+                <Link href="/privacy-center" className="hover:text-brand-600 transition-colors font-bold text-emerald-600">
+                  🛡️ Privacy & EXIF Center
                 </Link>
               </li>
               <li>
                 <Link href="/dev-tools" className="hover:text-brand-600 transition-colors">
-                  JSON Formatter & Validator
+                  💻 Developer Toolkit
                 </Link>
               </li>
               <li>
-                <Link href="/security-tools" className="hover:text-brand-600 transition-colors">
-                  SHA-256 Hash Generator
+                <Link href="/dashboard" className="hover:text-brand-600 transition-colors">
+                  🗄️ My Files & History
                 </Link>
               </li>
               <li>
-                <Link href="/ocr" className="hover:text-brand-600 transition-colors">
-                  OCR Text Recognition
+                <Link href="/admin" className="hover:text-brand-600 transition-colors">
+                  📊 System Health & Admin
                 </Link>
               </li>
             </ul>
@@ -170,7 +170,7 @@ export function Footer() {
             © {new Date().getFullYear()} NEXORA Tools Pro. All rights reserved.
           </div>
           <div className="flex items-center gap-1 text-slate-500">
-            <span>Crafted for high-performance productivity</span>
+            <span>Client-side, privacy-first productivity platform</span>
           </div>
         </div>
       </div>
