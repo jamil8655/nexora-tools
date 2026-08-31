@@ -1,7 +1,7 @@
 'use client';
 
-// NEXORA Production Firebase Client SDK Initialization
-// Connected to Studio Project: studio-5305763939-bdcf7
+// NEXORA Official Production Firebase Client SDK Initialization
+// Project: studio-5305763939-bdcf7
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';

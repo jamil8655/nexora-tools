@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "181387905351",
+    "firebase_url": "https://studio-5305763939-bdcf7-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "studio-5305763939-bdcf7",
+    "storage_bucket": "studio-5305763939-bdcf7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181387905351:android:e54c10b3542be3cc1ee462",
+        "android_client_info": {
+          "package_name": "com.nexoratools.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "181387905351-41rkppmloos45eavf99mosf4ml42ju1t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdyuIiTsYpB_eToe-IErvp2Ij2dHglyBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "181387905351-41rkppmloos45eavf99mosf4ml42ju1t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
