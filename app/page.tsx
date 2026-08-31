@@ -57,14 +57,13 @@ export default function HomePage() {
   const sideFeatured = popularTools.filter((t) => t.id !== featuredMedia?.id && t.id !== featuredPdfToWord?.id).slice(0, 4);
 
   const floatingChips = [
+    { label: '📸 Passport Photo Maker (3.5x4.5cm)', href: '/tools/passport-photo-maker', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 hover:border-blue-300' },
+    { label: '✨ AI Background Eraser (White / PNG)', href: '/tools/background-remover', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' },
     { label: '📝 PDF to Word (DOCX)', href: '/tools/pdf-to-docx', color: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 hover:border-rose-300' },
+    { label: '🖼️ PDF to 300 DPI Images', href: '/tools/pdf-to-image', color: 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100 hover:border-pink-300' },
     { label: '🔊 Audio Volume Booster', href: '/tools/audio-booster', color: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:border-amber-300' },
     { label: '✂️ Audio Cutter', href: '/tools/audio-cutter', color: 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100 hover:border-violet-300' },
-    { label: '⏩ Audio Speed (2x)', href: '/tools/audio-speed', color: 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300' },
-    { label: '🎨 Color Palette Extractor', href: '/tools/image-palette', color: 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100 hover:border-pink-300' },
-    { label: '📑 PDF Page Organizer', href: '/tools/pdf-organizer', color: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100 hover:border-red-300' },
-    { label: '✍️ Live Markdown to PDF', href: '/tools/markdown-editor', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' },
-    { label: '🎵 Video to MP3', href: '/tools/video-to-mp3', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' },
+    { label: '🎵 Video to MP3', href: '/tools/video-to-mp3', color: 'bg-teal-50 text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-300' },
     { label: '🎬 4K Video Downloader', href: '/tools/media-downloader', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 hover:border-purple-300' },
   ];
 

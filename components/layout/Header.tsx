@@ -68,6 +68,7 @@ export function Header() {
   }, []);
 
   const navLinks = [
+    { label: 'Passport Photo', href: '/tools/passport-photo-maker', badge: 'AI' },
     { label: 'PDF to Word', href: '/tools/pdf-to-docx', badge: 'OCR' },
     { label: 'Image Resizer', href: '/tools/image-resizer', badge: 'KB/MB' },
     { label: 'Audio Cutter', href: '/tools/audio-cutter', badge: 'NEW' },
@@ -75,7 +76,6 @@ export function Header() {
     { label: '4K Downloader', href: '/tools/media-downloader' },
     { label: 'PDF Suite', href: '/tools?category=pdf' },
     { label: 'Privacy QR', href: '/qr-barcode' },
-    { label: 'Dev Tools', href: '/dev-tools' },
   ];
 
   return (
