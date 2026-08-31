@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Heart, Star } from 'lucide-react';
-import { getFavorites, toggleFavorite } from '@/lib/storage/file-store';
+import { useUserStore } from '@/lib/user/user-store';
+import { TOOLS_LIST } from '@/lib/tools-config';
 
 interface FavoriteButtonProps {
   toolId: string;
@@ -17,18 +18,21 @@ export function FavoriteButton({
   variant = 'star',
   size = 'md',
 }: FavoriteButtonProps) {
-  const [isFavorited, setIsFavorited] = useState(false);
-
-  useEffect(() => {
-    const favs = getFavorites();
-    setIsFavorited(favs.includes(toolId));
-  }, [toolId]);
+  const { isFavorite, toggleFavorite: toggleStoreFav } = useUserStore();
+  const isFavorited = isFavorite(toolId);
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const updated = toggleFavorite(toolId);
-    setIsFavorited(updated.includes(toolId));
+    const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
+    toggleStoreFav({
+      id: toolId,
+      type: 'tool',
+      title: tool?.name || toolId,
+      category: tool?.category || 'Utility',
+      url: `/tools/${toolId}`,
+      iconName: tool?.icon,
+    });
   };
 
   const Icon = variant === 'heart' ? Heart : Star;

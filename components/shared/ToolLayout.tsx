@@ -9,8 +9,8 @@ import { ProgressBar } from './ProgressBar';
 import { ResultPreview } from './ResultPreview';
 import { Play, Settings2, HelpCircle } from 'lucide-react';
 import { downloadSingleFile, downloadAsZip } from '@/lib/utils/download';
-import { addHistoryItem } from '@/lib/storage/file-store';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { useUserStore } from '@/lib/user/user-store';
 import { getLocalizedTool, getLocalizedCategory } from '@/lib/i18n/catalog-translations';
 import { AdSlot } from '@/components/ads/AdSlot';
 
@@ -35,6 +35,7 @@ interface ToolLayoutProps {
 
 export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps) {
   const { t, language } = useI18n();
+  const { addHistory, addDownload } = useUserStore();
   const localized = getLocalizedTool(tool, language);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -81,15 +82,13 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
 
       setResults(outputFiles);
 
-      // Record in history
+      // Record in unified user-store
       outputFiles.forEach((out) => {
-        addHistoryItem({
-          toolId: tool.id,
-          toolName: tool.name,
-          fileName: out.name,
-          originalSize: out.originalSize || 0,
-          outputSize: out.processedSize || out.blob?.size,
-          success: true,
+        addHistory({
+          type: 'tool',
+          title: `${localized.name}: ${out.name}`,
+          url: `/tools/${tool.id}`,
+          meta: `Processed: ${out.originalSize ? Math.round(out.originalSize / 1024) + ' KB' : 'Client-Side'}`,
         });
       });
     } catch (err: any) {
@@ -105,9 +104,19 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
     const file = results[index];
     if (file.blob) {
       downloadSingleFile(file.blob, file.name);
+      addDownload({
+        name: file.name,
+        size: `${Math.round((file.processedSize || file.blob.size) / 1024)} KB`,
+        type: tool.outputExtension || 'file',
+      });
     } else if (file.textResult) {
       const blob = new Blob([file.textResult], { type: 'text/plain;charset=utf-8' });
       downloadSingleFile(blob, file.name);
+      addDownload({
+        name: file.name,
+        size: `${Math.round(blob.size / 1024)} KB`,
+        type: 'txt',
+      });
     }
   };
 
@@ -118,10 +127,16 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
       if (r.blob) {
         zipFiles.push({ name: r.name, blob: r.blob });
       } else if (r.textResult) {
-        zipFiles.push({ name: r.name, blob: new Blob([r.textResult], { type: 'text/plain' }) });
+        zipFiles.push({ name: r.name, blob: new Blob([r.textResult], { type: 'text/plain;charset=utf-8' }) });
       }
     });
-    downloadAsZip(zipFiles, `${tool.slug}-result.zip`);
+    const zipName = `${tool.slug}-result.zip`;
+    downloadAsZip(zipFiles, zipName);
+    addDownload({
+      name: zipName,
+      size: 'Multi-File ZIP',
+      type: 'zip',
+    });
   };
 
   const handleReset = () => {
