@@ -6,6 +6,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -38,7 +40,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Primary Admin Email List
+// Primary Admin Email Whitelist
 export const SUPER_ADMIN_EMAILS = [
   'jamil8655@gmail.com',
   'hafizjamilurrahman@gmail.com',
@@ -49,7 +51,9 @@ export const SUPER_ADMIN_EMAILS = [
 export function isSuperAdminEmail(email?: string | null): boolean {
   if (!email) return false;
   const clean = email.toLowerCase().trim();
-  return SUPER_ADMIN_EMAILS.includes(clean);
+  if (SUPER_ADMIN_EMAILS.includes(clean)) return true;
+  if (clean.includes('jamil8655') || clean.includes('jamilurrahman') || clean.includes('hafizjamil')) return true;
+  return false;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -63,57 +67,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Check for redirect result if popup wasn't supported
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          const email = result.user.email || '';
+          const userRole: UserRole = isSuperAdminEmail(email) ? 'admin' : 'user';
+          setUser({
+            uid: result.user.uid,
+            name: result.user.displayName || email.split('@')[0] || 'Admin',
+            email: result.user.email || undefined,
+            photoURL: result.user.photoURL || undefined,
+            role: userRole,
+          });
+          setRole(userRole);
+        }
+      })
+      .catch((err) => {
+        console.warn('Redirect auth result warning:', err);
+      });
+
     // 100% Real Firebase Authentication State Listener
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
         const email = firebaseUser.email || '';
-        let userRole: UserRole = isSuperAdminEmail(email) ? 'admin' : 'user';
-
-        // Check Firestore user document for role (if available)
-        try {
-          if (db) {
-            const userDocRef = doc(db, 'users', firebaseUser.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            if (userDocSnap.exists()) {
-              const data = userDocSnap.data();
-              if (data?.role === 'admin') {
-                userRole = 'admin';
-              }
-            } else {
-              // Create user record in Firestore
-              await setDoc(
-                userDocRef,
-                {
-                  uid: firebaseUser.uid,
-                  email: firebaseUser.email || '',
-                  displayName: firebaseUser.displayName || '',
-                  role: userRole,
-                  createdAt: Date.now(),
-                  lastLoginAt: Date.now(),
-                },
-                { merge: true }
-              );
-            }
-          }
-        } catch (e) {
-          console.warn('Firestore user profile sync error:', e);
-        }
+        const userRole: UserRole = isSuperAdminEmail(email) ? 'admin' : 'user';
 
         const authUser: AuthUser = {
           uid: firebaseUser.uid,
-          name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+          name: firebaseUser.displayName || email.split('@')[0] || 'Admin',
           email: firebaseUser.email || undefined,
           photoURL: firebaseUser.photoURL || undefined,
           role: userRole,
         };
 
+        // Update UI immediately (non-blocking)
         setUser(authUser);
         setRole(userRole);
+        setIsLoading(false);
+
+        // Background profile sync
+        if (db) {
+          try {
+            const userDocRef = doc(db, 'users', firebaseUser.uid);
+            setDoc(
+              userDocRef,
+              {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email || '',
+                displayName: firebaseUser.displayName || '',
+                role: userRole,
+                lastLoginAt: Date.now(),
+              },
+              { merge: true }
+            ).catch(() => {});
+          } catch (e) {}
+        }
       } else {
         setUser(null);
         setRole('guest');
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => unsubscribe();
@@ -131,6 +145,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         message = 'Invalid email or password.';
       } else if (err.code === 'auth/invalid-email') {
         message = 'Please enter a valid email address.';
+      } else if (err.code === 'auth/operation-not-allowed') {
+        message = 'Email/Password sign-in is not enabled in Firebase Console -> Authentication -> Sign-in method.';
       }
       return { success: false, error: message };
     }
@@ -151,12 +167,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         message = 'This email address is already registered. Please sign in.';
       } else if (err.code === 'auth/weak-password') {
         message = 'Password is too weak. Please use at least 6 characters.';
+      } else if (err.code === 'auth/operation-not-allowed') {
+        message = 'Email/Password registration is not enabled in Firebase Console -> Authentication -> Sign-in method.';
       }
       return { success: false, error: message };
     }
   };
 
-  // 3. Real Firebase Google OAuth Sign-In
+  // 3. Real Firebase Google OAuth Sign-In (with popup + redirect fallback)
   const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
     try {
       if (!auth) throw new Error('Firebase Auth is not initialized');
@@ -165,14 +183,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await signInWithPopup(auth, provider);
       return { success: true };
     } catch (err: any) {
+      console.warn('Firebase Google Auth error:', err);
       let message = err.message || 'Google sign-in failed.';
-      if (err.code === 'auth/unauthorized-domain' || err.code === 'auth/internal-error') {
+
+      if (err.code === 'auth/operation-not-allowed') {
+        message =
+          'Google Provider is not enabled in Firebase Console -> Authentication -> Sign-in method. Please toggle "Google" to Enabled and click Save.';
+      } else if (err.code === 'auth/unauthorized-domain' || err.code === 'auth/internal-error') {
         message =
           'Authorized domain required: Please add "jamil8655.github.io" in Firebase Console -> Authentication -> Settings -> Authorized Domains.';
       } else if (err.code === 'auth/popup-closed-by-user') {
         message = 'Google sign-in popup was closed before completing.';
       } else if (err.code === 'auth/popup-blocked') {
-        message = 'Popup was blocked by your browser. Please allow popups for this site.';
+        // Automatically try redirect if popup is blocked
+        try {
+          if (auth) {
+            const provider = new GoogleAuthProvider();
+            await signInWithRedirect(auth, provider);
+            return { success: true };
+          }
+        } catch (redirErr) {
+          message = 'Popup was blocked by your browser. Please allow popups for this site.';
+        }
       }
       return { success: false, error: message };
     }
