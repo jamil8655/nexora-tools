@@ -59,7 +59,7 @@ export function PwaInstallBanner() {
   if (!showBanner || isDismissed) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-40 animate-in slide-in-from-bottom-5 duration-300">
+    <div className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md lg:bottom-6 z-40 animate-in slide-in-from-bottom-5 duration-300">
       <div className="bg-white text-slate-900 border border-slate-200/90 rounded-3xl p-4 sm:p-5 shadow-2xl shadow-slate-900/10 flex items-start justify-between gap-3.5 relative overflow-hidden">
         {/* Subtle accent bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600" />
