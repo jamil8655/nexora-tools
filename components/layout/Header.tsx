@@ -10,6 +10,8 @@ import {
   Sun,
   Moon,
   Bookmark,
+  Download,
+  Smartphone,
 } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 import { QuickSearchModal } from '@/components/shared/QuickSearchModal';
@@ -19,6 +21,32 @@ export function Header() {
   const { theme, setTheme, isDark } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [canInstall, setCanInstall] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setCanInstall(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setCanInstall(false);
+      }
+      setDeferredPrompt(null);
+    } else {
+      alert('To install NEXORA App:\n• Chrome/Edge: Click the install icon in your address bar or menu.\n• Safari/iOS: Tap Share ➔ "Add to Home Screen".');
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -41,11 +69,12 @@ export function Header() {
 
   const navLinks = [
     { label: 'PDF to Word', href: '/tools/pdf-to-docx', badge: 'OCR' },
+    { label: 'Image Resizer', href: '/tools/image-resizer', badge: 'KB/MB' },
     { label: 'Audio Cutter', href: '/tools/audio-cutter', badge: 'NEW' },
     { label: 'Video to MP3', href: '/tools/video-to-mp3' },
     { label: '4K Downloader', href: '/tools/media-downloader' },
     { label: 'PDF Suite', href: '/tools?category=pdf' },
-    { label: 'Image Tools', href: '/tools?category=image' },
+    { label: 'Privacy QR', href: '/qr-barcode' },
     { label: 'Dev Tools', href: '/dev-tools' },
   ];
 
@@ -98,6 +127,17 @@ export function Header() {
 
           {/* Right Action Bar */}
           <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* 1-Click Install App Trigger */}
+            <button
+              type="button"
+              onClick={handleInstallClick}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-all shadow-xs"
+              title="Install NEXORA App on Mobile or Desktop"
+            >
+              <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="hidden xs:inline">Install App</span>
+            </button>
+
             {/* Quick Search Bar Trigger (Ctrl+K) */}
             <button
               type="button"
