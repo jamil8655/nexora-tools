@@ -56,6 +56,8 @@ import { ColorPaletteStudio } from '@/components/image/ColorPaletteStudio';
 import { PdfOrganizerStudio } from '@/components/pdf/PdfOrganizerStudio';
 import { MarkdownLiveStudio } from '@/components/dev/MarkdownLiveStudio';
 import { ImageResizerStudio } from '@/components/image/ImageResizerStudio';
+import { BackgroundRemoverStudio } from '@/components/image/BackgroundRemoverStudio';
+import { PdfToImagesStudio } from '@/components/pdf/PdfToImagesStudio';
 
 export function ToolPageClient({ toolId }: { toolId: string }) {
   const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
@@ -128,6 +130,10 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
     customWorkspace = <MarkdownLiveStudio />;
   } else if (tool.id === 'image-resizer') {
     customWorkspace = <ImageResizerStudio />;
+  } else if (tool.id === 'background-remover' || tool.slug === 'background-remover') {
+    customWorkspace = <BackgroundRemoverStudio />;
+  } else if (tool.id === 'pdf-to-image' || tool.id === 'pdf-to-jpg' || tool.slug === 'pdf-to-images') {
+    customWorkspace = <PdfToImagesStudio />;
   } else if (tool.category === 'media' || tool.id.includes('downloader') || tool.id === 'whatsapp-status-saver') {
     customWorkspace = <MediaDownloaderStudio />;
   }
