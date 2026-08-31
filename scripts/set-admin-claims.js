@@ -1,76 +1,112 @@
-/**
- * NEXORA Enterprise Firebase Admin Custom Claims Setter
- * 
- * Usage:
- * 1. Download Service Account JSON from Firebase Console -> Project Settings -> Service Accounts -> Generate new private key.
- * 2. Save it as `serviceAccountKey.json` in the root folder.
- * 3. Run: `node scripts/set-admin-claims.js jamil8655@gmail.com`
- */
+const { initializeApp, cert } = require("firebase-admin/app");
+const { getAuth } = require("firebase-admin/auth");
+const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+const path = require("path");
+const fs = require("fs");
 
-const admin = require('firebase-admin');
-const path = require('path');
-const fs = require('fs');
+const PROJECT_ID = "studio-3108342384-2960a";
 
-const serviceAccountPath = path.join(__dirname, '..', 'serviceAccountKey.json');
+const serviceAccountPath = path.join(
+  __dirname,
+  "../serviceAccountKey.json"
+);
 
 if (!fs.existsSync(serviceAccountPath)) {
-  console.error('\n❌ Error: serviceAccountKey.json not found!');
-  console.log('To set Custom Claims via Admin SDK:');
-  console.log('1. Go to Firebase Console -> Project Settings -> Service accounts.');
-  console.log('2. Click "Generate new private key" and save it as "serviceAccountKey.json" in the project root.');
-  console.log('3. Run: node scripts/set-admin-claims.js <user-email-or-uid>\n');
+  console.error("❌ serviceAccountKey.json not found!");
   process.exit(1);
 }
 
 const serviceAccount = require(serviceAccountPath);
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+if (serviceAccount.project_id !== PROJECT_ID) {
+  console.error("❌ Wrong Firebase project!");
+  console.error("Expected:", PROJECT_ID);
+  console.error("Found:", serviceAccount.project_id);
+  process.exit(1);
+}
+
+initializeApp({
+  credential: cert(serviceAccount),
+  projectId: PROJECT_ID
 });
 
-const targetIdentifier = process.argv[2] || 'jamil8655@gmail.com';
+const auth = getAuth();
+const db = getFirestore();
 
-async function setAdminCustomClaims(identifier) {
+async function makeAdmin(email) {
   try {
-    let userRecord;
-    if (identifier.includes('@')) {
-      userRecord = await admin.auth().getUserByEmail(identifier);
-    } else {
-      userRecord = await admin.auth().getUser(identifier);
+    const cleanEmail = email.trim().toLowerCase();
+
+    console.log(`\n🔍 Finding Firebase user: ${cleanEmail}`);
+
+    const user = await auth.getUserByEmail(cleanEmail);
+
+    console.log("✅ User found");
+    console.log("UID:", user.uid);
+
+    await auth.setCustomUserClaims(user.uid, {
+      admin: true,
+      role: "admin"
+    });
+
+    await db
+      .collection("admins")
+      .doc(user.uid)
+      .set(
+        {
+          uid: user.uid,
+          email: user.email,
+          role: "admin",
+          active: true,
+          updatedAt: FieldValue.serverTimestamp()
+        },
+        { merge: true }
+      );
+
+    console.log("\n====================================");
+    console.log("✅ ADMIN SUCCESSFULLY CREATED");
+    console.log("====================================");
+    console.log("Email :", user.email);
+    console.log("UID   :", user.uid);
+    console.log("Role  : admin");
+    console.log("Claim : admin = true");
+    console.log("====================================\n");
+
+    console.log("⚠️ NEXORA سے Logout کریں۔");
+    console.log("⚠️ Browser Refresh کریں۔");
+    console.log("⚠️ پھر دوبارہ Login کریں۔\n");
+
+  } catch (error) {
+    console.error("\n❌ ADMIN CREATION FAILED");
+    console.error("Code:", error.code || "unknown");
+    console.error("Message:", error.message);
+
+    if (error.code === "auth/user-not-found") {
+      console.error(
+        "\nیہ Email Firebase Authentication میں موجود نہیں ہے۔"
+      );
     }
 
-    console.log(`Found user: ${userRecord.email} (${userRecord.uid})`);
+    if (
+      error.code === "app/invalid-credential" ||
+      error.message?.toLowerCase().includes("credential")
+    ) {
+      console.error(
+        "\nService Account JSON یا Firebase credentials چیک کریں۔"
+      );
+    }
 
-    // Set Custom Claims
-    await admin.auth().setCustomUserClaims(userRecord.uid, {
-      admin: true,
-      super_admin: true,
-      role: 'admin',
-    });
-
-    // Also update Firestore profile
-    const db = admin.firestore();
-    await db.collection('users').doc(userRecord.uid).set(
-      {
-        role: 'admin',
-        isAdmin: true,
-        claimsUpdatedAt: Date.now(),
-      },
-      { merge: true }
-    );
-
-    await db.collection('admins').doc(userRecord.uid).set({
-      uid: userRecord.uid,
-      email: userRecord.email,
-      assignedAt: Date.now(),
-    });
-
-    console.log(`\n✅ SUCCESS: User ${userRecord.email} has been granted Admin Custom Claims!`);
-    console.log('Claims set: { admin: true, super_admin: true, role: "admin" }');
-    console.log('When this user signs in, Firebase ID token will carry cryptographically signed admin claims.\n');
-  } catch (error) {
-    console.error('Error setting custom claims:', error);
+    process.exit(1);
   }
 }
 
-setAdminCustomClaims(targetIdentifier);
+const email = process.argv[2];
+
+if (!email) {
+  console.error(
+    "\nاستعمال:\nnode scripts/set-admin-claims.js your@email.com\n"
+  );
+  process.exit(1);
+}
+
+makeAdmin(email);
