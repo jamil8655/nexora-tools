@@ -37,7 +37,7 @@ import { TOOLS_LIST, CATEGORIES_CONFIG } from '@/lib/tools-config';
 import { siteConfig } from '@/config/site';
 import { ToolCard } from '@/components/shared/ToolCard';
 import { ToolIcon } from '@/components/shared/ToolIcon';
-import { UniversalSearchEngine } from '@/components/search/UniversalSearchEngine';
+import { UnifiedSearchModal } from '@/components/search/UnifiedSearchModal';
 import { NexoraAiAssistant } from '@/components/ai/NexoraAiAssistant';
 import { AdSlot } from '@/components/ads/AdSlot';
 
@@ -327,8 +327,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Universal Search Modal Trigger */}
-      <UniversalSearchEngine
+      {/* Single Unified NEXORA Smart Search Modal */}
+      <UnifiedSearchModal
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
       />

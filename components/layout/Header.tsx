@@ -20,7 +20,7 @@ import {
 import { useTheme } from './ThemeContext';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useAuth } from '@/lib/auth/auth-context';
-import { UniversalSearchEngine } from '@/components/search/UniversalSearchEngine';
+import { UnifiedSearchModal } from '@/components/search/UnifiedSearchModal';
 
 export function Header() {
   const pathname = usePathname();
@@ -175,8 +175,8 @@ export function Header() {
         </div>
       </header>
 
-      {/* Universal Search Modal */}
-      <UniversalSearchEngine
+      {/* Single Unified NEXORA Smart Search Modal */}
+      <UnifiedSearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
       />
