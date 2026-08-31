@@ -8,6 +8,7 @@ interface I18nContextType {
   setLanguage: (lang: Language) => void;
   t: Translations;
   dir: 'ltr' | 'rtl';
+  isRtl: boolean;
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
@@ -16,7 +17,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
 
   useEffect(() => {
-    const saved = localStorage.getItem('docuomni_lang') as Language;
+    const saved = localStorage.getItem('nexora_lang_v2') as Language;
     if (saved && ['en', 'ar', 'ur', 'hi'].includes(saved)) {
       setLanguageState(saved);
     }
@@ -24,23 +25,32 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('docuomni_lang', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('nexora_lang_v2', lang);
+    }
     const dir = lang === 'ar' || lang === 'ur' ? 'rtl' : 'ltr';
     document.documentElement.setAttribute('dir', dir);
     document.documentElement.setAttribute('lang', lang);
+    document.documentElement.className = document.documentElement.className
+      .replace(/\blang-(en|ur|ar|hi)\b/g, '')
+      .trim() + ` lang-${lang}`;
   };
 
   useEffect(() => {
     const dir = language === 'ar' || language === 'ur' ? 'rtl' : 'ltr';
     document.documentElement.setAttribute('dir', dir);
     document.documentElement.setAttribute('lang', language);
+    document.documentElement.className = document.documentElement.className
+      .replace(/\blang-(en|ur|ar|hi)\b/g, '')
+      .trim() + ` lang-${language}`;
   }, [language]);
 
   const dir = language === 'ar' || language === 'ur' ? 'rtl' : 'ltr';
+  const isRtl = dir === 'rtl';
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
 
   return (
-    <I18nContext.Provider value={{ language, setLanguage, t, dir }}>
+    <I18nContext.Provider value={{ language, setLanguage, t, dir, isRtl }}>
       {children}
     </I18nContext.Provider>
   );

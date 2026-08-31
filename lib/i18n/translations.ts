@@ -24,6 +24,7 @@ export interface Translations {
   compressedSize: string;
   nav: {
     home: string;
+    courses: string;
     dashboard: string;
     pdfTools: string;
     imageTools: string;
@@ -37,33 +38,238 @@ export interface Translations {
     qrBarcode: string;
     aiTools: string;
     pdfEditor: string;
-    myFiles: string;
+    workflows: string;
+    allTools: string;
+    myTools: string;
+    favorites: string;
     history: string;
+    downloads: string;
+    notifications: string;
+    settings: string;
     admin: string;
+    login: string;
+    signup: string;
+    logout: string;
+    myProfile: string;
+  };
+  courses: {
+    title: string;
+    subtitle: string;
+    browse: string;
+    myCourses: string;
+    allCategories: string;
+    freePreview: string;
+    enrollFree: string;
+    enrolled: string;
+    continueLearning: string;
+    resume: string;
+    progress: string;
+    completed: string;
+    lessons: string;
+    duration: string;
+    instructor: string;
+    curriculum: string;
+    overview: string;
+    certificate: string;
+    certificateDesc: string;
+    noEnrollmentRequired: string;
+    enrollmentBenefitsTitle: string;
+    benefit1: string;
+    benefit2: string;
+    benefit3: string;
+    benefit4: string;
+    filterByLevel: string;
+    allLevels: string;
+    beginner: string;
+    intermediate: string;
+    advanced: string;
+    searchCourses: string;
+    noCoursesFound: string;
+    viewDetails: string;
+    startCourse: string;
+    lessonLocked: string;
+    lessonPreview: string;
+  };
+  auth: {
+    signIn: string;
+    signUp: string;
+    emailAddress: string;
+    password: string;
+    fullName: string;
+    forgotPassword: string;
+    resetPassword: string;
+    sendResetLink: string;
+    resetLinkSent: string;
+    rememberMe: string;
+    showPassword: string;
+    hidePassword: string;
+    continueWithGoogle: string;
+    orEmail: string;
+    dontHaveAccount: string;
+    alreadyHaveAccount: string;
+    createAccount: string;
+    emailVerification: string;
+    emailVerified: string;
+    emailNotVerified: string;
+    resendVerification: string;
+    verificationSent: string;
+    invalidCredentials: string;
+    accountCreatedSuccess: string;
+    loginSuccess: string;
+    logoutSuccess: string;
+    passwordMinLength: string;
+  };
+  userDashboard: {
+    welcomeBack: string;
+    overview: string;
+    myToolsTitle: string;
+    myToolsSubtitle: string;
+    favoritesTitle: string;
+    favoritesSubtitle: string;
+    historyTitle: string;
+    historySubtitle: string;
+    downloadsTitle: string;
+    downloadsSubtitle: string;
+    notificationsTitle: string;
+    notificationsSubtitle: string;
+    settingsTitle: string;
+    settingsSubtitle: string;
+    profileTitle: string;
+    bioPlaceholder: string;
+    saveProfile: string;
+    profileUpdated: string;
+    joinedOn: string;
+    accountStatus: string;
+    verified: string;
+    unverified: string;
+    clearHistory: string;
+    clearAll: string;
+    noHistory: string;
+    noFavorites: string;
+    noDownloads: string;
+    noNotifications: string;
+    markAllAsRead: string;
+    downloadAgain: string;
+    deleteItem: string;
+    changePassword: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+    updatePasswordBtn: string;
+  };
+  settings: {
+    accountTab: string;
+    appearanceTab: string;
+    languageTab: string;
+    notificationsTab: string;
+    privacyTab: string;
+    securityTab: string;
+    themeMode: string;
+    lightTheme: string;
+    darkTheme: string;
+    systemTheme: string;
+    selectLanguage: string;
+    emailNotifications: string;
+    courseUpdates: string;
+    toolAlerts: string;
+    securityAlerts: string;
+    marketingAnnouncements: string;
+    dataStorage: string;
+    localStorageNotice: string;
+    clearCache: string;
+    cacheCleared: string;
+  };
+  admin: {
+    controlCenter: string;
+    analytics: string;
+    userManagement: string;
+    courseManagement: string;
+    toolsManagement: string;
+    contentManager: string;
+    systemSettings: string;
+    totalUsers: string;
+    activeUsers: string;
+    totalCourses: string;
+    totalToolRuns: string;
+    systemHealth: string;
+    addCourse: string;
+    editCourse: string;
+    deleteCourse: string;
+    publishCourse: string;
+    draftCourse: string;
+    enableTool: string;
+    disableTool: string;
+    searchUsers: string;
+    roleAdmin: string;
+    roleUser: string;
+    makeAdmin: string;
+    removeAdmin: string;
+    maintenanceMode: string;
+    allowRegistration: string;
   };
   footer: {
     desc: string;
     quickLinks: string;
+    aboutPlatform: string;
+    courses: string;
+    tools: string;
+    features: string;
+    helpSupport: string;
+    contactUs: string;
     privacyPolicy: string;
     terms: string;
-    security: string;
+    refundPolicy: string;
+    disclaimer: string;
+    faq: string;
+    userGuidelines: string;
     rights: string;
+    poweredBy: string;
+    clientSideSecurity: string;
+  };
+  common: {
+    save: string;
+    cancel: string;
+    delete: string;
+    edit: string;
+    remove: string;
+    open: string;
+    close: string;
+    back: string;
+    next: string;
+    finish: string;
+    confirm: string;
+    loading: string;
+    success: string;
+    error: string;
+    all: string;
+    free: string;
+    pro: string;
+    enterprise: string;
+    filter: string;
+    search: string;
+    viewAll: string;
+    noData: string;
+    fileSize: string;
+    date: string;
+    status: string;
+    action: string;
   };
 }
 
 export const TRANSLATIONS: Record<Language, Translations> = {
+  // ==================== ENGLISH ====================
   en: {
-    appName: 'NEXORA TOOLS',
-    tagline: 'Powerful Tools for Every File, Document and Digital Task.',
-    heroTitle: 'Powerful Tools for Every File, Document & Digital Task',
-    heroSubtitle: 'Convert, compress, edit, calculate, code and manage your files from one fast, secure, and privacy-first digital utility workspace.',
-    searchPlaceholder: 'What do you want to do? (e.g., PDF to JPG, Compress PDF, MB to KB, JSON Formatter)...',
+    appName: 'NEXORA PRO',
+    tagline: 'Powerful Tools & Learning Platform for Every File and Digital Skill.',
+    heroTitle: 'Master Digital Skills & Transform Files in One Workspace',
+    heroSubtitle: 'Learn modern web, AI, document mastery, and execute 75+ lightning-fast, privacy-first client-side file tools with zero server tracking.',
+    searchPlaceholder: 'Search 75+ tools, courses, workflows, or actions (e.g. PDF to Word, Python AI, Compress Image)...',
     popularTools: 'Popular & Essential Tools',
-    allTools: 'All 60+ Utilities',
+    allTools: 'All 75+ Digital Tools',
     exploreCategories: 'Explore by Category',
-    privacyNotice: 'Zero Server Uploads • 100% Private Client-Side WASM Processing.',
+    privacyNotice: 'Zero Server Uploads • 100% Private Client-Side Processing.',
     clientSideBadge: 'Processed Locally (100% Private)',
-    serverSideBadge: 'Server Processing',
+    serverSideBadge: 'Cloud Engine',
     dropzoneTitle: 'Drag & Drop your files here',
     dropzoneSubtitle: 'or click to browse files from your device',
     chooseFiles: 'Choose Files',
@@ -76,6 +282,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     compressedSize: 'New Size',
     nav: {
       home: 'Home',
+      courses: 'Courses',
       dashboard: 'Dashboard',
       pdfTools: 'PDF Tools',
       imageTools: 'Image Tools',
@@ -89,167 +296,992 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       qrBarcode: 'QR & Barcode',
       aiTools: 'AI Workspace',
       pdfEditor: 'PDF Editor',
-      myFiles: 'My Files',
+      workflows: 'Workflows',
+      allTools: 'All Tools',
+      myTools: 'My Tools',
+      favorites: 'Favorites',
       history: 'History',
-      admin: 'Admin',
+      downloads: 'Downloads',
+      notifications: 'Notifications',
+      settings: 'Settings',
+      admin: 'Admin Center',
+      login: 'Log In',
+      signup: 'Sign Up',
+      logout: 'Log Out',
+      myProfile: 'My Profile',
+    },
+    courses: {
+      title: 'Explore Master Courses',
+      subtitle: 'Free and open learning paths. Browse curriculum, preview lessons freely, or enroll to track your progress and earn certificates.',
+      browse: 'Browse Courses',
+      myCourses: 'My Enrolled Courses',
+      allCategories: 'All Categories',
+      freePreview: 'Free Preview',
+      enrollFree: 'Enroll for Free',
+      enrolled: 'Enrolled',
+      continueLearning: 'Continue Learning',
+      resume: 'Resume Lesson',
+      progress: 'Course Progress',
+      completed: 'Completed',
+      lessons: 'Lessons',
+      duration: 'Total Duration',
+      instructor: 'Instructor',
+      curriculum: 'Curriculum & Lessons',
+      overview: 'Course Overview',
+      certificate: 'Completion Certificate',
+      certificateDesc: 'Earn a verified digital certificate upon finishing all course modules and projects.',
+      noEnrollmentRequired: 'No enrollment required to view previews and study course content.',
+      enrollmentBenefitsTitle: 'Why Enroll in a Course?',
+      benefit1: 'Save progress and pick up right where you left off',
+      benefit2: 'Track completed lessons and milestone achievements',
+      benefit3: 'Access interactive project files and downloadable tool templates',
+      benefit4: 'Receive direct updates, notifications, and course completion badges',
+      filterByLevel: 'Filter by Level',
+      allLevels: 'All Levels',
+      beginner: 'Beginner',
+      intermediate: 'Intermediate',
+      advanced: 'Advanced',
+      searchCourses: 'Search courses by title, topic, or technology...',
+      noCoursesFound: 'No courses match your search or filter criteria.',
+      viewDetails: 'View Curriculum',
+      startCourse: 'Start Learning Now',
+      lessonLocked: 'Enroll to track completion',
+      lessonPreview: 'Free Preview Available',
+    },
+    auth: {
+      signIn: 'Sign In',
+      signUp: 'Sign Up',
+      emailAddress: 'Email Address',
+      password: 'Password',
+      fullName: 'Full Name',
+      forgotPassword: 'Forgot Password?',
+      resetPassword: 'Reset Password',
+      sendResetLink: 'Send Password Reset Link',
+      resetLinkSent: 'Password reset link sent to your email. Check your inbox.',
+      rememberMe: 'Remember me on this device',
+      showPassword: 'Show password',
+      hidePassword: 'Hide password',
+      continueWithGoogle: 'Continue with Google',
+      orEmail: 'or continue with email',
+      dontHaveAccount: "Don't have an account?",
+      alreadyHaveAccount: 'Already have an account?',
+      createAccount: 'Create Free Account',
+      emailVerification: 'Email Verification',
+      emailVerified: 'Verified Account',
+      emailNotVerified: 'Email not verified yet',
+      resendVerification: 'Resend Verification Email',
+      verificationSent: 'Verification email sent! Please check your inbox.',
+      invalidCredentials: 'Invalid email or password. Please verify and try again.',
+      accountCreatedSuccess: 'Account created successfully! Welcome to NEXORA PRO.',
+      loginSuccess: 'Signed in successfully!',
+      logoutSuccess: 'Signed out safely.',
+      passwordMinLength: 'Password must be at least 6 characters.',
+    },
+    userDashboard: {
+      welcomeBack: 'Welcome back',
+      overview: 'Account Overview',
+      myToolsTitle: 'My Tools & Shortcuts',
+      myToolsSubtitle: 'Quickly access your most frequent and pinned productivity utilities.',
+      favoritesTitle: 'Bookmarked Favorites',
+      favoritesSubtitle: 'Your saved tools and bookmarked learning courses in one convenient list.',
+      historyTitle: 'Activity & Conversion History',
+      historySubtitle: 'Review recently processed files, opened tools, and studied lessons.',
+      downloadsTitle: 'Downloads & Generated Files',
+      downloadsSubtitle: 'Access and re-download your locally generated PDFs, images, and converted files.',
+      notificationsTitle: 'Notification Center',
+      notificationsSubtitle: 'Stay up-to-date with course releases, tool enhancements, and platform announcements.',
+      settingsTitle: 'Preferences & Settings',
+      settingsSubtitle: 'Customize your theme, language, notifications, and security options.',
+      profileTitle: 'Profile Information',
+      bioPlaceholder: 'Write a short bio about yourself or your skills...',
+      saveProfile: 'Save Profile Changes',
+      profileUpdated: 'Profile updated successfully!',
+      joinedOn: 'Member Since',
+      accountStatus: 'Account Status',
+      verified: 'Verified',
+      unverified: 'Unverified',
+      clearHistory: 'Clear Activity History',
+      clearAll: 'Clear All',
+      noHistory: 'No activity recorded yet. Start exploring tools and courses!',
+      noFavorites: 'No favorites bookmarked yet. Click the star on any tool or course to save it here.',
+      noDownloads: 'No generated files yet. Process any tool to see your download history.',
+      noNotifications: 'You have no new notifications.',
+      markAllAsRead: 'Mark All as Read',
+      downloadAgain: 'Download Again',
+      deleteItem: 'Remove Item',
+      changePassword: 'Change Account Password',
+      currentPassword: 'Current Password',
+      newPassword: 'New Password',
+      confirmNewPassword: 'Confirm New Password',
+      updatePasswordBtn: 'Update Password',
+    },
+    settings: {
+      accountTab: 'Account',
+      appearanceTab: 'Appearance',
+      languageTab: 'Language',
+      notificationsTab: 'Notifications',
+      privacyTab: 'Privacy',
+      securityTab: 'Security',
+      themeMode: 'Theme Mode',
+      lightTheme: 'Light Mode',
+      darkTheme: 'Dark Mode',
+      systemTheme: 'System Default',
+      selectLanguage: 'Select App Language',
+      emailNotifications: 'Email Notifications',
+      courseUpdates: 'Course & Curriculum Updates',
+      toolAlerts: 'New Tool Releases & Upgrades',
+      securityAlerts: 'Account & Security Alerts',
+      marketingAnnouncements: 'Product News & Tips',
+      dataStorage: 'Local Data & Cache',
+      localStorageNotice: 'NEXORA stores your tool preferences, history, and favorites securely on your device.',
+      clearCache: 'Clear Local Storage Cache',
+      cacheCleared: 'Local cache cleared successfully.',
+    },
+    admin: {
+      controlCenter: 'NEXORA Admin Control Center',
+      analytics: 'Analytics & Telemetry',
+      userManagement: 'User Management',
+      courseManagement: 'Course Management',
+      toolsManagement: 'Tools Control',
+      contentManager: 'Content & Translations',
+      systemSettings: 'Platform Settings',
+      totalUsers: 'Total Registered Users',
+      activeUsers: 'Active Sessions',
+      totalCourses: 'Published Courses',
+      totalToolRuns: 'Total File Executions',
+      systemHealth: 'System Health & Node Status',
+      addCourse: 'Create New Course',
+      editCourse: 'Edit Course',
+      deleteCourse: 'Delete Course',
+      publishCourse: 'Publish',
+      draftCourse: 'Save Draft',
+      enableTool: 'Enable Tool',
+      disableTool: 'Disable Tool',
+      searchUsers: 'Search users by name, email, or role...',
+      roleAdmin: 'Administrator',
+      roleUser: 'Standard User',
+      makeAdmin: 'Promote to Admin',
+      removeAdmin: 'Demote to User',
+      maintenanceMode: 'Platform Maintenance Mode',
+      allowRegistration: 'Allow New User Signups',
     },
     footer: {
-      desc: 'NEXORA TOOLS is the premier all-in-one digital utility super app for PDFs, images, developers, OCR, calculators, and security.',
-      quickLinks: 'Quick Links',
+      desc: 'NEXORA PRO is the premier digital ecosystem combining free high-performance client-side utility tools with comprehensive developer & digital skill courses.',
+      quickLinks: 'Navigation',
+      aboutPlatform: 'About Platform',
+      courses: 'Explore Courses',
+      tools: 'All 75+ Tools',
+      features: 'Key Features',
+      helpSupport: 'Help & Support',
+      contactUs: 'Contact Us',
       privacyPolicy: 'Privacy Policy',
       terms: 'Terms of Service',
-      security: 'Security Architecture',
+      refundPolicy: 'Refund Policy',
+      disclaimer: 'Legal Disclaimer',
+      faq: 'Frequently Asked Questions',
+      userGuidelines: 'User Guidelines',
       rights: 'All rights reserved.',
+      poweredBy: '100% Client-Side Private Processing Engine.',
+      clientSideSecurity: 'No files are ever uploaded or stored on external servers.',
+    },
+    common: {
+      save: 'Save',
+      cancel: 'Cancel',
+      delete: 'Delete',
+      edit: 'Edit',
+      remove: 'Remove',
+      open: 'Open',
+      close: 'Close',
+      back: 'Back',
+      next: 'Next',
+      finish: 'Finish',
+      confirm: 'Confirm',
+      loading: 'Loading...',
+      success: 'Success',
+      error: 'Error',
+      all: 'All',
+      free: 'Free',
+      pro: 'Pro',
+      enterprise: 'Enterprise',
+      filter: 'Filter',
+      search: 'Search',
+      viewAll: 'View All',
+      noData: 'No data available',
+      fileSize: 'File Size',
+      date: 'Date',
+      status: 'Status',
+      action: 'Action',
     },
   },
-  ar: {
-    appName: 'نكسورا تولز',
-    tagline: 'أدوات قوية لجميع الملفات والمستندات والمهام الرقمية.',
-    heroTitle: 'أدوات قوية لجميع الملفات والمستندات والمهام الرقمية',
-    heroSubtitle: 'تحويل، ضغط، تعديل، حساب، برمجة وإدارة ملفاتك من مساحة عمل رقمية سريعة وآمنة وخاصة تمامًا.',
-    searchPlaceholder: 'ماذا تريد أن تفعل؟ (مثل تحويل PDF إلى JPG، ضغط PDF، محول الوحدات)...',
-    popularTools: 'الأدوات الأكثر استخداماً',
-    allTools: 'جميع الأدوات (60+)',
-    exploreCategories: 'تصفح حسب الفئة',
-    privacyNotice: 'معالجة محلية 100%: ملفاتك لا تغادر متصفحك أو جهازك أبدًا.',
-    clientSideBadge: 'معالجة محلية آمنة',
-    serverSideBadge: 'معالجة عبر الخادم',
-    dropzoneTitle: 'اسحب وأفلت الملفات هنا',
-    dropzoneSubtitle: 'أو انقر لتصفح واختيار الملفات من جهازك',
-    chooseFiles: 'اختر الملفات',
-    processing: 'جارٍ معالجة الملفات...',
-    download: 'تحميل النتيجة',
-    downloadAllZip: 'تحميل الكل (ZIP)',
-    startAgain: 'معالجة ملف آخر',
-    savedPercentage: 'تم توفير',
-    originalSize: 'الحجم الأصلي',
-    compressedSize: 'الحجم الجديد',
-    nav: {
-      home: 'الرئيسية',
-      dashboard: 'لوحة العمل',
-      pdfTools: 'أدوات PDF',
-      imageTools: 'أدوات الصور',
-      documents: 'المستندات',
-      textTools: 'أدوات النصوص',
-      compress: 'ضغط الملفات',
-      ocr: 'التعرف الضوئي OCR',
-      calculators: 'الحاسبات والوحدات',
-      devTools: 'أدوات المطورين',
-      security: 'الأمان والتشفير',
-      qrBarcode: 'الباركود و QR',
-      aiTools: 'مساعد الذكاء الاصطناعي',
-      pdfEditor: 'محرر PDF',
-      myFiles: 'ملفاتي',
-      history: 'السجل',
-      admin: 'لوحة الإدارة',
-    },
-    footer: {
-      desc: 'نكسورا تولز هي المنصة الشاملة الرائدة لجميع أدوات ملفات PDF والصور وأدوات المطورين والأمان.',
-      quickLinks: 'روابط سريعة',
-      privacyPolicy: 'سياسة الخصوصية',
-      terms: 'شروط الخدمة',
-      security: 'الأمان والتشفير',
-      rights: 'جميع الحقوق محفوظة.',
-    },
-  },
+
+  // ==================== URDU (اردو) ====================
   ur: {
-    appName: 'نیکسورا ٹولز',
-    tagline: 'ہر فائل، دستاویز اور ڈیجیٹل کام کے لیے طاقتور ٹولز۔',
-    heroTitle: 'ہر فائل، دستاویز اور ڈیجیٹل کام کے لیے طاقتور ٹولز',
-    heroSubtitle: 'فائلوں کو تبدیل، کمپریس، ایڈیٹ، حساب، کوڈ اور منظم کریں، مکمل رازداری اور تیز رفتار کے ساتھ۔',
-    searchPlaceholder: 'آپ کیا کرنا چاہتے ہیں؟ (مثلاً پی ڈی ایف ضم کریں، ایم بی سے کے بی)...',
-    popularTools: 'مقبول ٹولز',
-    allTools: 'تمام ٹولز (60+)',
+    appName: 'نیکسورا پرو',
+    tagline: 'ہر قسم کی فائل، دستاویز اور ڈیجیٹل اسکل کے لیے طاقتور ٹولز اور لرننگ پلیٹ فارم۔',
+    heroTitle: 'ڈیجیٹل مہارتیں سیکھیں اور فائلوں کو محفوظ طریقے سے تبدیل کریں',
+    heroSubtitle: 'جدید ویب ڈیولپمنٹ، اے آئی اور دستاویزات کی مہارت حاصل کریں اور 75 سے زائد تیز رفتار پرائیویٹ ٹولز بغیر کسی سرور اپلوڈ کے استعمال کریں۔',
+    searchPlaceholder: '75+ ٹولز، کورسز یا ایکشنز تلاش کریں (مثلاً پی ڈی ایف سے ورڈ، امیج کمپریس)...',
+    popularTools: 'مقبول اور اہم ٹولز',
+    allTools: 'تمام 75+ ڈیجیٹل ٹولز',
     exploreCategories: 'کیٹیگری کے لحاظ سے تلاش کریں',
-    privacyNotice: '100% محفوظ اور نجی: آپ کی فائلیں براؤزر میں ہی پروسیس ہوتی ہیں۔',
-    clientSideBadge: 'مقامی پروسیسنگ (محفوظ)',
-    serverSideBadge: 'سرور پروسیسنگ',
-    dropzoneTitle: 'اپنی فائلیں یہاں ڈریگ اور ڈراپ کریں',
-    dropzoneSubtitle: 'یا کمپیوٹر اور موبائل سے منتخب کرنے کے لیے کلک کریں',
+    privacyNotice: 'زیرو سرور اپلوڈ • 100% نجی کلائنٹ سائیڈ پروسیسنگ۔',
+    clientSideBadge: 'مقامی طور پر پروسیس شدہ (100% محفوظ)',
+    serverSideBadge: 'کلاؤڈ انجن',
+    dropzoneTitle: 'اپنی فائلیں یہاں ڈریگ اینڈ ڈراپ کریں',
+    dropzoneSubtitle: 'یا اپنے ڈیوائس سے فائل منتخب کرنے کے لیے کلک کریں',
     chooseFiles: 'فائلیں منتخب کریں',
     processing: 'فائلیں پروسیس ہو رہی ہیں...',
-    download: 'نتیجہ ڈاؤن لوڈ کریں',
-    downloadAllZip: 'تمام فائلیں ڈاؤن لوڈ کریں (ZIP)',
+    download: 'نتیجہ ڈاؤنلوڈ کریں',
+    downloadAllZip: 'تمام فائلیں زپ (ZIP) میں ڈاؤنلوڈ کریں',
     startAgain: 'دوسری فائل پروسیس کریں',
     savedPercentage: 'سائز کی بچت',
-    originalSize: 'اصلی سائز',
+    originalSize: 'اصل سائز',
     compressedSize: 'نیا سائز',
     nav: {
       home: 'ہوم',
+      courses: 'کورسز',
       dashboard: 'ڈیش بورڈ',
       pdfTools: 'پی ڈی ایف ٹولز',
-      imageTools: 'تصویری ٹولز',
+      imageTools: 'امیج ٹولز',
       documents: 'دستاویزات',
       textTools: 'ٹیکسٹ ٹولز',
       compress: 'کمپریس',
       ocr: 'او سی آر اسٹوڈیو',
-      calculators: 'کیلکولیٹر',
-      devTools: 'ڈویلپر ٹولز',
-      security: 'سیکیورٹی و ہیش',
-      qrBarcode: 'کیو آر اور بارکوڈ',
-      aiTools: 'اے آئی ورک اسپیس',
+      calculators: 'کیلکولیٹرز',
+      devTools: 'ڈیولپر ٹولز',
+      security: 'سیکیورٹی',
+      qrBarcode: 'کیو آر و بارکوڈ',
+      aiTools: 'اے آئی اسٹوڈیو',
       pdfEditor: 'پی ڈی ایف ایڈیٹر',
-      myFiles: 'میری فائلیں',
+      workflows: 'ورک فلوز',
+      allTools: 'تمام ٹولز',
+      myTools: 'میرے ٹولز',
+      favorites: 'پسندیدہ',
       history: 'ہسٹری',
-      admin: 'ایڈمن',
+      downloads: 'ڈاؤنلوڈز',
+      notifications: 'نوٹیفیکیشنز',
+      settings: 'سیٹنگز',
+      admin: 'ایڈمن کنٹرول سینٹر',
+      login: 'لاگ ان',
+      signup: 'سائن اپ',
+      logout: 'لاگ آؤٹ',
+      myProfile: 'میرا پروفائل',
+    },
+    courses: {
+      title: 'ماسٹر کورسز دریافت کریں',
+      subtitle: 'مفت اور کھلے لرننگ کورسز۔ نصاب کا جائزہ لیں، اسباق کا پریویو دیکھیں یا پیش رفت اور سرٹیفکیٹ کے لیے اندراج کریں۔',
+      browse: 'کورسز براؤز کریں',
+      myCourses: 'میرے رجسٹرڈ کورسز',
+      allCategories: 'تمام کیٹیگریز',
+      freePreview: 'مفت پریویو',
+      enrollFree: 'مفت انرول کریں',
+      enrolled: 'اندراج شدہ',
+      continueLearning: 'سیکھنا جاری رکھیں',
+      resume: 'سبق جاری رکھیں',
+      progress: 'کورس کی پیش رفت',
+      completed: 'مکمل شدہ',
+      lessons: 'کل اسباق',
+      duration: 'دورانیہ',
+      instructor: 'استاد / انسٹرکٹر',
+      curriculum: 'مکمل نصاب و اسباق',
+      overview: 'کورس کا خلاصہ',
+      certificate: 'تکمیل کا سرٹیفکیٹ',
+      certificateDesc: 'تمام ماڈیولز اور پروجیکٹس مکمل کرنے پر تصدیق شدہ ڈیجیٹل سرٹیفکیٹ حاصل کریں۔',
+      noEnrollmentRequired: 'کورس کا مواد پڑھنے اور پریویو دیکھنے کے لیے اندراج لازمی نہیں ہے۔',
+      enrollmentBenefitsTitle: 'کورس میں اندراج کے فوائد:',
+      benefit1: 'اپنی پیش رفت محفوظ کریں اور جہاں سے چھوڑا تھا وہیں سے شروع کریں',
+      benefit2: 'مکمل شدہ اسباق اور کامیابیوں کا مکمل ٹریک ریکارڈ رکھیں',
+      benefit3: 'انٹرایکٹو پروجیکٹ فائلز اور ٹول ٹیمپلیٹس تک رسائی حاصل کریں',
+      benefit4: 'براہ راست اپ ڈیٹس، بیجز اور سرٹیفکیٹ حاصل کریں',
+      filterByLevel: 'لیول کے لحاظ سے فلٹر کریں',
+      allLevels: 'تمام لیولز',
+      beginner: 'ابتدائی (Beginner)',
+      intermediate: 'درمیانہ (Intermediate)',
+      advanced: 'ایڈوانسڈ (Advanced)',
+      searchCourses: 'عنوان، موضوع یا ٹیکنالوجی سے کورس تلاش کریں...',
+      noCoursesFound: 'کوئی کورس آپ کے سرچ معیار پر پورا نہیں اترا۔',
+      viewDetails: 'نصاب دیکھیں',
+      startCourse: 'ابھی سیکھنا شروع کریں',
+      lessonLocked: 'پیش رفت محفوظ کرنے کے لیے اندراج کریں',
+      lessonPreview: 'مفت پریویو دستیاب ہے',
+    },
+    auth: {
+      signIn: 'سائن ان',
+      signUp: 'سائن اپ',
+      emailAddress: 'ای میل ایڈریس',
+      password: 'پاس ورڈ',
+      fullName: 'پورا نام',
+      forgotPassword: 'پاس ورڈ بھول گئے؟',
+      resetPassword: 'پاس ورڈ ری سیٹ کریں',
+      sendResetLink: 'ری سیٹ لنک بھیجیں',
+      resetLinkSent: 'پاس ورڈ ری سیٹ لنک آپ کے ای میل پر بھیج دیا گیا ہے۔',
+      rememberMe: 'اس ڈیوائس پر مجھے یاد رکھیں',
+      showPassword: 'پاس ورڈ دکھائیں',
+      hidePassword: 'پاس ورڈ چھپائیں',
+      continueWithGoogle: 'گوگل کے ساتھ لاگ ان کریں',
+      orEmail: 'یا ای میل کے ذریعے جاری رکھیں',
+      dontHaveAccount: 'اکاؤنٹ نہیں ہے؟',
+      alreadyHaveAccount: 'پہلے سے اکاؤنٹ موجود ہے؟',
+      createAccount: 'مفت اکاؤنٹ بنائیں',
+      emailVerification: 'ای میل تصدیق',
+      emailVerified: 'تصدیق شدہ اکاؤنٹ',
+      emailNotVerified: 'ای میل ابھی تصدیق شدہ نہیں ہے',
+      resendVerification: 'دوبارہ تصدیقی ای میل بھیجیں',
+      verificationSent: 'تصدیقی ای میل بھیج دی گئی ہے! اپنا ان باکس چیک کریں۔',
+      invalidCredentials: 'ای میل یا پاس ورڈ درست نہیں ہے۔ دوبارہ چیک کریں۔',
+      accountCreatedSuccess: 'اکاؤنٹ کامیابی سے بن گیا! نیکسورا پرو میں خوش آمدید۔',
+      loginSuccess: 'کامیابی سے لاگ ان ہو گئے!',
+      logoutSuccess: 'محفوظ طریقے سے لاگ آؤٹ ہو گئے۔',
+      passwordMinLength: 'پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا چاہیے۔',
+    },
+    userDashboard: {
+      welcomeBack: 'خوش آمدید',
+      overview: 'اکاؤنٹ کا خلاصہ',
+      myToolsTitle: 'میرے ٹولز و شارٹ کٹس',
+      myToolsSubtitle: 'اپنے کثرت سے استعمال ہونے والے اور پن کیے گئے ٹولز تک فوری رسائی۔',
+      favoritesTitle: 'پسندیدہ بک مارکس',
+      favoritesSubtitle: 'آپ کے محفوظ کردہ ٹولز اور پسندیدہ کورسز کی لسٹ۔',
+      historyTitle: 'سرگرمی اور ہسٹری',
+      historySubtitle: 'حالیہ پروسیس شدہ فائلیں، کھلے گئے ٹولز اور پڑھے گئے اسباق۔',
+      downloadsTitle: 'ڈاؤنلوڈز اور فائلز',
+      downloadsSubtitle: 'اپنی تیار کردہ پی ڈی ایف، تصاویر اور کنورٹ شدہ فائلیں دوبارہ حاصل کریں۔',
+      notificationsTitle: 'نوٹیفیکیشن سینٹر',
+      notificationsSubtitle: 'نئے کورسز، ٹول اپ ڈیٹس اور پلیٹ فارم اعلانات سے باخبر رہیں۔',
+      settingsTitle: 'ترجیحات و سیٹنگز',
+      settingsSubtitle: 'تھیم، زبان، نوٹیفیکیشنز اور سیکیورٹی کو اپنی مرضی کے مطابق بنائیں۔',
+      profileTitle: 'پروفائل کی معلومات',
+      bioPlaceholder: 'اپنے بارے میں یا اپنی مہارتوں کے بارے میں مختصر لکھیں...',
+      saveProfile: 'تبدیلیاں محفوظ کریں',
+      profileUpdated: 'پروفائل کامیابی سے اپ ڈیٹ ہو گیا!',
+      joinedOn: 'رکنیت کی تاریخ',
+      accountStatus: 'اکاؤنٹ اسٹیٹس',
+      verified: 'تصدیق شدہ',
+      unverified: 'غیر تصدیق شدہ',
+      clearHistory: 'تمام ہسٹری صاف کریں',
+      clearAll: 'تمام صاف کریں',
+      noHistory: 'ابھی کوئی سرگرمی ریکارڈ نہیں ہوئی۔ ٹولز اور کورسز ایکسپلور کریں!',
+      noFavorites: 'کوئی پسندیدہ آئٹم محفوظ نہیں ہے۔ کسی بھی ٹول یا کورس پر ستارے کا نشان دبائیں۔',
+      noDownloads: 'کوئی فائل ڈاؤنلوڈ نہیں ہوئی۔ کسی ٹول پر کام کر کے فائل حاصل کریں۔',
+      noNotifications: 'آپ کے پاس کوئی نیا نوٹیفیکیشن نہیں ہے۔',
+      markAllAsRead: 'سب پڑھے ہوئے نشان زد کریں',
+      downloadAgain: 'دوبارہ ڈاؤنلوڈ کریں',
+      deleteItem: 'حذف کریں',
+      changePassword: 'اکاؤنٹ پاس ورڈ تبدیل کریں',
+      currentPassword: 'موجودہ پاس ورڈ',
+      newPassword: 'نیا پاس ورڈ',
+      confirmNewPassword: 'نئے پاس ورڈ کی تصدیق کریں',
+      updatePasswordBtn: 'پاس ورڈ تبدیل کریں',
+    },
+    settings: {
+      accountTab: 'اکاؤنٹ',
+      appearanceTab: 'ظاہری شکل (تھیم)',
+      languageTab: 'زبان',
+      notificationsTab: 'نوٹیفیکیشنز',
+      privacyTab: 'پرائیویسی',
+      securityTab: 'سیکیورٹی',
+      themeMode: 'تھیم کا انتخاب',
+      lightTheme: 'لائٹ موڈ',
+      darkTheme: 'ڈارک موڈ',
+      systemTheme: 'سسٹم ڈیفالٹ',
+      selectLanguage: 'ایپ کی زبان منتخب کریں',
+      emailNotifications: 'ای میل نوٹیفیکیشنز',
+      courseUpdates: 'کورسز اور نصاب کی اپ ڈیٹس',
+      toolAlerts: 'نئے ٹولز اور اپ گریڈز کے الرٹس',
+      securityAlerts: 'اکاؤنٹ اور سیکیورٹی الرٹس',
+      marketingAnnouncements: 'پروڈکٹ نیوز اور اہم ٹپس',
+      dataStorage: 'لوکل ڈیٹا اور کیشے',
+      localStorageNotice: 'نیکسورا آپ کی ترجیحات اور ہسٹری کو آپ کے اپنے ڈیوائس پر محفوظ رکھتا ہے۔',
+      clearCache: 'لوکل کیشے صاف کریں',
+      cacheCleared: 'لوکل کیشے کامیابی سے صاف ہو گیا۔',
+    },
+    admin: {
+      controlCenter: 'نیکسورا ایڈمن کنٹرول سینٹر',
+      analytics: 'اینالیٹکس و ٹیلی میٹری',
+      userManagement: 'یوزر مینجمنٹ',
+      courseManagement: 'کورس مینجمنٹ',
+      toolsManagement: 'ٹولز کنٹرول',
+      contentManager: 'مواد و تراجم',
+      systemSettings: 'پلیٹ فارم سیٹنگز',
+      totalUsers: 'کل رجسٹرڈ یوزرز',
+      activeUsers: 'فعال سیشنز',
+      totalCourses: 'شائع شدہ کورسز',
+      totalToolRuns: 'کل ٹول ایگزیکیوشنز',
+      systemHealth: 'سسٹم ہیلتھ و سرور اسٹیٹس',
+      addCourse: 'نیا کورس بنائیں',
+      editCourse: 'کورس میں ترمیم کریں',
+      deleteCourse: 'کورس ڈیلیٹ کریں',
+      publishCourse: 'شائع کریں',
+      draftCourse: 'ڈرافٹ رکھیں',
+      enableTool: 'ٹول آن کریں',
+      disableTool: 'ٹول بند کریں',
+      searchUsers: 'نام، ای میل یا رول سے تلاش کریں...',
+      roleAdmin: 'ایڈمنسٹریٹر',
+      roleUser: 'عام یوزر',
+      makeAdmin: 'ایڈمن بنائیں',
+      removeAdmin: 'عام یوزر بنائیں',
+      maintenanceMode: 'پلیٹ فارم مینٹیننس موڈ',
+      allowRegistration: 'نئے سائن اپ کی اجازت دیں',
     },
     footer: {
-      desc: 'نیکسورا ٹولز پی ڈی ایف، تصاویر، دستاویزات اور فائلوں کے انتظام کے لیے معروف سپر ایپ ہے۔',
-      quickLinks: 'فوری لنکس',
+      desc: 'نیکسورا پرو ایک جامع ڈیجیٹل ایکو سسٹم ہے جو بغیر سرور اپلوڈ کے مفت کلائنٹ سائیڈ ٹولز اور پیشہ ورانہ ڈیجیٹل اسکل کورسز فراہم کرتا ہے۔',
+      quickLinks: 'فوری روابط',
+      aboutPlatform: 'پلیٹ فارم کا تعارف',
+      courses: 'تمام کورسز',
+      tools: 'تمام 75+ ٹولز',
+      features: 'اہم خصوصیات',
+      helpSupport: 'مدد و سپورٹ',
+      contactUs: 'ہم سے رابطہ کریں',
       privacyPolicy: 'پرائیویسی پالیسی',
       terms: 'شرائط و ضوابط',
-      security: 'سیکیورٹی',
+      refundPolicy: 'ریفنڈ پالیسی',
+      disclaimer: 'قانونی ڈسکلیمر',
+      faq: 'عمومی سوالات (FAQ)',
+      userGuidelines: 'صارفین کی رہنمائی',
       rights: 'جملہ حقوق محفوظ ہیں۔',
+      poweredBy: '100% پرائیویٹ کلائنٹ سائیڈ پروسیسنگ انجن۔',
+      clientSideSecurity: 'آپ کی فائلیں کبھی بھی کسی بیرونی سرور پر اپلوڈ یا محفوظ نہیں ہوتیں۔',
+    },
+    common: {
+      save: 'محفوظ کریں',
+      cancel: 'منسوخ کریں',
+      delete: 'ڈیلیٹ کریں',
+      edit: 'ترمیم کریں',
+      remove: 'ہٹائیں',
+      open: 'کھولیں',
+      close: 'بند کریں',
+      back: 'پیچھے',
+      next: 'اگلا',
+      finish: 'مکمل',
+      confirm: 'تصدیق کریں',
+      loading: 'لوڈ ہو رہا ہے...',
+      success: 'کامیابی',
+      error: 'خرابی',
+      all: 'تمام',
+      free: 'مفت',
+      pro: 'پرو',
+      enterprise: 'انٹرپرائز',
+      filter: 'فلٹر',
+      search: 'تلاش کریں',
+      viewAll: 'تمام دیکھیں',
+      noData: 'کوئی ڈیٹا دستیاب نہیں ہے',
+      fileSize: 'فائل سائز',
+      date: 'تاریخ',
+      status: 'حیثیت',
+      action: 'عمل',
     },
   },
-  hi: {
-    appName: 'नेक्सोरा टूल्स',
-    tagline: 'हर फाइल, दस्तावेज़ और डिजिटल कार्य के लिए शक्तिशाली टूल्स।',
-    heroTitle: 'हर फाइल, दस्तावेज़ और डिजिटल काम के लिए शक्तिशाली टूल्स',
-    heroSubtitle: 'फाइलों को तुरंत कन्वर्ट, कंप्रेस, एडिट, कैलकुलेट, कोड और मैनेज करें पूरी प्राइवेसी और स्पीड के साथ।',
-    searchPlaceholder: 'आप क्या करना चाहते हैं? (जैसे पीडीएफ मर्ज करें, जेपीजी से पीएनजी, जेसन फॉर्मेटर)...',
-    popularTools: 'लोकप्रिय टूल्स',
-    allTools: 'सभी टूल्स (60+)',
-    exploreCategories: 'कैटेगरी के अनुसार देखें',
-    privacyNotice: '100% सुरक्षित और प्राइवेट: आपकी फाइलें आपके ब्राउज़र में ही प्रोसेस होती हैं।',
-    clientSideBadge: 'लोकल प्रोसेसिंग (प्राइवेट)',
-    serverSideBadge: 'सर्वर प्रोसेसिंग',
-    dropzoneTitle: 'अपनी फाइलें यहाँ ड्रैग और ड्रॉप करें',
-    dropzoneSubtitle: 'या अपने डिवाइस से फाइलें चुनने के लिए क्लिक करें',
-    chooseFiles: 'फाइलें चुनें',
-    processing: 'फाइलें प्रोसेस हो रही हैं...',
-    download: 'रिजल्ट डाउनलोड करें',
-    downloadAllZip: 'सभी डाउनलोड करें (ZIP)',
-    startAgain: 'दूसरी फाइल कन्वर्ट करें',
-    savedPercentage: 'बचत',
-    originalSize: 'मूल साइज',
-    compressedSize: 'नया साइज',
+
+  // ==================== ARABIC (العربية) ====================
+  ar: {
+    appName: 'نيكسورا برو',
+    tagline: 'منصة الأدوات القوية والتعليم الرقمي لكل ملف ومهمة إلكترونية.',
+    heroTitle: 'تعلم المهارات الرقمية وحوّل مستنداتك بأمان فائق',
+    heroSubtitle: 'اكتسب مهارات تطوير الويب والذكاء الاصطناعي واستخدم أكثر من 75 أداة لمعالجة الملفات محلياً بدون رفعها إلى أي خوادم خارجية.',
+    searchPlaceholder: 'ابحث في أكثر من 75 أداة ودورة تدريبية (مثل: تحويل PDF إلى Word، ضغط الصور)...',
+    popularTools: 'الأدوات الشائعة والأساسية',
+    allTools: 'جميع الأدوات الـ 75+',
+    exploreCategories: 'استكشف حسب الفئة',
+    privacyNotice: 'صفر رفع إلى الخوادم • معالجة محلية خاصة بنسبة 100%.',
+    clientSideBadge: 'تتم المعالجة محلياً (خاص بنسبة 100%)',
+    serverSideBadge: 'محرك سحابي',
+    dropzoneTitle: 'اسحب وأفلت ملفاتك هنا',
+    dropzoneSubtitle: 'أو انقر لاختيار الملفات من جهازك',
+    chooseFiles: 'اختر الملفات',
+    processing: 'جارٍ معالجة الملفات...',
+    download: 'تحميل النتيجة',
+    downloadAllZip: 'تحميل الكل (ملف ZIP)',
+    startAgain: 'معالجة ملف آخر',
+    savedPercentage: 'تم توفيره',
+    originalSize: 'الحجم الأصلي',
+    compressedSize: 'الحجم الجديد',
     nav: {
-      home: 'होम',
-      dashboard: 'डैशबोर्ड',
-      pdfTools: 'पीडीएफ टूल्स',
-      imageTools: 'इमेज टूल्स',
-      documents: 'डॉक्यूमेंट्स',
-      textTools: 'टेक्स्ट टूल्स',
-      compress: 'कंप्रेस',
-      ocr: 'ओसीआर स्टूडियो',
-      calculators: 'कैलकुलेटर व यूनिट्स',
-      devTools: 'डेवलपर टूल्स',
-      security: 'सुरक्षा व हैश',
-      qrBarcode: 'क्यूआर और बारकोड',
-      aiTools: 'एआई वर्कस्पेस',
-      pdfEditor: 'पीडीएफ एडिटर',
-      myFiles: 'मेरी फाइलें',
-      history: 'हिस्ट्री',
-      admin: 'एडमिन',
+      home: 'الرئيسية',
+      courses: 'الدورات التدريبية',
+      dashboard: 'لوحة التحكم',
+      pdfTools: 'أدوات PDF',
+      imageTools: 'أدوات الصور',
+      documents: 'المستندات',
+      textTools: 'أدوات النصوص',
+      compress: 'الضغط والتحسين',
+      ocr: 'استخراج النصوص OCR',
+      calculators: 'الحاسبات والمحولات',
+      devTools: 'أدوات المطورين',
+      security: 'الأمان والخصوصية',
+      qrBarcode: 'الباركود وQR',
+      aiTools: 'أدوات الذكاء الاصطناعي',
+      pdfEditor: 'محرر PDF',
+      workflows: 'سير العمل',
+      allTools: 'جميع الأدوات',
+      myTools: 'أدواتي المفضلة',
+      favorites: 'المفضلة',
+      history: 'السجل',
+      downloads: 'التنزيلات',
+      notifications: 'الإشعارات',
+      settings: 'الإعدادات',
+      admin: 'لوحة الإدارة',
+      login: 'تسجيل الدخول',
+      signup: 'إنشاء حساب',
+      logout: 'تسجيل الخروج',
+      myProfile: 'ملفي الشخصي',
+    },
+    courses: {
+      title: 'استكشف المسارات التعليمية الاحترافية',
+      subtitle: 'مسارات تعليمية مجانية ومفتوحة. تصفح المناهج الدراسية وعاين الدروس مجاناً أو سجل لمتابعة تقدمك ونيل الشهادات.',
+      browse: 'تصفح الدورات',
+      myCourses: 'دوراتي المسجلة',
+      allCategories: 'جميع الفئات',
+      freePreview: 'معاينة مجانية',
+      enrollFree: 'التسجيل مجاناً',
+      enrolled: 'تم التسجيل',
+      continueLearning: 'متابعة التعلم',
+      resume: 'استئناف الدرس',
+      progress: 'نسبة الإنجاز',
+      completed: 'مكتمل',
+      lessons: 'الدروس',
+      duration: 'المدة الإجمالية',
+      instructor: 'المحاضر',
+      curriculum: 'المنهج والدروس',
+      overview: 'نظرة عامة على الدورة',
+      certificate: 'شهادة إتمام معتمدة',
+      certificateDesc: 'احصل على شهادة رقمية موثقة فور إكمال جميع وحدات ومشاريع الدورة.',
+      noEnrollmentRequired: 'لا يلزم التسجيل المسبق لتصفح الدروس ومشاهدة المعاينات.',
+      enrollmentBenefitsTitle: 'لماذا تسجل في الدورة؟',
+      benefit1: 'حفظ التقدم ومتابعة الدروس من حيث توقفت',
+      benefit2: 'تتبع الدروس المكتملة والإنجازات الشخصية',
+      benefit3: 'الوصول إلى ملفات المشاريع التفاعلية ونماذج الأدوات',
+      benefit4: 'استلام التحديثات الحصرية والإشعارات وشارات التميز',
+      filterByLevel: 'تصفية حسب المستوى',
+      allLevels: 'جميع المستويات',
+      beginner: 'مبتدئ',
+      intermediate: 'متوسط',
+      advanced: 'متقدم',
+      searchCourses: 'ابحث عن الدورات بالعنوان أو الموضوع أو التقنية...',
+      noCoursesFound: 'لم يتم العثور على دورات تطابق معايير البحث.',
+      viewDetails: 'عرض المنهج',
+      startCourse: 'ابدأ التعلم الآن',
+      lessonLocked: 'سجل لحفظ تقدمك',
+      lessonPreview: 'معاينة مجانية متاحة',
+    },
+    auth: {
+      signIn: 'تسجيل الدخول',
+      signUp: 'إنشاء حساب جديد',
+      emailAddress: 'البريد الإلكتروني',
+      password: 'كلمة المرور',
+      fullName: 'الاسم الكامل',
+      forgotPassword: 'هل نسيت كلمة المرور؟',
+      resetPassword: 'إعادة تعيين كلمة المرور',
+      sendResetLink: 'إرسال رابط التعيين',
+      resetLinkSent: 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.',
+      rememberMe: 'تذكرني على هذا الجهاز',
+      showPassword: 'إظهار كلمة المرور',
+      hidePassword: 'إخفاء كلمة المرور',
+      continueWithGoogle: 'المتابعة باستخدام Google',
+      orEmail: 'أو المتابعة عبر البريد الإلكتروني',
+      dontHaveAccount: 'ليس لديك حساب؟',
+      alreadyHaveAccount: 'هل لديك حساب بالفعل؟',
+      createAccount: 'إنشاء حساب مجاني',
+      emailVerification: 'تأكيد البريد الإلكتروني',
+      emailVerified: 'حساب موثق ومؤكد',
+      emailNotVerified: 'البريد الإلكتروني غير مؤكد بعد',
+      resendVerification: 'إعادة إرسال رسالة التأكيد',
+      verificationSent: 'تم إرسال رابط التأكيد! يرجى مراجعة صندوق الوارد.',
+      invalidCredentials: 'بيانات الاعتماد غير صحيحة. يرجى التحقق وإعادة المحاولة.',
+      accountCreatedSuccess: 'تم إنشاء الحساب بنجاح! مرحباً بك في نيكسورا برو.',
+      loginSuccess: 'تم تسجيل الدخول بنجاح!',
+      logoutSuccess: 'تم تسجيل الخروج بأمان.',
+      passwordMinLength: 'يجب ألا تقل كلمة المرور عن 6 أحرف.',
+    },
+    userDashboard: {
+      welcomeBack: 'مرحباً بعودتك',
+      overview: 'نظرة عامة على الحساب',
+      myToolsTitle: 'أدواتي واختصاراتي',
+      myToolsSubtitle: 'الوصول السريع إلى الأدوات الرقمية التي تستخدمها بكثرة.',
+      favoritesTitle: 'المفضلة والعلامات المرجعية',
+      favoritesSubtitle: 'أدواتك ودوراتك المفضلة المحفوظة في مكان واحد.',
+      historyTitle: 'سجل النشاطات والعمليات',
+      historySubtitle: 'الملفات المعالجة والأدوات والدروس التي تم فتحها مؤخراً.',
+      downloadsTitle: 'التنزيلات والملفات المنشأة',
+      downloadsSubtitle: 'إعادة تنزيل وإدارة ملفات PDF والصور الناتجة محلياً.',
+      notificationsTitle: 'مركز الإشعارات',
+      notificationsSubtitle: 'متابعة أحدث التحديثات وإصدارات الأدوات والدورات.',
+      settingsTitle: 'التفضيلات والإعدادات',
+      settingsSubtitle: 'تخصيص المظهر واللغة والإشعارات وخيارات الأمان.',
+      profileTitle: 'المعلومات الشخصية',
+      bioPlaceholder: 'اكتب نبذة مختصرة عنك أو عن مهاراتك...',
+      saveProfile: 'حفظ التعديلات',
+      profileUpdated: 'تم تحديث الملف الشخصي بنجاح!',
+      joinedOn: 'تاريخ الانضمام',
+      accountStatus: 'حالة الحساب',
+      verified: 'مؤكد',
+      unverified: 'غير مؤكد',
+      clearHistory: 'مسح السجل بالكامل',
+      clearAll: 'مسح الكل',
+      noHistory: 'لا توجد نشاطات مسجلة بعد. ابدأ باستكشاف الأدوات والدورات!',
+      noFavorites: 'لم تتم إضافة أي عناصر إلى المفضلة بعد. انقر على أيقونة النجمة للحفظ.',
+      noDownloads: 'لا توجد ملفات منشأة بعد. قم بمعالجة أي ملف لتظهر تنزيلاتك هنا.',
+      noNotifications: 'ليس لديك أي إشعارات جديدة حالياً.',
+      markAllAsRead: 'تحديد الكل كمقروء',
+      downloadAgain: 'إعادة التنزيل',
+      deleteItem: 'حذف العنصر',
+      changePassword: 'تغيير كلمة المرور',
+      currentPassword: 'كلمة المرور الحالية',
+      newPassword: 'كلمة المرور الجديدة',
+      confirmNewPassword: 'تأكيد كلمة المرور الجديدة',
+      updatePasswordBtn: 'تحديث كلمة المرور',
+    },
+    settings: {
+      accountTab: 'الحساب',
+      appearanceTab: 'المظهر والتصميم',
+      languageTab: 'اللغة',
+      notificationsTab: 'الإشعارات',
+      privacyTab: 'الخصوصية',
+      securityTab: 'الأمان',
+      themeMode: 'وضع العرض',
+      lightTheme: 'الوضع الفاتح',
+      darkTheme: 'الوضع الداكن',
+      systemTheme: 'تلقائي حسب النظام',
+      selectLanguage: 'اختر لغة التطبيق',
+      emailNotifications: 'إشعارات البريد الإلكتروني',
+      courseUpdates: 'تحديثات الدورات والمناهج',
+      toolAlerts: 'تنبيهات إطلاق الأدوات الجديدة',
+      securityAlerts: 'تنبيهات الأمان والحساب',
+      marketingAnnouncements: 'أخبار المنصة ونصائح الاستخدام',
+      dataStorage: 'البيانات المحلية والذاكرة المؤقتة',
+      localStorageNotice: 'يحفظ نيكسورا تفضيلاتك وسجلك بأمان فائق على جهازك الشخصي فقط.',
+      clearCache: 'مسح الذاكرة المؤقتة المحلية',
+      cacheCleared: 'تم مسح الذاكرة المؤقتة بنجاح.',
+    },
+    admin: {
+      controlCenter: 'مركز إدارة نيكسورا المتقدم',
+      analytics: 'التحليلات والبيانات الحية',
+      userManagement: 'إدارة المستخدمين',
+      courseManagement: 'إدارة الدورات',
+      toolsManagement: 'التحكم في الأدوات',
+      contentManager: 'المحتوى والترجمات',
+      systemSettings: 'إعدادات النظام',
+      totalUsers: 'إجمالي المستخدمين المسجلين',
+      activeUsers: 'الجلسات النشطة',
+      totalCourses: 'الدورات المنشورة',
+      totalToolRuns: 'إجمالي العمليات المنفذة',
+      systemHealth: 'حالة الخوادم والأداء',
+      addCourse: 'إضافة دورة جديدة',
+      editCourse: 'تعديل الدورة',
+      deleteCourse: 'حذف الدورة',
+      publishCourse: 'نشر',
+      draftCourse: 'حفظ كمسودة',
+      enableTool: 'تفعيل الأداة',
+      disableTool: 'تعطيل الأداة',
+      searchUsers: 'البحث بالاسم أو البريد أو الدور...',
+      roleAdmin: 'مدير النظام (Admin)',
+      roleUser: 'مستخدم قياسي',
+      makeAdmin: 'ترقية إلى مدير',
+      removeAdmin: 'تحويل إلى مستخدم عادي',
+      maintenanceMode: 'وضع الصيانة للمنصة',
+      allowRegistration: 'السماح بتسجيل مستخدمين جدد',
     },
     footer: {
-      desc: 'नेक्सोरा टूल्स पीडीएफ, इमेज, टेक्स्ट, डेवलपर और सुरक्षा टूल्स का संपूर्ण ऑल-इन-वन सुपर ऐप है।',
+      desc: 'نيكسورا برو هي المنصة الرقمية الرائدة التي تجمع بين أكثر من 75 أداة فائقة الأداء تعمل محلياً بنسبة 100% مع دورات تدريبية شاملة للمهارات الرقمية.',
+      quickLinks: 'روابط سريعة',
+      aboutPlatform: 'عن المنصة',
+      courses: 'استكشاف الدورات',
+      tools: 'جميع الأدوات (75+)',
+      features: 'الميزات والخصائص',
+      helpSupport: 'المساعدة والدعم الفني',
+      contactUs: 'اتصل بنا',
+      privacyPolicy: 'سياسة الخصوصية',
+      terms: 'شروط الخدمة',
+      refundPolicy: 'سياسة الاسترجاع',
+      disclaimer: 'إخلاء المسؤولية القانوني',
+      faq: 'الأسئلة الشائعة (FAQ)',
+      userGuidelines: 'إرشادات الاستخدام',
+      rights: 'جميع الحقوق محفوظة.',
+      poweredBy: 'محرك معالجة محلي خاص بنسبة 100%.',
+      clientSideSecurity: 'لا يتم تخزين أو رفع أي من ملفاتك إلى خوادم خارجية إطلاقاً.',
+    },
+    common: {
+      save: 'حفظ',
+      cancel: 'إلغاء',
+      delete: 'حذف',
+      edit: 'تعديل',
+      remove: 'إزالة',
+      open: 'فتح',
+      close: 'إغلاق',
+      back: 'رجوع',
+      next: 'التالي',
+      finish: 'إنهاء',
+      confirm: 'تأكيد',
+      loading: 'جارٍ التحميل...',
+      success: 'تمت العملية بنجاح',
+      error: 'حدث خطأ',
+      all: 'الكل',
+      free: 'مجاني',
+      pro: 'برو',
+      enterprise: 'شركات',
+      filter: 'تصفية',
+      search: 'بحث',
+      viewAll: 'عرض الكل',
+      noData: 'لا توجد بيانات متاحة',
+      fileSize: 'حجم الملف',
+      date: 'التاريخ',
+      status: 'الحالة',
+      action: 'الإجراء',
+    },
+  },
+
+  // ==================== HINDI (हिन्दी) ====================
+  hi: {
+    appName: 'नेक्सोरा प्रो',
+    tagline: 'हर फ़ाइल, दस्तावेज़ और डिजिटल कौशल के लिए शक्तिशाली टूल्स और लर्निंग प्लेटफ़ॉर्म।',
+    heroTitle: 'डिजिटल कौशल सीखें और फ़ाइलों को सुरक्षित रूप से रूपांतरित करें',
+    heroSubtitle: 'आधुनिक वेब, एआई और दस्तावेज़ विशेषज्ञता सीखें और बिना किसी सर्वर अपलोड के 75+ तेज़, 100% निजी क्लाइंट-साइड टूल्स का उपयोग करें।',
+    searchPlaceholder: '75+ टूल्स, कोर्सेज़ या एक्शन खोजें (जैसे: PDF to Word, Image Compress, JSON Formatter)...',
+    popularTools: 'लोकप्रिय और आवश्यक टूल्स',
+    allTools: 'सभी 75+ डिजिटल टूल्स',
+    exploreCategories: 'श्रेणी के अनुसार खोजें',
+    privacyNotice: 'शून्य सर्वर अपलोड • 100% सुरक्षित क्लाइंट-साइड प्रोसेसिंग।',
+    clientSideBadge: 'लोकल प्रोसेस (100% निजी)',
+    serverSideBadge: 'क्लाउड इंजन',
+    dropzoneTitle: 'अपनी फ़ाइलें यहाँ ड्रैग और ड्रॉप करें',
+    dropzoneSubtitle: 'या अपने डिवाइस से फ़ाइल चुनने के लिए क्लिक करें',
+    chooseFiles: 'फ़ाइलें चुनें',
+    processing: 'फ़ाइलें प्रोसेस हो रही हैं...',
+    download: 'रिजल्ट डाउनलोड करें',
+    downloadAllZip: 'सभी फ़ाइलें (ZIP) डाउनलोड करें',
+    startAgain: 'अन्य फ़ाइल प्रोसेस करें',
+    savedPercentage: 'आकार की बचत',
+    originalSize: 'मूल आकार',
+    compressedSize: 'नया आकार',
+    nav: {
+      home: 'होम',
+      courses: 'कोर्सेज़',
+      dashboard: 'डैशबोर्ड',
+      pdfTools: 'PDF टूल्स',
+      imageTools: 'इमेज टूल्स',
+      documents: 'दस्तावेज़',
+      textTools: 'टेक्स्ट टूल्स',
+      compress: 'कंप्रेस टूल्स',
+      ocr: 'OCR स्टूडियो',
+      calculators: 'कैलकुलेटर',
+      devTools: 'डेवलपर टूल्स',
+      security: 'सुरक्षा और गोपनीयता',
+      qrBarcode: 'QR व बारकोड',
+      aiTools: 'AI स्टूडियो',
+      pdfEditor: 'PDF एडिटर',
+      workflows: 'वर्कफ़्लो',
+      allTools: 'सभी टूल्स',
+      myTools: 'मेरे टूल्स',
+      favorites: 'पसंदीदा',
+      history: 'इतिहास',
+      downloads: 'डाउनलोड्स',
+      notifications: 'सूचनाएं',
+      settings: 'सेटिंग्स',
+      admin: 'एडमिन कंट्रोल सेंटर',
+      login: 'लॉग इन',
+      signup: 'साइन अप',
+      logout: 'लॉग आउट',
+      myProfile: 'मेरी प्रोफ़ाइल',
+    },
+    courses: {
+      title: 'मास्टर कोर्सेज़ एक्सप्लोर करें',
+      subtitle: 'मुफ़्त और खुले लर्निंग पाथ्स। पाठ्यक्रम देखें, पाठों का पूर्वावलोकन करें या अपनी प्रगति और प्रमाणपत्र के लिए नामांकित हों।',
+      browse: 'कोर्सेज़ ब्राउज़ करें',
+      myCourses: 'मेरे नामांकित कोर्सेज़',
+      allCategories: 'सभी श्रेणियां',
+      freePreview: 'मुफ़्त पूर्वावलोकन',
+      enrollFree: 'मुफ़्त नामांकन करें',
+      enrolled: 'नामांकित',
+      continueLearning: 'सीखना जारी रखें',
+      resume: 'पाठ फिर से शुरू करें',
+      progress: 'कोर्स प्रगति',
+      completed: 'पूर्ण',
+      lessons: 'कुल पाठ',
+      duration: 'कुल अवधि',
+      instructor: 'प्रशिक्षक',
+      curriculum: 'पाठ्यक्रम और अध्याय',
+      overview: 'कोर्स अवलोकन',
+      certificate: 'सत्यापित प्रमाणपत्र',
+      certificateDesc: 'सभी मॉड्यूल और प्रोजेक्ट पूरे करने पर डिजिटल प्रमाणपत्र प्राप्त करें।',
+      noEnrollmentRequired: 'कोर्स कंटेंट और पूर्वावलोकन देखने के लिए नामांकन अनिवार्य नहीं है।',
+      enrollmentBenefitsTitle: 'कोर्स में नामांकन क्यों करें?',
+      benefit1: 'अपनी सीखने की प्रगति सहेजें और जहाँ छोड़ा था वहीं से शुरू करें',
+      benefit2: 'पूर्ण किए गए पाठों और उपलब्धियों को ट्रैक करें',
+      benefit3: 'इंटरैक्टिव प्रोजेक्ट फ़ाइलों और डाउनलोड करने योग्य टेम्प्लेट्स तक पहुंचें',
+      benefit4: 'अपडेट्स, सूचनाएं और पूरा होने पर कोर्स बैज प्राप्त करें',
+      filterByLevel: 'स्तर के अनुसार फ़िल्टर करें',
+      allLevels: 'सभी स्तर',
+      beginner: 'शुरुआती (Beginner)',
+      intermediate: 'मध्यम (Intermediate)',
+      advanced: 'उन्नत (Advanced)',
+      searchCourses: 'शीर्षक, विषय या तकनीक द्वारा कोर्सेज़ खोजें...',
+      noCoursesFound: 'आपके खोज मानदंडों से कोई कोर्स मेल नहीं खाता।',
+      viewDetails: 'पाठ्यक्रम देखें',
+      startCourse: 'सीखना शुरू करें',
+      lessonLocked: 'प्रगति सहेजने के लिए नामांकन करें',
+      lessonPreview: 'मुफ़्त पूर्वावलोकन उपलब्ध',
+    },
+    auth: {
+      signIn: 'साइन इन',
+      signUp: 'साइन अप',
+      emailAddress: 'ईमेल पता',
+      password: 'पासवर्ड',
+      fullName: 'पूरा नाम',
+      forgotPassword: 'पासवर्ड भूल गए?',
+      resetPassword: 'पासवर्ड रीसेट करें',
+      sendResetLink: 'रीसेट लिंक भेजें',
+      resetLinkSent: 'पासवर्ड रीसेट लिंक आपके ईमेल पर भेज दिया गया है।',
+      rememberMe: 'इस डिवाइस पर मुझे याद रखें',
+      showPassword: 'पासवर्ड दिखाएं',
+      hidePassword: 'पासवर्ड छिपाएं',
+      continueWithGoogle: 'Google के साथ जारी रखें',
+      orEmail: 'या ईमेल द्वारा जारी रखें',
+      dontHaveAccount: 'खाता नहीं है?',
+      alreadyHaveAccount: 'पहले से खाता है?',
+      createAccount: 'मुफ़्त खाता बनाएं',
+      emailVerification: 'ईमेल सत्यापन',
+      emailVerified: 'सत्यापित खाता',
+      emailNotVerified: 'ईमेल अभी सत्यापित नहीं है',
+      resendVerification: 'सत्यापन ईमेल पुनः भेजें',
+      verificationSent: 'सत्यापन ईमेल भेज दी गई है! अपना इनबॉक्स देखें।',
+      invalidCredentials: 'गलत ईमेल या पासवर्ड। कृपया जाँच कर पुनः प्रयास करें।',
+      accountCreatedSuccess: 'खाता सफलतापूर्वक बनाया गया! नेक्सोरा प्रो में आपका स्वागत है।',
+      loginSuccess: 'सफलतापूर्वक साइन इन किया गया!',
+      logoutSuccess: 'सुरक्षित रूप से लॉग आउट हो गए।',
+      passwordMinLength: 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।',
+    },
+    userDashboard: {
+      welcomeBack: 'वापसी पर स्वागत है',
+      overview: 'खाता अवलोकन',
+      myToolsTitle: 'मेरे टूल्स और शॉर्टकट',
+      myToolsSubtitle: 'अपने सबसे अधिक उपयोग किए जाने वाले और पिन किए गए टूल्स तक तुरंत पहुंचें।',
+      favoritesTitle: 'पसंदीदा बुकमार्क',
+      favoritesSubtitle: 'आपके सहेजे गए टूल्स और पसंदीदा कोर्सेज़ की सूची।',
+      historyTitle: 'गतिविधि और रूपांतरण इतिहास',
+      historySubtitle: 'हाल ही में प्रोसेस की गई फ़ाइलें, खोले गए टूल्स और सीखे गए पाठ।',
+      downloadsTitle: 'डाउनलोड और बनाई गई फ़ाइलें',
+      downloadsSubtitle: 'अपनी बनाई गई PDF, इमेज और कनवर्ट की गई फ़ाइलें पुनः डाउनलोड करें।',
+      notificationsTitle: 'सूचना केंद्र',
+      notificationsSubtitle: 'नए कोर्सेज़, टूल अपडेट्स और प्लेटफ़ॉर्म घोषणाओं से अपडेट रहें।',
+      settingsTitle: 'प्राथमिकताएं और सेटिंग्स',
+      settingsSubtitle: 'थीम, भाषा, सूचनाएं और सुरक्षा विकल्पों को अनुकूलित करें।',
+      profileTitle: 'प्रोफ़ाइल जानकारी',
+      bioPlaceholder: 'अपने बारे में या अपने कौशल के बारे में संक्षिप्त विवरण लिखें...',
+      saveProfile: 'बदलाव सहेजें',
+      profileUpdated: 'प्रोफ़ाइल सफलतापूर्वक अपडेट हो गई!',
+      joinedOn: 'सदस्यता तिथि',
+      accountStatus: 'खाता स्थिति',
+      verified: 'सत्यापित',
+      unverified: 'असत्यापित',
+      clearHistory: 'इतिहास साफ़ करें',
+      clearAll: 'सभी साफ़ करें',
+      noHistory: 'अभी कोई गतिविधि रिकॉर्ड नहीं हुई है। टूल्स और कोर्सेज़ एक्सप्लोर करें!',
+      noFavorites: 'कोई पसंदीदा आइटम नहीं है। किसी भी टूल या कोर्स पर स्टार दबाकर सहेजें।',
+      noDownloads: 'अभी कोई फ़ाइल डाउनलोड नहीं हुई है। किसी टूल पर काम करके फ़ाइल प्राप्त करें।',
+      noNotifications: 'आपके पास कोई नई सूचना नहीं है।',
+      markAllAsRead: 'सभी को पढ़ा हुआ चिह्नित करें',
+      downloadAgain: 'पुनः डाउनलोड करें',
+      deleteItem: 'हटाएं',
+      changePassword: 'खाता पासवर्ड बदलें',
+      currentPassword: 'वर्तमान पासवर्ड',
+      newPassword: 'नया पासवर्ड',
+      confirmNewPassword: 'नए पासवर्ड की पुष्टि करें',
+      updatePasswordBtn: 'पासवर्ड अपडेट करें',
+    },
+    settings: {
+      accountTab: 'खाता',
+      appearanceTab: 'दिखावट (थीम)',
+      languageTab: 'भाषा',
+      notificationsTab: 'सूचनाएं',
+      privacyTab: 'गोपनीयता',
+      securityTab: 'सुरक्षा',
+      themeMode: 'थीम मोड',
+      lightTheme: 'लाइट मोड',
+      darkTheme: 'डार्क मोड',
+      systemTheme: 'सिस्टम डिफ़ॉल्ट',
+      selectLanguage: 'ऐप की भाषा चुनें',
+      emailNotifications: 'ईमेल सूचनाएं',
+      courseUpdates: 'कोर्स और पाठ्यक्रम अपडेट्स',
+      toolAlerts: 'नए टूल्स और अपग्रेड अलर्ट्स',
+      securityAlerts: 'खाता और सुरक्षा अलर्ट्स',
+      marketingAnnouncements: 'उत्पाद समाचार और उपयोगी टिप्स',
+      dataStorage: 'लोकल डेटा और कैश',
+      localStorageNotice: 'नेक्सोरा आपकी प्राथमिकताओं और इतिहास को आपके डिवाइस पर सुरक्षित रखता है।',
+      clearCache: 'लोकल कैश साफ़ करें',
+      cacheCleared: 'लोकल कैश सफलतापूर्वक साफ़ किया गया।',
+    },
+    admin: {
+      controlCenter: 'नेक्सोरा एडमिन कंट्रोल सेंटर',
+      analytics: 'एनालिटिक्स और टेलीमेट्री',
+      userManagement: 'उपयोगकर्ता प्रबंधन',
+      courseManagement: 'कोर्स प्रबंधन',
+      toolsManagement: 'टूल्स नियंत्रण',
+      contentManager: 'सामग्री और अनुवाद',
+      systemSettings: 'सिस्टम सेटिंग्स',
+      totalUsers: 'कुल पंजीकृत उपयोगकर्ता',
+      activeUsers: 'सक्रिय सत्र',
+      totalCourses: 'प्रकाशित कोर्सेज़',
+      totalToolRuns: 'कुल फ़ाइल निष्पादन',
+      systemHealth: 'सिस्टम स्वास्थ्य और सर्वर स्थिति',
+      addCourse: 'नया कोर्स जोड़ें',
+      editCourse: 'कोर्स संपादित करें',
+      deleteCourse: 'कोर्स हटाएं',
+      publishCourse: 'प्रकाशित करें',
+      draftCourse: 'ड्राफ्ट सहेजें',
+      enableTool: 'टूल चालू करें',
+      disableTool: 'टूल बंद करें',
+      searchUsers: 'नाम, ईमेल या भूमिका द्वारा खोजें...',
+      roleAdmin: 'व्यवस्थापक (Admin)',
+      roleUser: 'मानक उपयोगकर्ता',
+      makeAdmin: 'एडमिन बनाएं',
+      removeAdmin: 'मानक यूजर बनाएं',
+      maintenanceMode: 'प्लेटफ़ॉर्म मेंटेनेंस मोड',
+      allowRegistration: 'नए पंजीकरण की अनुमति दें',
+    },
+    footer: {
+      desc: 'नेक्सोरा प्रो एक प्रमुख डिजिटल प्लेटफ़ॉर्म है जो 75+ शक्तिशाली क्लाइंट-साइड टूल्स को आधुनिक डिजिटल कौशल कोर्सेज़ के साथ जोड़ता है।',
       quickLinks: 'त्वरित लिंक',
+      aboutPlatform: 'प्लेटफ़ॉर्म के बारे में',
+      courses: 'सभी कोर्सेज़',
+      tools: 'सभी 75+ टूल्स',
+      features: 'मुख्य विशेषताएं',
+      helpSupport: 'सहायता व समर्थन',
+      contactUs: 'संपर्क करें',
       privacyPolicy: 'गोपनीयता नीति',
-      terms: 'नियम और शर्तें',
-      security: 'सुरक्षा',
+      terms: 'सेवा की शर्तें',
+      refundPolicy: 'रिफंड नीति',
+      disclaimer: 'कानूनी अस्वीकरण',
+      faq: 'अक्सर पूछे जाने वाले प्रश्न (FAQ)',
+      userGuidelines: 'उपयोगकर्ता दिशानिर्देश',
       rights: 'सर्वाधिकार सुरक्षित।',
+      poweredBy: '100% सुरक्षित क्लाइंट-साइड प्रोसेसिंग इंजन।',
+      clientSideSecurity: 'आपकी फ़ाइलें कभी भी बाहरी सर्वर पर अपलोड या संग्रहीत नहीं होती हैं।',
+    },
+    common: {
+      save: 'सहेजें',
+      cancel: 'रद्द करें',
+      delete: 'हटाएं',
+      edit: 'संपादित करें',
+      remove: 'निकालें',
+      open: 'खोलें',
+      close: 'बंद करें',
+      back: 'पीछे',
+      next: 'आगे',
+      finish: 'समाप्त',
+      confirm: 'पुष्टि करें',
+      loading: 'लोड हो रहा है...',
+      success: 'सफलता',
+      error: 'त्रुटि',
+      all: 'सभी',
+      free: 'मुफ़्त',
+      pro: 'प्रो',
+      enterprise: 'एंटरप्राइज',
+      filter: 'फ़िल्टर',
+      search: 'खोजें',
+      viewAll: 'सभी देखें',
+      noData: 'कोई डेटा उपलब्ध नहीं है',
+      fileSize: 'फ़ाइल का आकार',
+      date: 'तारीख',
+      status: 'स्थिति',
+      action: 'कार्रवाई',
     },
   },
 };

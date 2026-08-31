@@ -7,17 +7,17 @@ import {
   User,
   Wrench,
   Star,
-  History,
+  Clock,
   Download,
-  Zap,
-  CreditCard,
   Bell,
   Settings,
   ShieldCheck,
   LogOut,
   ChevronDown,
+  GraduationCap,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useI18n } from '@/lib/i18n/i18n-context';
 
 interface UserMenuDropdownProps {
   userName?: string;
@@ -30,13 +30,13 @@ export function UserMenuDropdown({
 }: UserMenuDropdownProps) {
   const router = useRouter();
   const { user, isAdmin, logout } = useAuth();
+  const { t, isRtl } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const displayName = user?.name || userName || 'Hafiz Jamilurrahman';
-  const displayEmail = user?.email || userEmail || 'hafiz.jamil@nexora.pro';
+  const displayEmail = user?.email || userEmail || 'jamil8655@gmail.com';
 
-  // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -66,24 +66,23 @@ export function UserMenuDropdown({
   };
 
   const menuItems = [
-    { label: 'My Profile', href: '/account', icon: User },
-    { label: 'My Tools', href: '/tools', icon: Wrench },
-    { label: 'Favorites', href: '/dashboard?tab=files', icon: Star },
-    { label: 'History', href: '/dashboard?tab=history', icon: History },
-    { label: 'Downloads', href: '/dashboard?tab=files', icon: Download },
-    { label: 'Usage', href: '/dashboard?tab=usage', icon: Zap },
-    { label: 'My Plan', href: '/dashboard?tab=plan', icon: CreditCard },
-    { label: 'Notifications', href: '/account', icon: Bell },
-    { label: 'Settings', href: '/account', icon: Settings },
+    { label: t.nav.myProfile, href: '/account', icon: User },
+    { label: t.courses.myCourses, href: '/courses', icon: GraduationCap },
+    { label: t.nav.myTools, href: '/account', icon: Wrench },
+    { label: t.nav.favorites, href: '/favorites', icon: Star },
+    { label: t.nav.history, href: '/history', icon: Clock },
+    { label: t.nav.downloads, href: '/downloads', icon: Download },
+    { label: t.nav.notifications, href: '/notifications', icon: Bell },
+    { label: t.nav.settings, href: '/settings', icon: Settings },
   ];
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Profile Trigger Button (Responsive, Compact) */}
+      {/* Profile Trigger Button */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all text-slate-800 dark:text-slate-100 font-bold text-xs shadow-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+        className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all text-slate-800 dark:text-slate-100 font-bold text-xs shadow-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -100,68 +99,74 @@ export function UserMenuDropdown({
         />
       </button>
 
-      {/* Dropdown Menu Modal (Contained, Zero Overflow) */}
+      {/* Dropdown Menu Modal */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-60 sm:w-68 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-white">
-          {/* 1. USER HEADER */}
-          <div className="p-3.5 sm:p-4 bg-gradient-to-br from-slate-50 to-brand-50/30 dark:from-slate-950 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-md shrink-0">
-              {displayName.charAt(0).toUpperCase()}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-black text-xs sm:text-sm truncate text-slate-900 dark:text-white">
-                👤 {displayName}
+        <div
+          className={`absolute mt-2 w-64 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 ${
+            isRtl ? 'left-0' : 'right-0'
+          }`}
+        >
+          {/* User Info Header */}
+          <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-md shrink-0">
+                {displayName.charAt(0).toUpperCase()}
               </div>
-              <div className="text-[10px] text-slate-500 truncate font-medium">
-                {isAdmin ? '🛡️ Administrator' : displayEmail}
+              <div className="min-w-0">
+                <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 truncate">
+                  {displayName}
+                </p>
+                <p className="text-[11px] text-slate-400 truncate">{displayEmail}</p>
               </div>
             </div>
-          </div>
-
-          {/* 2. USER NAVIGATION ITEMS */}
-          <div className="py-1.5 divide-y divide-slate-100 dark:divide-slate-800/60 max-h-[50vh] overflow-y-auto">
-            <div className="py-1 px-1.5 space-y-0.5">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
-                  >
-                    <Icon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="truncate">{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* 3. ADMIN CONTROL CENTER (Admin only) */}
             {isAdmin && (
-              <div className="py-1 px-1.5">
-                <Link
-                  href="/admin"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
-                >
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span className="truncate">🛡️ Admin Control Center</span>
-                </Link>
+              <div className="mt-2.5 flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black border border-purple-500/20 w-fit">
+                <ShieldCheck className="w-3 h-3" />
+                <span>SUPER ADMIN</span>
               </div>
             )}
+          </div>
 
-            {/* 4. LOG OUT */}
-            <div className="py-1 px-1.5">
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors text-left"
+          {/* Nav Items */}
+          <div className="py-2 px-1.5 space-y-0.5">
+            {menuItems.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={idx}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-600 transition-colors"
+                >
+                  <Icon className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+
+            {/* Admin Control Center Link if Admin */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-2xl text-xs font-black text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/60 transition-colors border border-purple-200/60 dark:border-purple-800/60 mt-1"
               >
-                <LogOut className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                <span>Log Out</span>
-              </button>
-            </div>
+                <ShieldCheck className="w-4 h-4 shrink-0" />
+                <span>{t.nav.admin}</span>
+              </Link>
+            )}
+          </div>
+
+          {/* Logout Section */}
+          <div className="p-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-2xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors"
+            >
+              <LogOut className="w-4 h-4 shrink-0" />
+              <span>{t.nav.logout}</span>
+            </button>
           </div>
         </div>
       )}

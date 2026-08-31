@@ -3,6 +3,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/layout/ThemeContext';
 import { I18nProvider } from '@/lib/i18n/i18n-context';
 import { AuthProvider } from '@/lib/auth/auth-context';
+import { UserStoreProvider } from '@/lib/user/user-store';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
@@ -12,36 +13,24 @@ import { siteConfig } from '@/config/site';
 import { adConfig } from '@/config/ads';
 
 export const metadata: Metadata = {
-  title: `${siteConfig.name} - Free All-in-One Online Productivity Tools & Converters`,
-  description: 'NEXORA Tools Pro provides 75+ free high-performance client-side tools: PDF to Word OCR, 4K Video Downloader, Audio Volume Booster, Audio Cutter, Video to MP3, Image Compression, and Developer Utilities.',
+  title: `${siteConfig.name} - Free Online Tools & Digital Skills Learning Platform`,
+  description: 'NEXORA PRO provides 75+ free high-performance client-side digital utilities and modern developer & digital skill courses with zero server tracking.',
   manifest: '/nexora-tools/manifest.json',
   keywords: [
-    'nexora tools',
+    'nexora pro',
+    'online courses',
+    'developer courses',
     'all in one utility',
     'pdf tools',
-    'pdf to word',
-    'pdf to docx ocr',
-    'audio volume booster',
-    'audio speed changer',
-    'audio cutter',
-    'video to mp3',
+    'pdf to word ocr',
+    'image compression',
     '4k video downloader',
-    'image color palette',
-    'pdf organizer',
-    'merge pdf',
-    'compress pdf',
-    'image to pdf',
-    'pdf to jpg',
-    'word counter',
-    'case converter',
+    'audio volume booster',
+    'video to mp3',
+    'developer tools',
     'json formatter',
-    'base64 encode',
-    'sha256 hash generator',
     'password generator',
-    'image converter',
     'ocr image to text',
-    'unit converter',
-    'barcode generator',
     'qr code generator',
   ],
   authors: [{ name: siteConfig.name, url: siteConfig.url }],
@@ -50,14 +39,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: siteConfig.url,
-    title: `${siteConfig.name} - 75+ Free Online File & Media Tools`,
-    description: 'Instant, private, and secure in-browser tools with 500MB max file support. No server uploads.',
+    title: `${siteConfig.name} - Free Online Tools & Master Courses`,
+    description: 'Instant, private, and secure in-browser tools with zero server tracking and interactive developer courses.',
     siteName: siteConfig.name,
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${siteConfig.name} - 75+ Free Online File & Media Tools`,
-    description: 'Convert PDFs, Boost Audio, Download 4K Videos, and format code with zero cloud uploads.',
+    title: `${siteConfig.name} - 75+ Free Online Tools & Digital Courses`,
+    description: 'Learn modern digital skills and transform files with 100% private client-side processing.',
   },
 };
 
@@ -66,15 +55,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Google / Bing JSON-LD Structured Data for High Search Rankings
   const structuredData = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'WebApplication',
-        name: 'NEXORA Tools Pro',
+        name: 'NEXORA PRO',
         url: 'https://jamil8655.github.io/nexora-tools/',
-        description: '75+ free high-performance online utilities including PDF to Word OCR, 4K Video Downloader, Audio Booster, Video to MP3, and Developer Tools.',
+        description: '75+ free high-performance online utilities and developer master courses.',
         applicationCategory: 'ProductivityApplication',
         operatingSystem: 'All (Web, Android, iOS, Windows, macOS, Linux)',
         offers: {
@@ -92,7 +80,7 @@ export default function RootLayout({
       },
       {
         '@type': 'WebSite',
-        name: 'NEXORA Tools',
+        name: 'NEXORA PRO',
         url: 'https://jamil8655.github.io/nexora-tools/',
         potentialAction: {
           '@type': 'SearchAction',
@@ -115,9 +103,8 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="NEXORA Tools" />
+        <meta name="apple-mobile-web-app-title" content="NEXORA PRO" />
 
-        {/* Google AdSense / AdMob Web Integration Tag */}
         {adConfig.enabled && adConfig.adsense.client && (
           <script
             async
@@ -135,12 +122,14 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <I18nProvider>
-              <Header />
-              <main className="flex-1 pb-16 xl:pb-0">{children}</main>
-              <Footer />
-              <MobileNav />
-              <PwaInstallBanner />
-              <ServiceWorkerRegister />
+              <UserStoreProvider>
+                <Header />
+                <main className="flex-1 pb-16 xl:pb-0">{children}</main>
+                <Footer />
+                <MobileNav />
+                <PwaInstallBanner />
+                <ServiceWorkerRegister />
+              </UserStoreProvider>
             </I18nProvider>
           </AuthProvider>
         </ThemeProvider>

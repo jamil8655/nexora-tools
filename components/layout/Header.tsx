@@ -9,12 +9,16 @@ import {
   Smartphone,
   Workflow,
   Code,
-  User,
+  GraduationCap,
+  Bell,
   LogIn,
+  HelpCircle,
+  Info,
 } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useUserStore } from '@/lib/user/user-store';
 import { UnifiedSearchModal } from '@/components/search/UnifiedSearchModal';
 import { UserMenuDropdown } from './UserMenuDropdown';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -22,8 +26,9 @@ import { AuthModal } from '@/components/auth/AuthModal';
 export function Header() {
   const pathname = usePathname();
   const { theme, setTheme, isDark } = useTheme();
-  const { language, setLanguage } = useI18n();
+  const { language, setLanguage, t, isRtl } = useI18n();
   const { isAdmin, isAuthenticated } = useAuth();
+  const { unreadCount } = useUserStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -75,9 +80,10 @@ export function Header() {
   }, []);
 
   const navLinks = [
-    { label: 'All Tools', href: '/tools', icon: Sparkles },
-    { label: 'Workflows', href: '/workflows', icon: Workflow },
-    { label: 'Developers', href: '/developers', icon: Code },
+    { label: t.nav.allTools || 'All Tools', href: '/tools', icon: Sparkles },
+    { label: t.nav.courses || 'Courses', href: '/courses', icon: GraduationCap },
+    { label: t.nav.workflows || 'Workflows', href: '/workflows', icon: Workflow },
+    { label: t.footer.aboutPlatform || 'About', href: '/about', icon: Info },
   ];
 
   return (
@@ -85,13 +91,13 @@ export function Header() {
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-200 ${
           isScrolled
-            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs'
+            ? 'bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs'
             : 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800'
         }`}
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 min-w-0">
           {/* Logo & Brand */}
-          <div className="flex items-center gap-4 sm:gap-6 min-w-0 shrink-0">
+          <div className="flex items-center gap-3 sm:gap-6 min-w-0 shrink-0">
             <Link
               href="/"
               className="flex items-center gap-2 group transition-transform active:scale-95 shrink-0"
@@ -109,7 +115,7 @@ export function Header() {
                   </span>
                 </div>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline leading-none">
-                  All-in-One Privacy Workspace
+                  Tools & Master Courses
                 </span>
               </div>
             </Link>
@@ -150,17 +156,30 @@ export function Header() {
               <span className="hidden sm:inline">Install App</span>
             </button>
 
-            {/* Language Selector */}
+            {/* Language Selector (4 Languages: EN, UR, AR, HI) */}
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as any)}
-              className="px-2 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer shrink-0"
+              className="px-2 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-hidden cursor-pointer shrink-0"
               title="Change Language"
             >
-              <option value="en">EN</option>
-              <option value="ur">اردو</option>
-              <option value="ar">عربي</option>
+              <option value="en">English (EN)</option>
+              <option value="ur">اردو (UR)</option>
+              <option value="ar">العربية (AR)</option>
+              <option value="hi">हिन्दी (HI)</option>
             </select>
+
+            {/* Notification Bell */}
+            <Link
+              href="/notifications"
+              className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all shrink-0"
+              title={t.userDashboard.notificationsTitle}
+            >
+              <Bell className="w-4 h-4" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-brand-600 ring-2 ring-white dark:ring-slate-900" />
+              )}
+            </Link>
 
             {/* Global Search Button */}
             <button
@@ -183,7 +202,7 @@ export function Header() {
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs transition-all shadow-xs active:scale-95 shrink-0"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                <span>Log In</span>
+                <span>{t.nav.login}</span>
               </button>
             )}
           </div>

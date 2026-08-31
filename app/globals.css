@@ -57,6 +57,26 @@
   }
 }
 
+/* Multilingual Typography & Nastaliq / Arabic / Devanagari support */
+html.lang-ur, html[lang="ur"] {
+  font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', 'Segoe UI', Tahoma, sans-serif;
+  line-height: 1.8;
+}
+
+html.lang-ar, html[lang="ar"] {
+  font-family: 'Noto Kufi Arabic', 'Amiri', 'Segoe UI', Tahoma, sans-serif;
+  line-height: 1.7;
+}
+
+html.lang-hi, html[lang="hi"] {
+  font-family: 'Noto Sans Devanagari', 'Mangal', 'Segoe UI', sans-serif;
+  line-height: 1.6;
+}
+
+[dir="rtl"] {
+  text-align: right;
+}
+
 /* Crisp Clean Light Dot & Grid Patterns */
 .bg-light-pattern {
   background-color: #ffffff;

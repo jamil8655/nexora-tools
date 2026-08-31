@@ -29,6 +29,7 @@ export interface AuthUser {
 
 interface AuthContextType {
   user: AuthUser | null;
+  firebaseUser: FirebaseUser | null;
   role: UserRole;
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -44,10 +45,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [rawFirebaseUser, setRawFirebaseUser] = useState<FirebaseUser | null>(null);
   const [role, setRole] = useState<UserRole>('guest');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const evaluateUser = async (firebaseUser: FirebaseUser | null, forceRefresh = false) => {
+    setRawFirebaseUser(firebaseUser);
     if (!firebaseUser) {
       setUser(null);
       setRole('guest');
@@ -221,6 +224,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        firebaseUser: rawFirebaseUser,
         role,
         isAuthenticated,
         isAdmin,
