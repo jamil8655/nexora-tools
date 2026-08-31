@@ -13,11 +13,9 @@ import {
   CreditCard,
   Bell,
   Settings,
-  Shield,
   ShieldCheck,
   LogOut,
   ChevronDown,
-  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 
@@ -27,13 +25,16 @@ interface UserMenuDropdownProps {
 }
 
 export function UserMenuDropdown({
-  userName = 'Hafiz Jamilurrahman',
-  userEmail = 'hafiz.jamil@nexora.pro',
+  userName,
+  userEmail,
 }: UserMenuDropdownProps) {
   const router = useRouter();
-  const { isAdmin, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const displayName = user?.name || userName || 'Hafiz Jamilurrahman';
+  const displayEmail = user?.email || userEmail || 'hafiz.jamil@nexora.pro';
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -58,8 +59,8 @@ export function UserMenuDropdown({
     };
   }, [isOpen]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setIsOpen(false);
     router.push('/');
   };
@@ -78,19 +79,19 @@ export function UserMenuDropdown({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Profile Trigger Button */}
+      {/* Profile Trigger Button (Responsive, Compact) */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all text-slate-800 dark:text-slate-100 font-bold text-xs shadow-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+        className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all text-slate-800 dark:text-slate-100 font-bold text-xs shadow-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <div className="w-6 h-6 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-[11px] font-black shadow-xs">
-          {userName.charAt(0)}
+        <div className="w-6 h-6 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-[11px] font-black shadow-xs shrink-0">
+          {displayName.charAt(0).toUpperCase()}
         </div>
-        <span className="hidden sm:inline-block max-w-[120px] truncate text-xs font-extrabold">
-          {userName}
+        <span className="hidden sm:inline-block max-w-[110px] truncate text-xs font-extrabold">
+          {displayName}
         </span>
         <ChevronDown
           className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
@@ -99,75 +100,68 @@ export function UserMenuDropdown({
         />
       </button>
 
-      {/* Dropdown Menu Modal */}
+      {/* Dropdown Menu Modal (Contained, Zero Overflow) */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 sm:w-72 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-white">
+        <div className="absolute right-0 mt-2 w-60 sm:w-68 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-white">
           {/* 1. USER HEADER */}
-          <div className="p-4 bg-gradient-to-br from-slate-50 to-brand-50/30 dark:from-slate-950 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-sm font-black shadow-md shrink-0">
-              {userName.charAt(0)}
+          <div className="p-3.5 sm:p-4 bg-gradient-to-br from-slate-50 to-brand-50/30 dark:from-slate-950 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-md shrink-0">
+              {displayName.charAt(0).toUpperCase()}
             </div>
-            <div className="min-w-0">
-              <div className="font-black text-sm truncate text-slate-900 dark:text-white">
-                👤 {userName}
+            <div className="min-w-0 flex-1">
+              <div className="font-black text-xs sm:text-sm truncate text-slate-900 dark:text-white">
+                👤 {displayName}
               </div>
-              <div className="text-[11px] text-slate-500 truncate font-medium">
-                {isAdmin ? '🛡️ Administrator' : userEmail}
+              <div className="text-[10px] text-slate-500 truncate font-medium">
+                {isAdmin ? '🛡️ Administrator' : displayEmail}
               </div>
             </div>
           </div>
 
           {/* 2. USER NAVIGATION ITEMS */}
-          <div className="p-2 space-y-0.5">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
-                >
-                  <Icon className="w-4 h-4 text-slate-400" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
+          <div className="py-1.5 divide-y divide-slate-100 dark:divide-slate-800/60 max-h-[50vh] overflow-y-auto">
+            <div className="py-1 px-1.5 space-y-0.5">
+              {menuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span className="truncate">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
 
-          {/* 3. ADMIN CONTROL CENTER (EXCLUSIVELY FOR VERIFIED ADMINS) */}
-          {isAdmin && (
-            <>
-              <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
-              <div className="p-2">
+            {/* 3. ADMIN CONTROL CENTER (Admin only) */}
+            {isAdmin && (
+              <div className="py-1 px-1.5">
                 <Link
                   href="/admin"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-black text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 transition-all"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    <span>🛡️ Admin Control Center</span>
-                  </div>
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-emerald-600 text-white">
-                    ADMIN
-                  </span>
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="truncate">🛡️ Admin Control Center</span>
                 </Link>
               </div>
-            </>
-          )}
+            )}
 
-          {/* 4. LOG OUT */}
-          <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
-          <div className="p-2">
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Log Out</span>
-            </button>
+            {/* 4. LOG OUT */}
+            <div className="py-1 px-1.5">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors text-left"
+              >
+                <LogOut className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                <span>Log Out</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -6,29 +6,26 @@ import { usePathname } from 'next/navigation';
 import {
   Search,
   Sparkles,
-  Command,
-  Sun,
-  Moon,
-  Bookmark,
-  Download,
   Smartphone,
   Workflow,
-  ShieldCheck,
   Code,
-  FileCheck,
+  User,
+  LogIn,
 } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useAuth } from '@/lib/auth/auth-context';
 import { UnifiedSearchModal } from '@/components/search/UnifiedSearchModal';
 import { UserMenuDropdown } from './UserMenuDropdown';
+import { AuthModal } from '@/components/auth/AuthModal';
 
 export function Header() {
   const pathname = usePathname();
   const { theme, setTheme, isDark } = useTheme();
   const { language, setLanguage } = useI18n();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isAuthenticated } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [canInstall, setCanInstall] = useState(false);
@@ -53,85 +50,87 @@ export function Header() {
       }
       setDeferredPrompt(null);
     } else {
-      alert('To install NEXORA App:\n• Chrome/Edge: Click the install icon in your address bar or menu.\n• Safari/iOS: Tap Share ➔ "Add to Home Screen".');
+      alert('To install NEXORA: Tap "Share" or "Menu" in your browser and select "Add to Home Screen".');
     }
   };
 
   useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Quick keyboard shortcut listener for ⌘K / Ctrl+K
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setIsSearchOpen((prev) => !prev);
+        setIsSearchOpen(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 15);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const baseNavLinks = [
-    { label: 'Workflows', href: '/workflows', badge: 'NEW' },
-    { label: 'Passport Photo', href: '/tools/passport-photo-maker', badge: 'AI' },
-    { label: 'PDF to Word', href: '/tools/pdf-to-docx', badge: 'OCR' },
-    { label: 'PDF Editor', href: '/pdf-editor' },
-    { label: '4K Downloader', href: '/tools/media-downloader' },
-    { label: 'Dev Toolkit', href: '/dev-tools' },
-    { label: 'Privacy Center', href: '/privacy-center' },
-    { label: 'My Files', href: '/dashboard' },
+  const navLinks = [
+    { label: 'All Tools', href: '/tools', icon: Sparkles },
+    { label: 'Workflows', href: '/workflows', icon: Workflow },
+    { label: 'Developers', href: '/developers', icon: Code },
   ];
-
-  const navLinks = isAdmin
-    ? [...baseNavLinks, { label: 'Admin Center', href: '/admin', badge: 'ADMIN' }]
-    : baseNavLinks;
 
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        className={`sticky top-0 z-40 w-full transition-all duration-200 ${
           isScrolled
-            ? 'glass-nav shadow-md shadow-slate-200/50'
-            : 'bg-white/90 border-b border-slate-200/80 backdrop-blur-md'
+            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs'
+            : 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          {/* Brand Logo */}
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-brand-500/25 group-hover:scale-105 transition-transform border border-brand-400/20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 min-w-0">
+          {/* Logo & Brand */}
+          <div className="flex items-center gap-4 sm:gap-6 min-w-0 shrink-0">
+            <Link
+              href="/"
+              className="flex items-center gap-2 group transition-transform active:scale-95 shrink-0"
+            >
+              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform shrink-0">
                 <Sparkles className="w-4 h-4 fill-current" />
               </div>
-              <span className="text-lg font-black text-slate-900 tracking-tight">
-                NEXORA<span className="text-brand-600 text-xs ml-1 font-mono uppercase font-black">PRO</span>
-              </span>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-black text-base sm:text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-brand-900 to-indigo-900 dark:from-white dark:via-brand-200 dark:to-indigo-200">
+                    NEXORA
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded-md bg-brand-500/10 dark:bg-brand-400/10 text-brand-600 dark:text-brand-400 text-[9px] font-black tracking-wider uppercase border border-brand-500/20">
+                    PRO
+                  </span>
+                </div>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline leading-none">
+                  All-in-One Privacy Workspace
+                </span>
+              </div>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => {
+                const Icon = link.icon;
                 const isActive = pathname === link.href;
                 return (
                   <Link
-                    key={link.label}
+                    key={link.href}
                     href={link.href}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       isActive
-                        ? 'bg-brand-50 text-brand-700 border border-brand-200 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
+                        ? 'bg-brand-50 text-brand-700 dark:bg-brand-950/50 dark:text-brand-300'
+                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
+                    <Icon className="w-3.5 h-3.5" />
                     <span>{link.label}</span>
-                    {link.badge && (
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-100 text-rose-700 border border-rose-200">
-                        {link.badge}
-                      </span>
-                    )}
                   </Link>
                 );
               })}
@@ -139,50 +138,68 @@ export function Header() {
           </div>
 
           {/* Right Action Bar */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
             {/* 1-Click Install App Trigger */}
             <button
               type="button"
               onClick={handleInstallClick}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-all shadow-xs"
-              title="Install NEXORA App on Mobile or Desktop"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold transition-all shadow-xs shrink-0"
+              title="Install NEXORA App"
             >
-              <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="hidden xs:inline">Install App</span>
+              <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span className="hidden sm:inline">Install App</span>
             </button>
 
             {/* Language Selector */}
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as any)}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer"
+              className="px-2 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer shrink-0"
               title="Change Language"
             >
-              <option value="en">English (EN)</option>
-              <option value="ur">اردو (Urdu)</option>
-              <option value="ar">العربية (Arabic)</option>
+              <option value="en">EN</option>
+              <option value="ur">اردو</option>
+              <option value="ar">عربي</option>
             </select>
 
             {/* Global Search Button */}
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-all flex items-center gap-1.5 text-xs font-mono"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 text-xs font-mono shrink-0"
+              title="Quick Search (⌘K)"
             >
               <Search className="w-4 h-4" />
-              <span className="hidden md:inline font-bold">⌘K Search</span>
+              <span className="hidden md:inline font-bold">⌘K</span>
             </button>
 
-            {/* User Profile / Account Menu Dropdown */}
-            <UserMenuDropdown />
+            {/* User Profile Menu OR Clean Log In Button */}
+            {isAuthenticated ? (
+              <UserMenuDropdown />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs transition-all shadow-xs active:scale-95 shrink-0"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Log In</span>
+              </button>
+            )}
           </div>
         </div>
       </header>
 
-      {/* Single Unified NEXORA Smart Search Modal */}
+      {/* Unified Search Modal */}
       <UnifiedSearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
+      />
+
+      {/* Real Firebase Authentication Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
     </>
   );
