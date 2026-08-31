@@ -21,6 +21,7 @@ import { useTheme } from './ThemeContext';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useAuth } from '@/lib/auth/auth-context';
 import { UnifiedSearchModal } from '@/components/search/UnifiedSearchModal';
+import { UserMenuDropdown } from './UserMenuDropdown';
 
 export function Header() {
   const pathname = usePathname();
@@ -171,6 +172,9 @@ export function Header() {
               <Search className="w-4 h-4" />
               <span className="hidden md:inline font-bold">⌘K Search</span>
             </button>
+
+            {/* User Profile / Account Menu Dropdown */}
+            <UserMenuDropdown />
           </div>
         </div>
       </header>
