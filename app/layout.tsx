@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/layout/ThemeContext';
 import { I18nProvider } from '@/lib/i18n/i18n-context';
+import { AuthProvider } from '@/lib/auth/auth-context';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
@@ -132,14 +133,16 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-white text-slate-900 antialiased selection:bg-brand-500 selection:text-white">
         <ThemeProvider>
-          <I18nProvider>
-            <Header />
-            <main className="flex-1 pb-16 xl:pb-0">{children}</main>
-            <Footer />
-            <MobileNav />
-            <PwaInstallBanner />
-            <ServiceWorkerRegister />
-          </I18nProvider>
+          <AuthProvider>
+            <I18nProvider>
+              <Header />
+              <main className="flex-1 pb-16 xl:pb-0">{children}</main>
+              <Footer />
+              <MobileNav />
+              <PwaInstallBanner />
+              <ServiceWorkerRegister />
+            </I18nProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

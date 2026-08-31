@@ -156,8 +156,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/admin" className="hover:text-brand-600 transition-colors">
-                  📊 System Health & Admin
+                <Link href="/developers" className="hover:text-brand-600 transition-colors">
+                  ⚡ Developer REST API
                 </Link>
               </li>
             </ul>

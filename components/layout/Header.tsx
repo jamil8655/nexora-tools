@@ -19,12 +19,14 @@ import {
 } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { useAuth } from '@/lib/auth/auth-context';
 import { UniversalSearchEngine } from '@/components/search/UniversalSearchEngine';
 
 export function Header() {
   const pathname = usePathname();
   const { theme, setTheme, isDark } = useTheme();
   const { language, setLanguage } = useI18n();
+  const { isAdmin } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -73,7 +75,7 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
+  const baseNavLinks = [
     { label: 'Workflows', href: '/workflows', badge: 'NEW' },
     { label: 'Passport Photo', href: '/tools/passport-photo-maker', badge: 'AI' },
     { label: 'PDF to Word', href: '/tools/pdf-to-docx', badge: 'OCR' },
@@ -83,6 +85,10 @@ export function Header() {
     { label: 'Privacy Center', href: '/privacy-center' },
     { label: 'My Files', href: '/dashboard' },
   ];
+
+  const navLinks = isAdmin
+    ? [...baseNavLinks, { label: 'Admin Center', href: '/admin', badge: 'ADMIN' }]
+    : baseNavLinks;
 
   return (
     <>

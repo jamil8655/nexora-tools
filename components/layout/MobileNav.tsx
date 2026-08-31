@@ -3,19 +3,25 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Grid, Search, Bookmark, Calculator } from 'lucide-react';
+import { Home, Grid, Search, Bookmark, Calculator, ShieldCheck } from 'lucide-react';
+import { useAuth } from '@/lib/auth/auth-context';
 import { QuickSearchModal } from '@/components/shared/QuickSearchModal';
 
 export function MobileNav() {
   const pathname = usePathname();
+  const { isAdmin } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const tabs = [
+  const baseTabs = [
     { label: 'Home', href: '/', icon: Home },
     { label: 'Tools', href: '/tools', icon: Grid },
     { label: 'Calculators', href: '/calculators', icon: Calculator },
     { label: 'Workspace', href: '/dashboard', icon: Bookmark },
   ];
+
+  const tabs = isAdmin
+    ? [...baseTabs, { label: 'Admin', href: '/admin', icon: ShieldCheck }]
+    : baseTabs;
 
   return (
     <>
