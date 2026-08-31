@@ -6,20 +6,16 @@ import {
   Mail,
   Lock,
   User,
-  ShieldCheck,
   Sparkles,
-  ArrowRight,
   AlertCircle,
   CheckCircle2,
-  KeyRound,
-  UserCheck,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultTab?: 'signin' | 'signup' | 'admin';
+  defaultTab?: 'signin' | 'signup';
 }
 
 export function AuthModal({
@@ -27,14 +23,13 @@ export function AuthModal({
   onClose,
   defaultTab = 'signin',
 }: AuthModalProps) {
-  const { loginWithGoogle, loginWithEmail, signupWithEmail, loginAdmin, loginAsOwner } = useAuth();
-  const [tab, setTab] = useState<'signin' | 'signup' | 'admin'>(defaultTab);
+  const { loginWithGoogle, loginWithEmail, signupWithEmail } = useAuth();
+  const [tab, setTab] = useState<'signin' | 'signup'>(defaultTab);
 
   // Form State
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [adminPasskey, setAdminPasskey] = useState('');
 
   // Status State
   const [isLoading, setIsLoading] = useState(false);
@@ -49,22 +44,13 @@ export function AuthModal({
     setIsLoading(false);
   };
 
-  const handleOwnerDirectLogin = async () => {
-    resetState();
-    setIsLoading(true);
-    await loginAsOwner();
-    setIsLoading(false);
-    setSuccessMsg('Welcome back, Hafiz Jamilurrahman! (Super Admin Unlocked)');
-    setTimeout(() => onClose(), 600);
-  };
-
   const handleGoogleSignIn = async () => {
     resetState();
     setIsLoading(true);
     const res = await loginWithGoogle();
     setIsLoading(false);
     if (res.success) {
-      setSuccessMsg('Signed in successfully!');
+      setSuccessMsg('Signed in with Google successfully!');
       setTimeout(() => onClose(), 500);
     } else if (res.error) {
       setErrorMsg(res.error);
@@ -74,26 +60,26 @@ export function AuthModal({
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     resetState();
-    if (!email || !password) {
+    if (!email.trim() || !password) {
       setErrorMsg('Please enter both email and password.');
       return;
     }
     setIsLoading(true);
-    const res = await loginWithEmail(email, password);
+    const res = await loginWithEmail(email.trim(), password);
     setIsLoading(false);
     if (res.success) {
       setSuccessMsg('Signed in successfully!');
       setTimeout(() => onClose(), 500);
     } else {
-      setErrorMsg(res.error || 'Sign in failed. Check email or password.');
+      setErrorMsg(res.error || 'Sign in failed. Check your email or password.');
     }
   };
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     resetState();
-    if (!email || !password || !name) {
-      setErrorMsg('Please enter your name, email, and password.');
+    if (!email.trim() || !password || !name.trim()) {
+      setErrorMsg('Please enter your full name, email, and password.');
       return;
     }
     if (password.length < 6) {
@@ -101,40 +87,22 @@ export function AuthModal({
       return;
     }
     setIsLoading(true);
-    const res = await signupWithEmail(email, password, name);
+    const res = await signupWithEmail(email.trim(), password, name.trim());
     setIsLoading(false);
     if (res.success) {
-      setSuccessMsg('Account created successfully!');
+      setSuccessMsg('Account registered successfully in Firebase!');
       setTimeout(() => onClose(), 600);
     } else {
       setErrorMsg(res.error || 'Registration failed.');
     }
   };
 
-  const handleAdminLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    resetState();
-    if (!adminPasskey) {
-      setErrorMsg('Please enter the Master Admin Passkey.');
-      return;
-    }
-    setIsLoading(true);
-    const success = await loginAdmin(adminPasskey);
-    setIsLoading(false);
-    if (success) {
-      setSuccessMsg('Administrator Mode Unlocked!');
-      setTimeout(() => onClose(), 500);
-    } else {
-      setErrorMsg('Invalid Master Passkey. Access denied.');
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      {/* Background click */}
+      {/* Backdrop */}
       <div className="fixed inset-0" onClick={onClose} />
 
-      {/* Modal Card (Strictly Viewport-Safe & Zero Overflow) */}
+      {/* Modal Container (Strictly Viewport-Safe & Zero Overflow) */}
       <div
         className="relative w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-10 my-auto max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
@@ -150,7 +118,7 @@ export function AuthModal({
                 NEXORA Account
               </h3>
               <p className="text-[11px] text-slate-500">
-                Sign in to manage workflows and cloud sync
+                Official Firebase Cloud Authentication
               </p>
             </div>
           </div>
@@ -164,7 +132,7 @@ export function AuthModal({
           </button>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Tabs: Sign In / Sign Up */}
         <div className="flex items-center p-1.5 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
           <button
             type="button"
@@ -194,29 +162,15 @@ export function AuthModal({
           >
             Sign Up
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              setTab('admin');
-              resetState();
-            }}
-            className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              tab === 'admin'
-                ? 'bg-slate-900 text-emerald-400 shadow-xs'
-                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            Owner / Admin
-          </button>
         </div>
 
         {/* Form Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs">
           {/* Notifications */}
           {errorMsg && (
-            <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMsg}</span>
+            <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span className="leading-relaxed">{errorMsg}</span>
             </div>
           )}
 
@@ -230,17 +184,6 @@ export function AuthModal({
           {/* 1. SIGN IN TAB */}
           {tab === 'signin' && (
             <div className="space-y-3.5">
-              {/* Guaranteed 1-Click Owner Sign-in */}
-              <button
-                type="button"
-                onClick={handleOwnerDirectLogin}
-                disabled={isLoading}
-                className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
-              >
-                <UserCheck className="w-4 h-4" />
-                <span>1-Click Owner Login (Hafiz Jamilurrahman)</span>
-              </button>
-
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -270,7 +213,7 @@ export function AuthModal({
 
               <div className="flex items-center gap-2 my-2">
                 <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-                <span className="text-[10px] uppercase font-bold text-slate-400">or email</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400">or email address</span>
                 <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
               </div>
 
@@ -286,6 +229,7 @@ export function AuthModal({
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
+                      required
                       className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-brand-500"
                     />
                   </div>
@@ -302,6 +246,7 @@ export function AuthModal({
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
+                      required
                       className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-brand-500"
                     />
                   </div>
@@ -310,9 +255,9 @@ export function AuthModal({
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-2.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md transition-all active:scale-95"
+                  className="w-full py-2.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
                 >
-                  {isLoading ? 'Signing in...' : 'Sign In'}
+                  {isLoading ? 'Signing in...' : 'Sign In with Firebase'}
                 </button>
               </form>
             </div>
@@ -332,6 +277,7 @@ export function AuthModal({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Hafiz Jamilurrahman"
+                    required
                     className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-brand-500"
                   />
                 </div>
@@ -348,6 +294,7 @@ export function AuthModal({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
+                    required
                     className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-brand-500"
                   />
                 </div>
@@ -355,7 +302,7 @@ export function AuthModal({
 
               <div className="space-y-1">
                 <label className="font-bold text-slate-700 dark:text-slate-300 text-[11px]">
-                  Create Password (min 6 chars)
+                  Password (min 6 chars)
                 </label>
                 <div className="relative">
                   <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -364,6 +311,7 @@ export function AuthModal({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
+                    required
                     className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-brand-500"
                   />
                 </div>
@@ -372,68 +320,11 @@ export function AuthModal({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md transition-all active:scale-95"
+                className="w-full py-2.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
               >
                 {isLoading ? 'Creating account...' : 'Create Account'}
               </button>
             </form>
-          )}
-
-          {/* 3. OWNER / ADMIN TAB */}
-          {tab === 'admin' && (
-            <div className="space-y-3.5">
-              <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 space-y-1">
-                <div className="font-bold text-xs flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Master Administrator Authentication</span>
-                </div>
-                <p className="text-[11px] leading-relaxed">
-                  Verified owner: <span className="font-bold">Hafiz Jamilurrahman (jamil8655@gmail.com)</span>.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleOwnerDirectLogin}
-                disabled={isLoading}
-                className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs rounded-2xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95 transition-all"
-              >
-                <UserCheck className="w-4 h-4" />
-                <span>Instant 1-Click Owner Login</span>
-              </button>
-
-              <div className="flex items-center gap-2 my-2">
-                <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-                <span className="text-[10px] uppercase font-bold text-slate-400">or passkey</span>
-                <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-              </div>
-
-              <form onSubmit={handleAdminLogin} className="space-y-3 text-left">
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 text-[11px]">
-                    Master Passkey
-                  </label>
-                  <div className="relative">
-                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                    <input
-                      type="password"
-                      value={adminPasskey}
-                      onChange={(e) => setAdminPasskey(e.target.value)}
-                      placeholder="e.g. nexora@2026 or admin123"
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-bold text-xs shadow-md transition-all active:scale-95"
-                >
-                  {isLoading ? 'Verifying...' : 'Unlock Admin Controls'}
-                </button>
-              </form>
-            </div>
           )}
 
           <p className="text-[10px] text-slate-400 text-center pt-2">

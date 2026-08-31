@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth } from '@/lib/firebase/firebase-client';
+import { auth, db } from '@/lib/firebase/firebase-client';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -12,11 +12,12 @@ import {
   User as FirebaseUser,
   updateProfile,
 } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export type UserRole = 'admin' | 'user' | 'guest';
 
 export interface AuthUser {
-  id: string;
+  uid: string;
   name: string;
   role: UserRole;
   email?: string;
@@ -29,8 +30,6 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isLoading: boolean;
-  loginAdmin: (passcode: string) => Promise<boolean>;
-  loginAsOwner: () => Promise<boolean>;
   loginWithEmail: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   signupWithEmail: (email: string, pass: string, name: string) => Promise<{ success: boolean; error?: string }>;
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
@@ -39,221 +38,154 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Real Admin Email Whitelist
-const ADMIN_WHITELIST_EMAILS = [
+// Primary Admin Email List
+export const SUPER_ADMIN_EMAILS = [
   'jamil8655@gmail.com',
   'hafizjamilurrahman@gmail.com',
   'jamilurrahman@gmail.com',
-  'hafiz.jamil@nexora.pro',
   'jamil8655@users.noreply.github.com',
-  'admin@nexoratools.internal',
 ];
 
-export function isUserAdmin(email?: string | null): boolean {
+export function isSuperAdminEmail(email?: string | null): boolean {
   if (!email) return false;
   const clean = email.toLowerCase().trim();
-  if (ADMIN_WHITELIST_EMAILS.includes(clean)) return true;
-  if (clean.includes('jamil8655') || clean.includes('jamilurrahman') || clean.includes('hafizjamil')) return true;
-  return false;
+  return SUPER_ADMIN_EMAILS.includes(clean);
 }
-
-const ADMIN_PERSIST_KEY = 'nexora_real_admin_auth_v3';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [role, setRole] = useState<UserRole>('guest');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Initialize and listen to real Firebase Auth
   useEffect(() => {
-    let isMounted = true;
-
-    // Check localStorage fallback for persistent owner session
-    const savedRole = typeof window !== 'undefined' ? localStorage.getItem(ADMIN_PERSIST_KEY) : null;
-    if (savedRole === 'admin') {
-      setUser({
-        id: 'adm_jamil_01',
-        name: 'Hafiz Jamilurrahman',
-        role: 'admin',
-        email: 'jamil8655@gmail.com',
-      });
-      setRole('admin');
+    if (!auth) {
       setIsLoading(false);
+      return;
     }
 
-    if (auth) {
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
-        if (!isMounted) return;
+    // 100% Real Firebase Authentication State Listener
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        const email = firebaseUser.email || '';
+        let userRole: UserRole = isSuperAdminEmail(email) ? 'admin' : 'user';
 
-        const persist = typeof window !== 'undefined' ? localStorage.getItem(ADMIN_PERSIST_KEY) : null;
-        if (persist === 'admin') {
-          setUser({
-            id: firebaseUser?.uid || 'adm_jamil_01',
-            name: firebaseUser?.displayName || 'Hafiz Jamilurrahman',
-            role: 'admin',
-            email: firebaseUser?.email || 'jamil8655@gmail.com',
-            photoURL: firebaseUser?.photoURL || undefined,
-          });
-          setRole('admin');
-          setIsLoading(false);
-          return;
+        // Check Firestore user document for role (if available)
+        try {
+          if (db) {
+            const userDocRef = doc(db, 'users', firebaseUser.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+              const data = userDocSnap.data();
+              if (data?.role === 'admin') {
+                userRole = 'admin';
+              }
+            } else {
+              // Create user record in Firestore
+              await setDoc(
+                userDocRef,
+                {
+                  uid: firebaseUser.uid,
+                  email: firebaseUser.email || '',
+                  displayName: firebaseUser.displayName || '',
+                  role: userRole,
+                  createdAt: Date.now(),
+                  lastLoginAt: Date.now(),
+                },
+                { merge: true }
+              );
+            }
+          }
+        } catch (e) {
+          console.warn('Firestore user profile sync error:', e);
         }
 
-        if (firebaseUser) {
-          const email = firebaseUser.email || '';
-          const isSuperAdmin = isUserAdmin(email);
+        const authUser: AuthUser = {
+          uid: firebaseUser.uid,
+          name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+          email: firebaseUser.email || undefined,
+          photoURL: firebaseUser.photoURL || undefined,
+          role: userRole,
+        };
 
-          const authUser: AuthUser = {
-            id: firebaseUser.uid,
-            name: firebaseUser.displayName || 'Hafiz Jamilurrahman',
-            email: firebaseUser.email || undefined,
-            photoURL: firebaseUser.photoURL || undefined,
-            role: isSuperAdmin ? 'admin' : 'user',
-          };
-
-          if (isSuperAdmin && typeof window !== 'undefined') {
-            localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
-          }
-
-          setUser(authUser);
-          setRole(authUser.role);
-        } else {
-          if (persist === 'admin') {
-            setUser({
-              id: 'adm_jamil_01',
-              name: 'Hafiz Jamilurrahman',
-              role: 'admin',
-              email: 'jamil8655@gmail.com',
-            });
-            setRole('admin');
-          } else {
-            setUser(null);
-            setRole('guest');
-          }
-        }
-        setIsLoading(false);
-      });
-
-      return () => {
-        isMounted = false;
-        unsubscribe();
-      };
-    } else {
+        setUser(authUser);
+        setRole(userRole);
+      } else {
+        setUser(null);
+        setRole('guest');
+      }
       setIsLoading(false);
-    }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  // Instant 1-Click Owner Login (Guaranteed Zero-Error Mode)
-  const loginAsOwner = async (): Promise<boolean> => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
-    }
-    const adminUser: AuthUser = {
-      id: 'adm_jamil_01',
-      name: 'Hafiz Jamilurrahman',
-      role: 'admin',
-      email: 'jamil8655@gmail.com',
-    };
-    setUser(adminUser);
-    setRole('admin');
-    return true;
-  };
-
-  // Real Email Sign-in
+  // 1. Real Firebase Email & Password Sign-In
   const loginWithEmail = async (email: string, pass: string): Promise<{ success: boolean; error?: string }> => {
     try {
       if (!auth) throw new Error('Firebase Auth is not initialized');
-      const res = await signInWithEmailAndPassword(auth, email.trim(), pass);
-      const isSuperAdmin = isUserAdmin(res.user.email);
-      if (isSuperAdmin && typeof window !== 'undefined') {
-        localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
-      }
+      await signInWithEmailAndPassword(auth, email.trim(), pass);
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Login failed. Please check credentials.' };
+      let message = err.message || 'Login failed.';
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+        message = 'Invalid email or password.';
+      } else if (err.code === 'auth/invalid-email') {
+        message = 'Please enter a valid email address.';
+      }
+      return { success: false, error: message };
     }
   };
 
-  // Real Email Registration
+  // 2. Real Firebase Email & Password Sign-Up
   const signupWithEmail = async (email: string, pass: string, name: string): Promise<{ success: boolean; error?: string }> => {
     try {
       if (!auth) throw new Error('Firebase Auth is not initialized');
       const cred = await createUserWithEmailAndPassword(auth, email.trim(), pass);
       if (cred.user && name) {
-        await updateProfile(cred.user, { displayName: name });
-      }
-      const isSuperAdmin = isUserAdmin(cred.user.email);
-      if (isSuperAdmin && typeof window !== 'undefined') {
-        localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
+        await updateProfile(cred.user, { displayName: name.trim() });
       }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Registration failed.' };
+      let message = err.message || 'Registration failed.';
+      if (err.code === 'auth/email-already-in-use') {
+        message = 'This email address is already registered. Please sign in.';
+      } else if (err.code === 'auth/weak-password') {
+        message = 'Password is too weak. Please use at least 6 characters.';
+      }
+      return { success: false, error: message };
     }
   };
 
-  // Robust Google OAuth Sign-in with Graceful Fallback
+  // 3. Real Firebase Google OAuth Sign-In
   const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
     try {
       if (!auth) throw new Error('Firebase Auth is not initialized');
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
-      const res = await signInWithPopup(auth, provider);
-      const isSuperAdmin = isUserAdmin(res.user.email);
-      if (isSuperAdmin && typeof window !== 'undefined') {
-        localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
-      }
+      await signInWithPopup(auth, provider);
       return { success: true };
     } catch (err: any) {
-      const code = err?.code || '';
-      console.warn('Firebase Google Auth warning:', err);
-
-      // If domain / popup / internal error occurs, provide direct owner login fallback
-      if (
-        code === 'auth/internal-error' ||
-        code === 'auth/unauthorized-domain' ||
-        code === 'auth/popup-blocked' ||
-        code === 'auth/cancelled-popup-request'
-      ) {
-        // Auto-fallback for site owner on GitHub Pages domain
-        await loginAsOwner();
-        return { success: true };
+      let message = err.message || 'Google sign-in failed.';
+      if (err.code === 'auth/unauthorized-domain' || err.code === 'auth/internal-error') {
+        message =
+          'Authorized domain required: Please add "jamil8655.github.io" in Firebase Console -> Authentication -> Settings -> Authorized Domains.';
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        message = 'Google sign-in popup was closed before completing.';
+      } else if (err.code === 'auth/popup-blocked') {
+        message = 'Popup was blocked by your browser. Please allow popups for this site.';
       }
-
-      return {
-        success: false,
-        error:
-          'Google popup was closed or restricted by browser. You can use "1-Click Owner Login" or Email sign-in.',
-      };
+      return { success: false, error: message };
     }
   };
 
-  // Direct Admin Passkey unlock
-  const loginAdmin = async (passcode: string): Promise<boolean> => {
-    const clean = passcode.trim().toLowerCase();
-    if (
-      clean === 'nexora@2026' ||
-      clean === 'admin123' ||
-      clean === 'admin' ||
-      clean === 'nexora' ||
-      clean === 'hafiz2026' ||
-      clean === '123456'
-    ) {
-      return loginAsOwner();
-    }
-    return false;
-  };
-
-  // Real Logout
+  // 4. Real Firebase Sign-Out
   const logout = async () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(ADMIN_PERSIST_KEY);
-      sessionStorage.removeItem('nexora_auth_session_token');
-    }
     if (auth) {
       try {
         await signOut(auth);
-      } catch (e) {}
+      } catch (e) {
+        console.error('Sign out error:', e);
+      }
     }
     setUser(null);
     setRole('guest');
@@ -270,8 +202,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated,
         isAdmin,
         isLoading,
-        loginAdmin,
-        loginAsOwner,
         loginWithEmail,
         signupWithEmail,
         loginWithGoogle,
