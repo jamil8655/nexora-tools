@@ -26,6 +26,7 @@
     "docx": "^9.7.1",
     "express": "^5.2.1",
     "file-saver": "^2.0.5",
+    "firebase": "^12.18.0",
     "html2canvas": "^1.4.1",
     "jsbarcode": "^3.11.6",
     "jspdf": "^2.5.1",
