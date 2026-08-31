@@ -1,7 +1,7 @@
 'use client';
 
 // NEXORA Official Production Firebase Client SDK Initialization
-// Project: studio-5305763939-bdcf7
+// Dedicated Project: studio-3108342384-2960a (NEXORA Tools Pro)
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
@@ -10,13 +10,13 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { getDatabase, Database } from 'firebase/database';
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyDAphK0M9mz4OPKX-hp7Z56_89E9P4Z8Z4",
-  authDomain: "studio-5305763939-bdcf7.firebaseapp.com",
-  databaseURL: "https://studio-5305763939-bdcf7-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "studio-5305763939-bdcf7",
-  storageBucket: "studio-5305763939-bdcf7.firebasestorage.app",
-  messagingSenderId: "181387905351",
-  appId: "1:181387905351:web:3f2f901d98ace5491ee462"
+  apiKey: "AIzaSyAZfVYKYHzIRz9QTZboE04hat5fEZ6nwVI",
+  authDomain: "studio-3108342384-2960a.firebaseapp.com",
+  databaseURL: "https://studio-3108342384-2960a-default-rtdb.firebaseio.com",
+  projectId: "studio-3108342384-2960a",
+  storageBucket: "studio-3108342384-2960a.firebasestorage.app",
+  messagingSenderId: "701477341899",
+  appId: "1:701477341899:web:84030b9d2b3da73531294e"
 };
 
 let app: FirebaseApp;
