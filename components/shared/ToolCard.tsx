@@ -6,6 +6,8 @@ import { ArrowUpRight } from 'lucide-react';
 import { ToolDefinition } from '@/lib/types';
 import { ToolIcon } from './ToolIcon';
 import { FavoriteButton } from './FavoriteButton';
+import { useI18n } from '@/lib/i18n/i18n-context';
+import { getLocalizedTool } from '@/lib/i18n/catalog-translations';
 
 interface CategoryTheme {
   iconBg: string;
@@ -185,6 +187,8 @@ interface ToolCardProps {
 }
 
 export function ToolCard({ tool }: ToolCardProps) {
+  const { language } = useI18n();
+  const localized = getLocalizedTool(tool, language);
   const theme = CATEGORY_THEMES[tool.category] || DEFAULT_THEME;
 
   return (
@@ -197,7 +201,7 @@ export function ToolCard({ tool }: ToolCardProps) {
       {/* Subtle Micro-Dot Card Background Pattern */}
       <div className="absolute inset-0 card-pattern-overlay opacity-40 pointer-events-none" />
 
-      <Link href={`/tools/${tool.id}`} className="absolute inset-0 z-0 rounded-3xl" aria-label={tool.name} />
+      <Link href={`/tools/${tool.id}`} className="absolute inset-0 z-0 rounded-3xl" aria-label={localized.name} />
 
       <div className="space-y-4 relative z-10 pointer-events-none">
         {/* Header: Glowing Icon, Badges, Favorite */}
@@ -212,7 +216,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             <span
               className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider border ${theme.badgeBg} ${theme.badgeText} ${theme.badgeBorder}`}
             >
-              {tool.category}
+              {localized.categoryLabel}
             </span>
             <FavoriteButton toolId={tool.id} />
           </div>
@@ -221,10 +225,10 @@ export function ToolCard({ tool }: ToolCardProps) {
         {/* Title & Description */}
         <div className="space-y-1.5">
           <h3 className="text-base sm:text-[17px] font-extrabold text-slate-900 group-hover:text-brand-600 tracking-tight transition-colors line-clamp-1">
-            {tool.name}
+            {localized.name}
           </h3>
           <p className="text-xs sm:text-[13px] text-slate-500 line-clamp-2 leading-relaxed">
-            {tool.shortDesc}
+            {localized.shortDesc}
           </p>
         </div>
       </div>

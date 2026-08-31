@@ -40,16 +40,22 @@ import { ToolIcon } from '@/components/shared/ToolIcon';
 import { UnifiedSearchModal } from '@/components/search/UnifiedSearchModal';
 import { NexoraAiAssistant } from '@/components/ai/NexoraAiAssistant';
 import { AdSlot } from '@/components/ads/AdSlot';
+import { useI18n } from '@/lib/i18n/i18n-context';
+import { getLocalizedCategory, getLocalizedTool } from '@/lib/i18n/catalog-translations';
 
 export default function HomePage() {
+  const { t, language, isRtl } = useI18n();
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   const filteredTools = TOOLS_LIST.filter((tool) => {
+    const localized = getLocalizedTool(tool, language);
     const matchesCat = activeCategory === 'all' || tool.category === activeCategory;
     const matchesSearch =
       !searchQuery ||
+      localized.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      localized.shortDesc.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.shortDesc.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -93,11 +99,10 @@ export default function HomePage() {
           {/* Main Headline */}
           <div className="space-y-3.5 max-w-3xl mx-auto">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.14]">
-              The Ultimate Suite for <br />
-              <span className="shimmer-text">Files, Media & Productivity.</span>
+              {t.heroTitle || 'The Ultimate Suite for Files, Media & Productivity.'}
             </h1>
             <p className="text-xs sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Convert PDF to editable Word with AI OCR, generate official 3.5x4.5cm Passport Photos, extract 320kbps MP3s, download 4K media, and automate multi-tool pipelines with zero cloud storage.
+              {t.heroSubtitle || 'Convert PDF to editable Word with AI OCR, generate official 3.5x4.5cm Passport Photos, extract 320kbps MP3s, download 4K media, and automate multi-tool pipelines with zero cloud storage.'}
             </p>
           </div>
 
@@ -111,14 +116,14 @@ export default function HomePage() {
               <input
                 type="text"
                 readOnly
-                placeholder="What do you want to do? (e.g. compress my PDF, make image 50kb, remove bg)..."
+                placeholder={t.searchPlaceholder || 'What do you want to do? (e.g. compress my PDF, make image 50kb, remove bg)...'}
                 className="w-full px-3.5 py-3.5 text-xs sm:text-sm bg-transparent text-slate-900 placeholder-slate-400 focus:outline-none cursor-pointer"
               />
               <button
                 type="button"
                 className="hidden sm:inline-flex items-center gap-1 mr-3 px-3 py-1.5 rounded-xl bg-slate-100 text-xs font-mono text-slate-600 border border-slate-200 shadow-sm"
               >
-                ⌘K Search
+                ⌘K {t.common?.search || 'Search'}
               </button>
             </div>
           </div>
@@ -283,10 +288,10 @@ export default function HomePage() {
         <div className="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
-              Specialized Tool Suites
+              {t.exploreCategories || 'Specialized Tool Suites'}
             </h2>
             <p className="text-xs text-slate-500">
-              Filter by category or explore all {TOOLS_LIST.length} utilities
+              {t.privacyNotice || `Filter by category or explore all ${TOOLS_LIST.length} utilities`}
             </p>
           </div>
 
@@ -300,7 +305,7 @@ export default function HomePage() {
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              All Tools ({TOOLS_LIST.length})
+              {getLocalizedCategory('all', language)} ({TOOLS_LIST.length})
             </button>
             {CATEGORIES_CONFIG.map((cat) => (
               <button
@@ -313,7 +318,7 @@ export default function HomePage() {
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
-                {cat.label}
+                {getLocalizedCategory(cat.id, language)}
               </button>
             ))}
           </div>

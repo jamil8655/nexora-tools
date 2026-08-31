@@ -18,9 +18,10 @@ import {
 import { COURSES_CATALOG, Course } from '@/lib/courses/courses-data';
 import { useUserStore } from '@/lib/user/user-store';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { getLocalizedCourse } from '@/lib/i18n/catalog-translations';
 
 export default function CoursesPage() {
-  const { t, isRtl } = useI18n();
+  const { t, isRtl, language } = useI18n();
   const { isEnrolled, getCourseProgress, enrollInCourse } = useUserStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,7 +45,7 @@ export default function CoursesPage() {
   ];
 
   const filteredCourses = useMemo(() => {
-    return COURSES_CATALOG.filter((course) => {
+    return COURSES_CATALOG.map((c) => getLocalizedCourse(c, language)).filter((course) => {
       const matchesSearch =
         course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -11,6 +11,7 @@ import { Play, Settings2, HelpCircle } from 'lucide-react';
 import { downloadSingleFile, downloadAsZip } from '@/lib/utils/download';
 import { addHistoryItem } from '@/lib/storage/file-store';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { getLocalizedTool, getLocalizedCategory } from '@/lib/i18n/catalog-translations';
 import { AdSlot } from '@/components/ads/AdSlot';
 
 interface ToolLayoutProps {
@@ -33,7 +34,8 @@ interface ToolLayoutProps {
 }
 
 export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const localized = getLocalizedTool(tool, language);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [options, setOptions] = useState<Record<string, any>>(() => {
@@ -148,8 +150,8 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
       {/* Breadcrumbs */}
       <Breadcrumbs
         items={[
-          { label: tool.category.toUpperCase(), href: `/tools?cat=${tool.category}` },
-          { label: tool.name },
+          { label: getLocalizedCategory(tool.category, language).toUpperCase(), href: `/tools?cat=${tool.category}` },
+          { label: localized.name },
         ]}
       />
 
@@ -159,10 +161,10 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
           <PrivacyBadge isClientSide={tool.isClientSide} />
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
-          {tool.name}
+          {localized.name}
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          {tool.fullDesc || tool.shortDesc}
+          {localized.shortDesc}
         </p>
       </div>
 

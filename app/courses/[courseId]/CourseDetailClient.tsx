@@ -22,9 +22,11 @@ import {
 import { Course, Lesson } from '@/lib/courses/courses-data';
 import { useUserStore } from '@/lib/user/user-store';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { getLocalizedCourse } from '@/lib/i18n/catalog-translations';
 
-export default function CourseDetailClient({ course }: { course: Course }) {
-  const { t, isRtl } = useI18n();
+export default function CourseDetailClient({ course: rawCourse }: { course: Course }) {
+  const { t, isRtl, language } = useI18n();
+  const course = getLocalizedCourse(rawCourse, language);
   const { isEnrolled, enrollInCourse, unenrollCourse, markLessonComplete, enrolledCourses } = useUserStore();
 
   const enrolled = isEnrolled(course.id);
