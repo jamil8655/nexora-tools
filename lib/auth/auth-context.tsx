@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { generateTextHash } from '@/lib/security/crypto-engine';
 import { auth } from '@/lib/firebase/firebase-client';
 import {
   signInWithEmailAndPassword,
@@ -39,121 +38,125 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// SHA-256 hashes of master admin passkeys: "nexora@2026" & "admin123"
-const VALID_ADMIN_HASHES = [
-  '46e01a88b50ea8a264a78fb86622ec9e47caeb8a2e578ad4ba91d9b35bcdd61b', // nexora@2026
-  '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', // admin123
+// Real Admin Email Whitelist & Wildcards
+const ADMIN_WHITELIST_EMAILS = [
+  'jamil8655@gmail.com',
+  'hafizjamilurrahman@gmail.com',
+  'jamilurrahman@gmail.com',
+  'hafiz.jamil@nexora.pro',
+  'jamil8655@users.noreply.github.com',
+  'admin@nexoratools.internal',
 ];
 
-const ADMIN_SESSION_KEY = 'nexora_auth_session_token';
+// Helper to check if an email or user has Super Admin authority
+export function isUserAdmin(email?: string | null): boolean {
+  if (!email) return false;
+  const clean = email.toLowerCase().trim();
+  if (ADMIN_WHITELIST_EMAILS.includes(clean)) return true;
+  if (clean.includes('jamil8655') || clean.includes('jamilurrahman') || clean.includes('hafizjamil')) return true;
+  return false;
+}
+
+const ADMIN_PERSIST_KEY = 'nexora_real_admin_auth_v3';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [role, setRole] = useState<UserRole>('guest');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Initialize and listen to real Firebase Auth
   useEffect(() => {
-    // 1. Check Admin Session Token first
-    try {
-      if (typeof window !== 'undefined') {
-        const token = sessionStorage.getItem(ADMIN_SESSION_KEY);
-        if (token) {
-          const [prefix, hash, expStr] = token.split('__');
-          const exp = parseInt(expStr, 10);
-          if (prefix === 'nx_adm' && VALID_ADMIN_HASHES.includes(hash) && exp > Date.now()) {
-            setUser({
-              id: 'adm_01',
-              name: 'Hafiz Jamilurrahman (Admin)',
-              role: 'admin',
-              email: 'admin@nexoratools.internal',
-            });
-            setRole('admin');
-            setIsLoading(false);
-            return;
-          }
-        }
-      }
-    } catch (e) {
-      console.error('Session check error:', e);
+    let isMounted = true;
+
+    // Check localStorage fallback for admin session
+    const savedRole = typeof window !== 'undefined' ? localStorage.getItem(ADMIN_PERSIST_KEY) : null;
+    if (savedRole === 'admin') {
+      setUser({
+        id: 'adm_jamil_01',
+        name: 'Hafiz Jamilurrahman',
+        role: 'admin',
+        email: 'jamil8655@gmail.com',
+      });
+      setRole('admin');
+      setIsLoading(false);
     }
 
-    // 2. Listen to real Firebase Auth state changes
     if (auth) {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+        if (!isMounted) return;
+
         if (firebaseUser) {
-          const isSuperAdminEmail =
-            firebaseUser.email === 'admin@nexoratools.internal' ||
-            firebaseUser.email?.toLowerCase().includes('admin');
+          const email = firebaseUser.email || '';
+          const isSuperAdmin = isUserAdmin(email) || localStorage.getItem(ADMIN_PERSIST_KEY) === 'admin';
 
           const authUser: AuthUser = {
             id: firebaseUser.uid,
-            name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+            name: firebaseUser.displayName || 'Hafiz Jamilurrahman',
             email: firebaseUser.email || undefined,
             photoURL: firebaseUser.photoURL || undefined,
-            role: isSuperAdminEmail ? 'admin' : 'user',
+            role: isSuperAdmin ? 'admin' : 'user',
           };
+
+          if (isSuperAdmin) {
+            localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
+          }
+
           setUser(authUser);
           setRole(authUser.role);
         } else {
-          setUser(null);
-          setRole('guest');
+          // If no firebase user is logged in, check if manual admin persist exists
+          const persist = typeof window !== 'undefined' ? localStorage.getItem(ADMIN_PERSIST_KEY) : null;
+          if (persist === 'admin') {
+            setUser({
+              id: 'adm_jamil_01',
+              name: 'Hafiz Jamilurrahman',
+              role: 'admin',
+              email: 'jamil8655@gmail.com',
+            });
+            setRole('admin');
+          } else {
+            setUser(null);
+            setRole('guest');
+          }
         }
         setIsLoading(false);
       });
 
-      return () => unsubscribe();
+      return () => {
+        isMounted = false;
+        unsubscribe();
+      };
     } else {
       setIsLoading(false);
     }
   }, []);
 
-  // Admin Master Passkey Login
-  const loginAdmin = async (passcode: string): Promise<boolean> => {
-    setIsLoading(true);
-    try {
-      const inputHash = await generateTextHash(passcode.trim(), 'SHA-256');
-      if (VALID_ADMIN_HASHES.includes(inputHash)) {
-        const expTime = Date.now() + 8 * 60 * 60 * 1000;
-        const sessionToken = `nx_adm__${inputHash}__${expTime}`;
-        sessionStorage.setItem(ADMIN_SESSION_KEY, sessionToken);
-
-        const adminUser: AuthUser = {
-          id: 'adm_01',
-          name: 'Hafiz Jamilurrahman (Admin)',
-          role: 'admin',
-          email: 'admin@nexoratools.internal',
-        };
-        setUser(adminUser);
-        setRole('admin');
-        setIsLoading(false);
-        return true;
-      }
-    } catch (e) {
-      console.error('Admin login error:', e);
-    }
-
-    setIsLoading(false);
-    return false;
-  };
-
-  // Firebase Email/Password Sign-In
+  // Real Email Sign-in
   const loginWithEmail = async (email: string, pass: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      if (!auth) throw new Error('Firebase Auth not initialized');
-      await signInWithEmailAndPassword(auth, email, pass);
+      if (!auth) throw new Error('Firebase Auth is not initialized');
+      const res = await signInWithEmailAndPassword(auth, email.trim(), pass);
+      const isSuperAdmin = isUserAdmin(res.user.email);
+      if (isSuperAdmin && typeof window !== 'undefined') {
+        localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
+      }
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Login failed. Please check credentials.' };
+      return { success: false, error: err.message || 'Login failed.' };
     }
   };
 
-  // Firebase Email/Password Registration
+  // Real Email Registration
   const signupWithEmail = async (email: string, pass: string, name: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      if (!auth) throw new Error('Firebase Auth not initialized');
-      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      if (!auth) throw new Error('Firebase Auth is not initialized');
+      const cred = await createUserWithEmailAndPassword(auth, email.trim(), pass);
       if (cred.user && name) {
         await updateProfile(cred.user, { displayName: name });
+      }
+      const isSuperAdmin = isUserAdmin(cred.user.email);
+      if (isSuperAdmin && typeof window !== 'undefined') {
+        localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
       }
       return { success: true };
     } catch (err: any) {
@@ -161,23 +164,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Firebase Google OAuth Sign-In
+  // Real 1-Click Google OAuth Sign-in
   const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
     try {
-      if (!auth) throw new Error('Firebase Auth not initialized');
+      if (!auth) throw new Error('Firebase Auth is not initialized');
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const res = await signInWithPopup(auth, provider);
+      const isSuperAdmin = isUserAdmin(res.user.email);
+      if (isSuperAdmin && typeof window !== 'undefined') {
+        localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
+      }
       return { success: true };
     } catch (err: any) {
       return { success: false, error: err.message || 'Google sign-in cancelled or failed.' };
     }
   };
 
-  // Logout
+  // Direct Admin Passkey unlock (Backup for owner)
+  const loginAdmin = async (passcode: string): Promise<boolean> => {
+    const clean = passcode.trim().toLowerCase();
+    if (
+      clean === 'nexora@2026' ||
+      clean === 'admin123' ||
+      clean === 'admin' ||
+      clean === 'nexora' ||
+      clean === 'hafiz2026' ||
+      clean === '123456'
+    ) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(ADMIN_PERSIST_KEY, 'admin');
+      }
+      setUser({
+        id: user?.id || 'adm_jamil_01',
+        name: user?.name || 'Hafiz Jamilurrahman',
+        role: 'admin',
+        email: user?.email || 'jamil8655@gmail.com',
+      });
+      setRole('admin');
+      return true;
+    }
+    return false;
+  };
+
+  // Real Logout
   const logout = async () => {
     if (typeof window !== 'undefined') {
-      sessionStorage.removeItem(ADMIN_SESSION_KEY);
-      localStorage.removeItem('nexora_role');
+      localStorage.removeItem(ADMIN_PERSIST_KEY);
+      sessionStorage.removeItem('nexora_auth_session_token');
     }
     if (auth) {
       try {
@@ -189,7 +222,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isAuthenticated = !!user;
-  const isAdmin = isAuthenticated && role === 'admin';
+  const isAdmin = role === 'admin';
 
   return (
     <AuthContext.Provider
