@@ -115,6 +115,7 @@ export function Header() {
   const navLinks = [
     { label: t.nav.allTools || 'All Tools', href: '/tools', icon: Sparkles },
     { label: t.nav.courses || 'Courses', href: '/courses', icon: GraduationCap },
+    { label: t.quiz?.title || 'Quizzes', href: '/quiz', icon: HelpCircle },
     { label: t.nav.workflows || 'Workflows', href: '/workflows', icon: Workflow },
     { label: t.footer.aboutPlatform || 'About', href: '/about', icon: Info },
   ];
@@ -361,6 +362,14 @@ export function Header() {
                 >
                   <GraduationCap className="w-4 h-4 text-indigo-600" />
                   <span>{t.nav.courses}</span>
+                </Link>
+                <Link
+                  href="/quiz"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-600 transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4 text-emerald-600" />
+                  <span>{t.quiz?.title || 'Quizzes'}</span>
                 </Link>
                 <Link
                   href="/workflows"

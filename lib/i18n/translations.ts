@@ -40,6 +40,7 @@ export interface Translations {
     pdfEditor: string;
     workflows: string;
     allTools: string;
+    quiz: string;
     myTools: string;
     favorites: string;
     history: string;
@@ -254,6 +255,44 @@ export interface Translations {
     status: string;
     action: string;
   };
+  quiz: {
+    title: string;
+    subtitle: string;
+    startQuiz: string;
+    nextQuestion: string;
+    prevQuestion: string;
+    submitQuiz: string;
+    score: string;
+    passed: string;
+    failed: string;
+    retake: string;
+    explanation: string;
+    question: string;
+    of: string;
+    correctAnswer: string;
+    yourAnswer: string;
+    congratulations: string;
+    tryAgain: string;
+    selectQuiz: string;
+  };
+  dialogs: {
+    confirmTitle: string;
+    confirmMessage: string;
+    deleteConfirmation: string;
+    saveChanges: string;
+    discardChanges: string;
+    searchModalTitle: string;
+    searchModalPlaceholder: string;
+  };
+  errors: {
+    general: string;
+    notFound: string;
+    unauthorized: string;
+    fileTooLarge: string;
+    invalidFileType: string;
+    networkError: string;
+    tryAgainLater: string;
+  };
 }
 
 export const TRANSLATIONS: Record<Language, Translations> = {
@@ -298,6 +337,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       pdfEditor: 'PDF Editor',
       workflows: 'Workflows',
       allTools: 'All Tools',
+      quiz: 'Skill Quizzes',
       myTools: 'My Tools',
       favorites: 'Favorites',
       history: 'History',
@@ -512,6 +552,44 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       status: 'Status',
       action: 'Action',
     },
+    quiz: {
+      title: 'Skills & Knowledge Checks',
+      subtitle: 'Test your understanding across full-stack development, Python AI, and privacy engineering with interactive assessments.',
+      startQuiz: 'Start Knowledge Check',
+      nextQuestion: 'Next Question',
+      prevQuestion: 'Previous',
+      submitQuiz: 'Submit & View Results',
+      score: 'Your Score',
+      passed: 'Assessment Passed! 🎉',
+      failed: 'Keep Practicing',
+      retake: 'Retake Quiz',
+      explanation: 'Explanation & Key Insight',
+      question: 'Question',
+      of: 'of',
+      correctAnswer: 'Correct Answer',
+      yourAnswer: 'Your Answer',
+      congratulations: 'Congratulations! You demonstrated strong mastery.',
+      tryAgain: 'Review the lessons and try again to improve your score.',
+      selectQuiz: 'Select a Topic to Test',
+    },
+    dialogs: {
+      confirmTitle: 'Confirm Action',
+      confirmMessage: 'Are you sure you want to proceed with this operation?',
+      deleteConfirmation: 'This item will be permanently removed from your workspace.',
+      saveChanges: 'Save Changes',
+      discardChanges: 'Discard',
+      searchModalTitle: 'Universal Platform Search',
+      searchModalPlaceholder: 'Search 75+ tools, courses, lessons, and workflows...',
+    },
+    errors: {
+      general: 'An unexpected issue occurred. Please try again.',
+      notFound: 'The requested resource or page could not be located.',
+      unauthorized: 'You must be signed in with proper permissions to access this feature.',
+      fileTooLarge: 'Selected file exceeds the maximum 500 MB client-side engine limit.',
+      invalidFileType: 'Unsupported file format. Please select a valid document or image.',
+      networkError: 'Network request failed. Please check your internet connection.',
+      tryAgainLater: 'Operation timed out. Please retry in a few moments.',
+    },
   },
 
   // ==================== URDU (اردو) ====================
@@ -555,6 +633,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       pdfEditor: 'پی ڈی ایف ایڈیٹر',
       workflows: 'ورک فلوز',
       allTools: 'تمام ٹولز',
+      quiz: 'کوئز اور ٹیسٹ',
       myTools: 'میرے ٹولز',
       favorites: 'پسندیدہ',
       history: 'ہسٹری',
@@ -769,6 +848,44 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       status: 'حیثیت',
       action: 'عمل',
     },
+    quiz: {
+      title: 'مہارت و علم کی جانچ (کوئز)',
+      subtitle: 'فل اسٹیک ویب ڈیولپمنٹ، پائتھون اے آئی اور دستاویزات کی مہارت کی انٹرایکٹو جانچ کریں۔',
+      startQuiz: 'ٹیسٹ شروع کریں',
+      nextQuestion: 'اگلا سوال',
+      prevQuestion: 'پچھلا سوال',
+      submitQuiz: 'نتائج دیکھیں',
+      score: 'آپ کا اسکور',
+      passed: 'مبارک ہو! آپ کامیاب ہو گئے 🎉',
+      failed: 'دوبارہ مشق کریں',
+      retake: 'دوبارہ ٹیسٹ دیں',
+      explanation: 'وضاحت اور اہم نکتہ',
+      question: 'سوال',
+      of: 'از',
+      correctAnswer: 'درست جواب',
+      yourAnswer: 'آپ کا جواب',
+      congratulations: 'بہت خوب! آپ نے شاندار مہارت کا مظاہرہ کیا۔',
+      tryAgain: 'اسباق کا دوبارہ جائزہ لیں اور اپنا اسکور بہتر بنانے کے لیے دوبارہ کوشش کریں۔',
+      selectQuiz: 'کوئز کا موضوع منتخب کریں',
+    },
+    dialogs: {
+      confirmTitle: 'عمل کی تصدیق کریں',
+      confirmMessage: 'کیا آپ واقعی اس کارروائی کو جاری رکھنا چاہتے ہیں؟',
+      deleteConfirmation: 'یہ آئٹم آپ کے ورک اسپیس سے مستقل طور پر حذف ہو جائے گا۔',
+      saveChanges: 'تبدیلیاں محفوظ کریں',
+      discardChanges: 'منسوخ کریں',
+      searchModalTitle: 'پلیٹ فارم گلوبل سرچ',
+      searchModalPlaceholder: '75+ ٹولز، کورسز، اسباق اور ورک فلوز تلاش کریں...',
+    },
+    errors: {
+      general: 'ایک غیر متوقع مسئلہ پیش آیا ہے۔ براہ کرم دوبارہ کوشش کریں۔',
+      notFound: 'درخواست کردہ صفحہ یا وسیلہ دستیاب نہیں ہے۔',
+      unauthorized: 'اس فیچر تک رسائی کے لیے آپ کا لاگ ان ہونا ضروری ہے۔',
+      fileTooLarge: 'منتخب کردہ فائل 500MB کی کلائنٹ سائیڈ حد سے بڑی ہے۔',
+      invalidFileType: 'ناقابل قبول فائل فارمیٹ۔ درست دستاویز یا تصویر منتخب کریں۔',
+      networkError: 'انٹرنیٹ کنکشن میں خرابی ہے۔ براہ کرم اپنا رابطہ چیک کریں۔',
+      tryAgainLater: 'وقت ختم ہو گیا۔ کچھ لمحے بعد دوبارہ کوشش کریں۔',
+    },
   },
 
   // ==================== ARABIC (العربية) ====================
@@ -812,6 +929,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       pdfEditor: 'محرر PDF',
       workflows: 'سير العمل',
       allTools: 'جميع الأدوات',
+      quiz: 'الاختبارات والتقييم',
       myTools: 'أدواتي المفضلة',
       favorites: 'المفضلة',
       history: 'السجل',
@@ -1026,6 +1144,44 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       status: 'الحالة',
       action: 'الإجراء',
     },
+    quiz: {
+      title: 'اختبارات وتقييم المهارات',
+      subtitle: 'اختبر مهاراتك في تطوير الويب والذكاء الاصطناعي وهندسة المستندات عبر اختبارات تفاعلية.',
+      startQuiz: 'بدء الاختبار',
+      nextQuestion: 'السؤال التالي',
+      prevQuestion: 'السابق',
+      submitQuiz: 'تسليم الإجابات وعرض النتيجة',
+      score: 'درجتك الإجمالية',
+      passed: 'تهانينا! لقد اجتزت الاختبار بنجاح 🎉',
+      failed: 'واصل التدريب والمحاولة',
+      retake: 'إعادة الاختبار',
+      explanation: 'الشرح والتوضيح',
+      question: 'السؤال',
+      of: 'من',
+      correctAnswer: 'الإجابة الصحيحة',
+      yourAnswer: 'إجابتك',
+      congratulations: 'رائع جداً! لقد أظهرت فهماً متميزاً.',
+      tryAgain: 'راجع الدروس مرة أخرى وحاول تحسين درجتك.',
+      selectQuiz: 'اختر موضوع الاختبار',
+    },
+    dialogs: {
+      confirmTitle: 'تأكيد الإجراء',
+      confirmMessage: 'هل أنت متأكد من رغبتك في متابعة هذه العملية؟',
+      deleteConfirmation: 'سيتم حذف هذا العنصر نهائياً من مساحة العمل الخاصة بك.',
+      saveChanges: 'حفظ التغييرات',
+      discardChanges: 'إلغاء التغييرات',
+      searchModalTitle: 'البحث الشامل في المنصة',
+      searchModalPlaceholder: 'ابحث في أكثر من 75 أداة ودورة ودرس وسير عمل...',
+    },
+    errors: {
+      general: 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.',
+      notFound: 'لم يتم العثور على الصفحة أو المورد المطلوب.',
+      unauthorized: 'يجب تسجيل الدخول بالصلاحيات المناسبة للوصول إلى هذه الميزة.',
+      fileTooLarge: 'حجم الملف يتجاوز الحد الأقصى للمعالجة المحلية (500 ميجابايت).',
+      invalidFileType: 'نوع الملف غير مدعوم. يرجى اختيار مستند أو صورة صالحة.',
+      networkError: 'فشل الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت.',
+      tryAgainLater: 'انتهت المهلة. يرجى إعادة المحاولة بعد لحظات.',
+    },
   },
 
   // ==================== HINDI (हिन्दी) ====================
@@ -1069,6 +1225,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       pdfEditor: 'PDF एडिटर',
       workflows: 'वर्कफ़्लो',
       allTools: 'सभी टूल्स',
+      quiz: 'क्विज़ व टेस्ट',
       myTools: 'मेरे टूल्स',
       favorites: 'पसंदीदा',
       history: 'इतिहास',
@@ -1282,6 +1439,44 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       date: 'तारीख',
       status: 'स्थिति',
       action: 'कार्रवाई',
+    },
+    quiz: {
+      title: 'कौशल और ज्ञान की जांच (क्विज़)',
+      subtitle: 'फुल-स्टैक वेब डेवलपमेंट, पायथन एआई और दस्तावेज़ विशेषज्ञता की इंटरैक्टिव जांच करें।',
+      startQuiz: 'टेस्ट शुरू करें',
+      nextQuestion: 'अगला प्रश्न',
+      prevQuestion: 'पिछला प्रश्न',
+      submitQuiz: 'रिजल्ट देखें',
+      score: 'आपका स्कोर',
+      passed: 'बधाई हो! आप उत्तीर्ण हुए 🎉',
+      failed: 'पुनः अभ्यास करें',
+      retake: 'दोबारा टेस्ट दें',
+      explanation: 'व्याख्या और मुख्य बिंदु',
+      question: 'प्रश्न',
+      of: 'में से',
+      correctAnswer: 'सही उत्तर',
+      yourAnswer: 'आपका उत्तर',
+      congratulations: 'अद्भुत! आपने शानदार ज्ञान का प्रदर्शन किया।',
+      tryAgain: 'पाठों की पुनः समीक्षा करें और बेहतर स्कोर के लिए फिर से प्रयास करें।',
+      selectQuiz: 'क्विज़ का विषय चुनें',
+    },
+    dialogs: {
+      confirmTitle: 'कार्रवाई की पुष्टि करें',
+      confirmMessage: 'क्या आप वाकई इस ऑपरेशन को आगे बढ़ाना चाहते हैं?',
+      deleteConfirmation: 'यह आइटम आपके वर्कस्पेस से स्थायी रूप से हटा दिया जाएगा।',
+      saveChanges: 'परिवर्तन सहेजें',
+      discardChanges: 'रद्द करें',
+      searchModalTitle: 'यूनिवर्सल प्लेटफ़ॉर्म खोज',
+      searchModalPlaceholder: '75+ टूल्स, कोर्सेज़, पाठ और वर्कफ़्लो खोजें...',
+    },
+    errors: {
+      general: 'एक अप्रत्याशित समस्या उत्पन्न हुई। कृपया पुनः प्रयास करें।',
+      notFound: 'अनुरोधित पृष्ठ या संसाधन नहीं मिला।',
+      unauthorized: 'इस सुविधा तक पहुँचने के लिए आपका लॉगिन होना आवश्यक है।',
+      fileTooLarge: 'चयनित फ़ाइल 500MB की लोकल सीमा से अधिक है।',
+      invalidFileType: 'अमान्य फ़ाइल प्रारूप। कृपया मान्य दस्तावेज़ या छवि चुनें।',
+      networkError: 'नेटवर्क त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।',
+      tryAgainLater: 'समय समाप्त हो गया। कृपया कुछ पलों में पुनः प्रयास करें।',
     },
   },
 };
