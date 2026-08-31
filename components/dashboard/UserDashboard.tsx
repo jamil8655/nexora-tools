@@ -24,6 +24,11 @@ import {
   Workflow,
   CheckCircle2,
   XCircle,
+  CreditCard,
+  Sliders,
+  Share2,
+  Eye,
+  FileArchive,
 } from 'lucide-react';
 import {
   StoredFileItem,
@@ -35,12 +40,15 @@ import {
   getActivityHistory,
   clearActivityHistory,
   getSavedWorkflows,
+  deleteWorkflow,
+  purgeAllLocalData,
 } from '@/lib/storage/indexeddb-store';
 import { TOOLS_LIST } from '@/lib/tools-config';
 import { formatBytes } from '@/lib/utils/formatters';
+import { downloadSingleFile } from '@/lib/utils/download';
 
 export function UserDashboard() {
-  const [activeTab, setActiveTab] = useState<'files' | 'history' | 'workflows'>('files');
+  const [activeTab, setActiveTab] = useState<'files' | 'history' | 'workflows' | 'usage' | 'plan' | 'privacy'>('files');
   const [storedFiles, setStoredFiles] = useState<StoredFileItem[]>([]);
   const [historyItems, setHistoryItems] = useState<ActivityHistoryItem[]>([]);
   const [savedWorkflows, setSavedWorkflows] = useState<SavedWorkflow[]>([]);
@@ -61,7 +69,7 @@ export function UserDashboard() {
   };
 
   const handleDeleteFile = async (id: string) => {
-    if (confirm('Delete this file from your local storage?')) {
+    if (confirm('Delete this file from your local workspace storage?')) {
       await deleteStoredFile(id);
       loadDashboardData();
     }
@@ -73,16 +81,45 @@ export function UserDashboard() {
   };
 
   const handleClearHistory = async () => {
-    if (confirm('Clear all activity logs?')) {
+    if (confirm('Clear all local activity history logs?')) {
       await clearActivityHistory();
       loadDashboardData();
     }
   };
 
-  const filteredFiles = storedFiles.filter((f) =>
-    f.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-    f.toolUsed.toLowerCase().includes(searchFilter.toLowerCase())
+  const handleDeleteWorkflow = async (id: string) => {
+    if (confirm('Delete this saved workflow?')) {
+      await deleteWorkflow(id);
+      loadDashboardData();
+    }
+  };
+
+  const handleExportDataJson = () => {
+    const backup = {
+      filesCount: storedFiles.length,
+      history: historyItems,
+      workflows: savedWorkflows,
+      exportedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    downloadSingleFile(blob, 'nexora_user_workspace_backup.json');
+  };
+
+  const handlePurgeAll = async () => {
+    if (confirm('Purge all stored files, workflows, and history from this device?')) {
+      await purgeAllLocalData();
+      loadDashboardData();
+      alert('Local workspace storage has been cleared.');
+    }
+  };
+
+  const filteredFiles = storedFiles.filter(
+    (f) =>
+      f.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      f.toolUsed.toLowerCase().includes(searchFilter.toLowerCase())
   );
+
+  const totalBytes = storedFiles.reduce((acc, f) => acc + (f.size || 0), 0);
 
   const quickActions = [
     { label: 'Passport Studio', href: '/tools/passport-photo-maker', icon: Sparkles, color: 'text-blue-500 bg-blue-500/10' },
@@ -99,10 +136,10 @@ export function UserDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              NEXORA Workspace & My Files Hub
+              NEXORA User Workspace Hub
             </h1>
             <p className="text-xs sm:text-sm text-brand-100">
-              Manage your local processed files, automated workflows, and conversion history with 100% private in-browser storage.
+              Manage your local files, automated workflows, and conversion history with 100% private in-browser storage.
             </p>
           </div>
 
@@ -112,24 +149,22 @@ export function UserDashboard() {
           </div>
         </div>
 
-        {/* Quick Actions Row */}
+        {/* Quick Launch Row */}
         <div className="space-y-2 pt-2">
           <span className="text-[11px] font-bold uppercase tracking-wider text-brand-200">
             Quick Launch:
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-            {quickActions.map((action) => {
-              const Icon = action.icon;
+            {quickActions.map((qa) => {
+              const Icon = qa.icon;
               return (
                 <Link
-                  key={action.label}
-                  href={action.href}
-                  className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold text-white transition-all shadow-sm backdrop-blur-md hover:scale-105"
+                  key={qa.label}
+                  href={qa.href}
+                  className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 backdrop-blur-md flex items-center gap-2.5 transition-all text-xs font-bold text-white hover:scale-105"
                 >
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${action.color}`}>
-                    <Icon className="w-3.5 h-3.5" />
-                  </div>
-                  <span className="truncate">{action.label}</span>
+                  <Icon className="w-4 h-4 text-brand-200" />
+                  <span className="truncate">{qa.label}</span>
                 </Link>
               );
             })}
@@ -137,250 +172,379 @@ export function UserDashboard() {
         </div>
       </div>
 
-      {/* 2. STATS ROW */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">My Processed Files</span>
-            <div className="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
-              <FileCheck className="w-4 h-4" />
-            </div>
+      {/* 2. STATS CARDS */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-bold uppercase">Stored Files</span>
+            <FileCheck className="w-4 h-4 text-brand-600" />
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
             {storedFiles.length}
           </div>
+          <p className="text-[11px] text-slate-400 font-medium">Ready to download</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Activity History Items</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
-            </div>
+        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-bold uppercase">Storage Footprint</span>
+            <HardDrive className="w-4 h-4 text-purple-600" />
+          </div>
+          <div className="text-2xl font-black text-slate-900 dark:text-white">
+            {formatBytes(totalBytes)}
+          </div>
+          <p className="text-[11px] text-slate-400 font-medium">Private on this device</p>
+        </div>
+
+        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-bold uppercase">Recent Operations</span>
+            <History className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
             {historyItems.length}
           </div>
+          <p className="text-[11px] text-slate-400 font-medium">Auto-clears in 24h</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Saved Workflows</span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <Workflow className="w-4 h-4" />
-            </div>
+        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-bold uppercase">Saved Workflows</span>
+            <Workflow className="w-4 h-4 text-indigo-600" />
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
             {savedWorkflows.length}
           </div>
+          <p className="text-[11px] text-slate-400 font-medium">Automated pipelines</p>
         </div>
       </div>
 
-      {/* 3. TABS CONTROLLER */}
-      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-        <div className="flex items-center gap-2">
-          {[
-            { id: 'files', label: `My Files (${storedFiles.length})` },
-            { id: 'history', label: `Recent Activity (${historyItems.length})` },
-            { id: 'workflows', label: `Saved Workflows (${savedWorkflows.length})` },
-          ].map((tab) => (
+      {/* 3. USER NAVIGATION TABS */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-x-auto">
+        {[
+          { id: 'files', label: 'My Files & Downloads', icon: FileArchive },
+          { id: 'history', label: 'Activity History', icon: History },
+          { id: 'workflows', label: 'Saved Workflows', icon: Workflow },
+          { id: 'usage', label: 'Usage Meter', icon: Zap },
+          { id: 'plan', label: 'My Plan', icon: CreditCard },
+          { id: 'privacy', label: 'Privacy & Data Export', icon: ShieldCheck },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all ${
-                activeTab === tab.id
-                  ? 'bg-brand-600 text-white shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all ${
+                isActive
+                  ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              {tab.label}
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
 
-        {activeTab === 'files' && (
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+      {/* 4. TAB CONTENTS */}
+
+      {/* TAB A: MY FILES */}
+      {activeTab === 'files' && (
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <FileCheck className="w-4 h-4 text-brand-600" />
+              <span>Processed Files ({storedFiles.length})</span>
+            </h3>
+
             <input
               type="text"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
               placeholder="Search files..."
-              className="pl-8 pr-3 py-1.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+              className="px-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none"
             />
           </div>
-        )}
 
-        {activeTab === 'history' && historyItems.length > 0 && (
-          <button
-            type="button"
-            onClick={handleClearHistory}
-            className="text-xs font-bold text-rose-600 hover:underline flex items-center gap-1"
-          >
-            <Trash2 className="w-3 h-3" /> Clear History
-          </button>
-        )}
-      </div>
-
-      {/* 4. TAB CONTENTS */}
-      {/* A. MY FILES TAB */}
-      {activeTab === 'files' && (
-        <div className="space-y-4">
-          {filteredFiles.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {filteredFiles.length === 0 ? (
+            <div className="py-12 text-center text-xs text-slate-400 space-y-2">
+              <p className="font-bold text-slate-500">No processed files currently saved.</p>
+              <p>When you compress, convert, or edit files, they will be accessible here for instant download.</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
               {filteredFiles.map((file) => (
                 <div
                   key={file.id}
-                  className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between"
+                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 text-xs"
                 >
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-300">
-                        {file.category}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleFavorite(file.id)}
-                        className={`p-1 rounded-lg ${file.isFavorite ? 'text-amber-500' : 'text-slate-400'}`}
-                      >
-                        <Star className="w-4 h-4 fill-current" />
-                      </button>
-                    </div>
-
-                    <h4 className="font-extrabold text-xs text-slate-900 dark:text-white truncate" title={file.name}>
+                  <div className="min-w-0">
+                    <div className="font-bold text-slate-900 dark:text-white truncate">
                       {file.name}
-                    </h4>
-
-                    <div className="text-[11px] text-slate-500">
-                      Tool: {file.toolUsed} • {formatBytes(file.size)}
+                    </div>
+                    <div className="text-[11px] text-slate-400 font-mono">
+                      {formatBytes(file.size)} • Tool: {file.toolUsed} • {new Date(file.createdAt).toLocaleDateString()}
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <span className="text-[10px] text-slate-400">
-                      {new Date(file.createdAt).toLocaleDateString()}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFavorite(file.id)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 transition-colors"
+                      title="Favorite"
+                    >
+                      <Star
+                        className={`w-4 h-4 ${file.isFavorite ? 'fill-amber-400 text-amber-400' : ''}`}
+                      />
+                    </button>
 
-                    <div className="flex items-center gap-2">
-                      {file.dataUrl && (
-                        <a
-                          href={file.dataUrl}
-                          download={file.name}
-                          className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors"
-                          title="Download"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                        </a>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteFile(file.id)}
-                        className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = file.blobUrl || file.dataUrl;
+                        if (url) {
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = file.name;
+                          a.click();
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl shadow-xs flex items-center gap-1 text-[11px]"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteFile(file.id)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               ))}
-            </div>
-          ) : (
-            <div className="p-12 text-center rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-3">
-              <FileCheck className="w-10 h-10 text-slate-400 mx-auto" />
-              <div className="space-y-1">
-                <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200">No Processed Files Yet</h4>
-                <p className="text-xs text-slate-500">
-                  Files processed in Passport Studio, Background Remover, or PDF tools will appear here.
-                </p>
-              </div>
             </div>
           )}
         </div>
       )}
 
-      {/* B. ACTIVITY HISTORY TAB */}
+      {/* TAB B: HISTORY */}
       {activeTab === 'history' && (
-        <div className="space-y-3">
-          {historyItems.length > 0 ? (
-            <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <History className="w-4 h-4 text-brand-600" />
+              <span>Activity History ({historyItems.length})</span>
+            </h3>
+
+            {historyItems.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearHistory}
+                className="text-xs font-bold text-rose-600 hover:underline"
+              >
+                Clear History
+              </button>
+            )}
+          </div>
+
+          {historyItems.length === 0 ? (
+            <div className="py-12 text-center text-xs text-slate-400">
+              No recent processing history recorded.
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
               {historyItems.map((item) => (
                 <div
                   key={item.id}
-                  className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-between"
+                  className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
                 >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-7 h-7 rounded-xl flex items-center justify-center ${
-                        item.status === 'Completed'
-                          ? 'bg-emerald-100 text-emerald-600'
-                          : 'bg-rose-100 text-rose-600'
-                      }`}
-                    >
-                      {item.status === 'Completed' ? (
-                        <CheckCircle2 className="w-4 h-4" />
-                      ) : (
-                        <XCircle className="w-4 h-4" />
-                      )}
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-slate-900 dark:text-white">
-                        {item.toolName} — {item.fileName}
-                      </div>
-                      <div className="text-[10px] text-slate-500">
-                        {new Date(item.timestamp).toLocaleTimeString()} • Duration: {(item.durationMs / 1000).toFixed(1)}s
-                      </div>
+                  <div>
+                    <div className="font-bold text-slate-900 dark:text-white">{item.toolName}</div>
+                    <div className="text-[11px] text-slate-400 font-mono">
+                      {item.fileName} • {item.timestamp}
                     </div>
                   </div>
 
-                  <Link
-                    href={`/tools/${item.toolId}`}
-                    className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold rounded-lg hover:text-brand-600"
-                  >
-                    Run Again
-                  </Link>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800">
+                    {item.status}
+                  </span>
                 </div>
               ))}
-            </div>
-          ) : (
-            <div className="p-12 text-center rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-3">
-              <Clock className="w-10 h-10 text-slate-400 mx-auto" />
-              <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200">No Recent Activity</h4>
             </div>
           )}
         </div>
       )}
 
-      {/* C. SAVED WORKFLOWS TAB */}
+      {/* TAB C: SAVED WORKFLOWS */}
       {activeTab === 'workflows' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {savedWorkflows.map((wf) => (
-            <div
-              key={wf.id}
-              className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between"
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-black text-xs text-slate-900 dark:text-white flex items-center gap-2">
-                    <Workflow className="w-4 h-4 text-purple-600" />
-                    <span>{wf.name}</span>
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    {wf.steps.length} Steps
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500">{wf.description}</p>
-              </div>
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <Workflow className="w-4 h-4 text-purple-600" />
+              <span>Your Saved Workflows ({savedWorkflows.length})</span>
+            </h3>
 
-              <Link
-                href="/workflows"
-                className="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2"
-              >
-                <Play className="w-3.5 h-3.5 fill-current" /> Launch in Workflow Builder
-              </Link>
+            <Link
+              href="/workflows"
+              className="text-xs font-bold text-purple-600 hover:underline"
+            >
+              + Create New Workflow
+            </Link>
+          </div>
+
+          {savedWorkflows.length === 0 ? (
+            <div className="py-12 text-center text-xs text-slate-400 space-y-2">
+              <p className="font-bold text-slate-500">No saved workflows yet.</p>
+              <p>Chain multiple tools into 1-click automated pipelines in the Smart Workflows builder.</p>
             </div>
-          ))}
+          ) : (
+            <div className="space-y-3">
+              {savedWorkflows.map((wf) => (
+                <div
+                  key={wf.id}
+                  className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 flex items-center justify-between gap-4 text-xs"
+                >
+                  <div>
+                    <div className="font-black text-slate-900 dark:text-white text-sm">
+                      {wf.name}
+                    </div>
+                    <div className="text-[11px] text-purple-700 dark:text-purple-300 font-mono">
+                      {wf.steps.length} Steps: {wf.steps.map((s) => s.toolName).join(' ➔ ')}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href="/workflows"
+                      className="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl shadow-xs"
+                    >
+                      Run Pipeline
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteWorkflow(wf.id)}
+                      className="p-1.5 text-slate-400 hover:text-rose-600"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB D: USAGE METER */}
+      {activeTab === 'usage' && (
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <Zap className="w-4 h-4 text-brand-600" />
+              <span>Real Resource Usage Meter</span>
+            </h3>
+            <p className="text-xs text-slate-500">Live processing metrics on your active device session.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="font-bold text-slate-900 dark:text-white">Daily File Processing</div>
+              <div className="text-xl font-black text-brand-600">{historyItems.length} Operations</div>
+              <p className="text-[11px] text-emerald-600 font-semibold">Unlimited Free In-Browser Engine</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+              <div className="font-bold text-slate-900 dark:text-white">Local Storage Quota</div>
+              <div className="text-xl font-black text-purple-600">{formatBytes(totalBytes)}</div>
+              <p className="text-[11px] text-slate-500 font-semibold">Available capacity: ~50 GB in IndexedDB</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB E: MY PLAN */}
+      {activeTab === 'plan' && (
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-brand-600" />
+              <span>Your Active Plan & Privileges</span>
+            </h3>
+            <p className="text-xs text-slate-500">Account status and maximum file processing limits.</p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-black text-base text-emerald-900 dark:text-emerald-200">
+                NEXORA Community Free Plan
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-600 text-white">
+                ACTIVE
+              </span>
+            </div>
+
+            <p className="text-xs text-emerald-800 dark:text-emerald-300 leading-relaxed">
+              You have unrestricted free access to all 75+ productivity utilities, in-browser PDF manipulation, 4K video downloading, and Passport Photo Maker with 500 MB per-file processing.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* TAB F: PRIVACY & DATA EXPORT */}
+      {activeTab === 'privacy' && (
+        <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Workspace Privacy & Local Data Management</span>
+            </h3>
+            <p className="text-xs text-slate-500">
+              Export your saved workflows or purge all cached workspace data with 1 click.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+              <div>
+                <h4 className="font-bold text-xs text-slate-900 dark:text-white">Export Workspace Metadata</h4>
+                <p className="text-[11px] text-slate-500">
+                  Download a JSON backup of your saved workflows and activity history.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleExportDataJson}
+                className="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-xl shadow-sm"
+              >
+                Export JSON
+              </button>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-rose-50/50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 space-y-3">
+              <div>
+                <h4 className="font-bold text-xs text-rose-900 dark:text-rose-200">Purge Local Workspace</h4>
+                <p className="text-[11px] text-rose-700 dark:text-rose-300">
+                  Instantly delete all local files, history, and workflows from this browser.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handlePurgeAll}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-sm"
+              >
+                Purge All Data
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
