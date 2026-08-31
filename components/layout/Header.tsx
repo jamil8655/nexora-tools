@@ -216,11 +216,24 @@ export function Header() {
               </select>
             </div>
 
+            {/* Global Search Button (Available on both mobile and desktop) */}
+            <button
+              type="button"
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 text-xs font-mono shrink-0"
+              title="Quick Search (⌘K)"
+              aria-label="Search"
+            >
+              <Search className="w-4 h-4" />
+              <span className="hidden md:inline font-bold">⌘K</span>
+            </button>
+
             {/* Notification Bell */}
             <Link
               href="/notifications"
               className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all shrink-0"
               title={t.userDashboard.notificationsTitle}
+              aria-label="Notifications"
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
@@ -228,18 +241,7 @@ export function Header() {
               )}
             </Link>
 
-            {/* Desktop Global Search Button */}
-            <button
-              type="button"
-              onClick={() => setIsSearchOpen(true)}
-              className="hidden sm:flex p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all items-center gap-1.5 text-xs font-mono shrink-0"
-              title="Quick Search (⌘K)"
-            >
-              <Search className="w-4 h-4" />
-              <span className="hidden md:inline font-bold">⌘K</span>
-            </button>
-
-            {/* User Profile Menu OR Clean Log In Button */}
+            {/* User Profile Menu OR Clean Log In Button (Single Primary Profile Entry) */}
             {isAuthenticated ? (
               <div className="shrink-0">
                 <UserMenuDropdown />
