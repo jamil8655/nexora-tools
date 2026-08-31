@@ -118,13 +118,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-white text-slate-900 antialiased selection:bg-brand-500 selection:text-white">
+      <body className="min-h-screen flex flex-col bg-white text-slate-900 antialiased selection:bg-brand-500 selection:text-white w-full max-w-full overflow-x-hidden">
         <ThemeProvider>
           <AuthProvider>
             <I18nProvider>
               <UserStoreProvider>
                 <Header />
-                <main className="flex-1 pb-16 xl:pb-0">{children}</main>
+                <main className="flex-1 w-full max-w-full overflow-x-hidden pb-20 lg:pb-0">{children}</main>
                 <Footer />
                 <MobileNav />
                 <PwaInstallBanner />

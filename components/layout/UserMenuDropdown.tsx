@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { useUserStore } from '@/lib/user/user-store';
 
 interface UserMenuDropdownProps {
   userName?: string;
@@ -30,12 +31,13 @@ export function UserMenuDropdown({
 }: UserMenuDropdownProps) {
   const router = useRouter();
   const { user, isAdmin, logout } = useAuth();
+  const { profilePhoto } = useUserStore();
   const { t, isRtl } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const displayName = user?.name || userName || 'Hafiz Jamilurrahman';
-  const displayEmail = user?.email || userEmail || 'jamil8655@gmail.com';
+  const displayName = user?.name || userName || 'User';
+  const displayEmail = user?.email || userEmail || '';
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -68,7 +70,6 @@ export function UserMenuDropdown({
   const menuItems = [
     { label: t.nav.myProfile, href: '/account', icon: User },
     { label: t.courses.myCourses, href: '/courses', icon: GraduationCap },
-    { label: t.nav.myTools, href: '/account', icon: Wrench },
     { label: t.nav.favorites, href: '/favorites', icon: Star },
     { label: t.nav.history, href: '/history', icon: Clock },
     { label: t.nav.downloads, href: '/downloads', icon: Download },
@@ -82,14 +83,22 @@ export function UserMenuDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all text-slate-800 dark:text-slate-100 font-bold text-xs shadow-xs focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
+        className="flex items-center gap-1 sm:gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all text-slate-800 dark:text-slate-100 font-bold text-xs shadow-xs focus:outline-hidden"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <div className="w-6 h-6 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-[11px] font-black shadow-xs shrink-0">
-          {displayName.charAt(0).toUpperCase()}
-        </div>
-        <span className="hidden sm:inline-block max-w-[110px] truncate text-xs font-extrabold">
+        {profilePhoto ? (
+          <img
+            src={profilePhoto}
+            alt="Avatar"
+            className="w-6 h-6 rounded-xl object-cover border border-brand-500 shrink-0"
+          />
+        ) : (
+          <div className="w-6 h-6 rounded-xl bg-linear-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-[11px] font-black shadow-xs shrink-0">
+            {displayName.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <span className="hidden sm:inline-block max-w-[100px] truncate text-xs font-extrabold">
           {displayName}
         </span>
         <ChevronDown
@@ -102,17 +111,25 @@ export function UserMenuDropdown({
       {/* Dropdown Menu Modal */}
       {isOpen && (
         <div
-          className={`absolute mt-2 w-64 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 ${
+          className={`absolute mt-2 w-64 max-w-[calc(100vw-24px)] rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 ${
             isRtl ? 'left-0' : 'right-0'
           }`}
         >
           {/* User Info Header */}
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-md shrink-0">
-                {displayName.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
+              {profilePhoto ? (
+                <img
+                  src={profilePhoto}
+                  alt="Avatar"
+                  className="w-9 h-9 rounded-2xl object-cover border border-brand-500 shrink-0"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-2xl bg-linear-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-md shrink-0">
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
                 <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 truncate">
                   {displayName}
                 </p>
