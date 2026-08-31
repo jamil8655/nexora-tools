@@ -1,0 +1,40 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.admin == true ||
+        request.auth.token.super_admin == true ||
+        request.auth.token.email == 'jamil8655@gmail.com' ||
+        request.auth.token.email == 'hafizjamilurrahman@gmail.com' ||
+        request.auth.token.email == 'jamilurrahman@gmail.com'
+      );
+    }
+
+    // User Private Storage (PDFs, Images, Conversion outputs)
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Temporary Processing Files (auto-cleaned after conversion)
+    match /temp/{jobId}/{fileName} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Public Assets / Tool Templates: Anyone can read, only Admin can write
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admin System Backups & Audit Exports
+    match /admin/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
