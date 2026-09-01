@@ -12,10 +12,8 @@ import {
   Bell,
   LogIn,
   Info,
-  Languages,
   HelpCircle,
 } from 'lucide-react';
-import { useTheme } from './ThemeContext';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useUserStore } from '@/lib/user/user-store';
@@ -25,9 +23,8 @@ import { AuthModal } from '@/components/auth/AuthModal';
 
 export function Header() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-  const { language, setLanguage, t, isRtl } = useI18n();
-  const { user, isAdmin, isAuthenticated, logout } = useAuth();
+  const { t } = useI18n();
+  const { isAuthenticated } = useAuth();
   const { unreadCount } = useUserStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -92,13 +89,13 @@ export function Header() {
       <header
         className={`sticky top-0 z-40 w-full max-w-full transition-all duration-200 ${
           isScrolled
-            ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm'
-            : 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800'
+            ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-md'
+            : 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs'
         }`}
       >
-        <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
-          {/* Left Area: Official Brand Logo & Name (Clean, No Duplicate Left Menus) */}
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0 shrink">
+        <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4 min-w-0">
+          {/* Left Area: Official Brand Logo & Name */}
+          <div className="flex items-center gap-3 sm:gap-6 min-w-0 shrink">
             <Link
               href="/"
               className="flex items-center gap-2 sm:gap-2.5 group transition-transform active:scale-95 shrink-0"
@@ -109,10 +106,10 @@ export function Header() {
               </div>
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-base sm:text-xl tracking-tight bg-clip-text text-transparent bg-linear-to-r from-slate-900 via-brand-900 to-indigo-900 dark:from-white dark:via-brand-200 dark:to-indigo-200">
+                  <span className="font-black text-base sm:text-xl tracking-tight text-slate-900 dark:text-white">
                     NEXORA
                   </span>
-                  <span className="px-1.5 py-0.5 rounded-md bg-brand-500/10 dark:bg-brand-400/10 text-brand-600 dark:text-brand-400 text-[9px] font-black tracking-wider uppercase border border-brand-500/20">
+                  <span className="px-1.5 py-0.5 rounded-md bg-brand-600 text-white text-[9px] font-black tracking-wider uppercase shadow-xs">
                     PRO
                   </span>
                 </div>
@@ -123,7 +120,7 @@ export function Header() {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 ml-3">
+            <nav className="hidden lg:flex items-center gap-1 ml-2">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname === link.href;
@@ -133,11 +130,11 @@ export function Header() {
                     href={link.href}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       isActive
-                        ? 'bg-brand-50 text-brand-700 dark:bg-brand-950/50 dark:text-brand-300'
-                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        ? 'bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 shadow-xs'
+                        : 'text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
+                    <Icon className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
                     <span>{link.label}</span>
                   </Link>
                 );
@@ -145,40 +142,24 @@ export function Header() {
             </nav>
           </div>
 
-          {/* Right Action Bar (The Single Authoritative Profile & Tools Location) */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 min-w-0">
+          {/* Right Action Bar (Search + Notification + Profile / Login) */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
             {/* Desktop Install App Trigger */}
             <button
               type="button"
               onClick={handleInstallClick}
-              className="hidden xl:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold transition-all shadow-xs shrink-0"
+              className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold transition-all shadow-xs shrink-0"
               title="Install NEXORA App"
             >
               <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Install App</span>
             </button>
 
-            {/* Language Selector */}
-            <div className="shrink-0">
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as any)}
-                className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-hidden cursor-pointer"
-                title="Change Language"
-                aria-label="Select Language"
-              >
-                <option value="en">EN</option>
-                <option value="ur">اردو</option>
-                <option value="ar">عربي</option>
-                <option value="hi">हिन्दी</option>
-              </select>
-            </div>
-
             {/* Global Search Button */}
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 text-xs font-mono shrink-0"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 text-xs font-mono shrink-0 shadow-xs"
               title="Quick Search (⌘K)"
               aria-label="Search"
             >
@@ -189,11 +170,11 @@ export function Header() {
             {/* Notification Bell */}
             <Link
               href="/notifications"
-              className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all shrink-0"
+              className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shrink-0 shadow-xs"
               title={t.userDashboard.notificationsTitle}
               aria-label="Notifications"
             >
-              <Bell className="w-4 h-4" />
+              <Bell className="w-4 h-4 text-slate-600 dark:text-slate-300" />
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-brand-600 ring-2 ring-white dark:ring-slate-900" />
               )}
@@ -208,7 +189,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setIsAuthModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-black text-xs transition-all shadow-md shadow-brand-600/20 active:scale-95 shrink-0"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-black text-xs transition-all shadow-md shadow-brand-600/20 active:scale-95 shrink-0"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span className="text-xs">{t.nav.login || 'Log In'}</span>

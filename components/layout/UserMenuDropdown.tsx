@@ -18,9 +18,14 @@ import {
   Camera,
   LayoutDashboard,
   Sparkles,
+  Languages,
+  Sun,
+  Moon,
+  Laptop,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { useTheme } from '@/components/layout/ThemeContext';
 import { useUserStore } from '@/lib/user/user-store';
 
 interface UserMenuDropdownProps {
@@ -35,7 +40,8 @@ export function UserMenuDropdown({
   const router = useRouter();
   const { user, isAdmin, logout } = useAuth();
   const { profilePhoto, updateProfilePhoto } = useUserStore();
-  const { t, isRtl } = useI18n();
+  const { language, setLanguage, t, isRtl } = useI18n();
+  const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -120,11 +126,11 @@ export function UserMenuDropdown({
         className="hidden"
       />
 
-      {/* Profile Trigger Button (Visible, Polished, High Contrast) */}
+      {/* Profile Trigger Button (Crisp, High-Contrast, No distracting green dot) */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 sm:gap-2.5 p-1 sm:px-3 sm:py-1.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border-2 border-brand-500/30 hover:border-brand-500 transition-all text-slate-800 dark:text-slate-100 font-bold text-xs shadow-md shadow-brand-500/5 focus:outline-hidden active:scale-95"
+        className="flex items-center gap-1.5 sm:gap-2.5 p-1 sm:px-3 sm:py-1.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border-2 border-brand-500/40 hover:border-brand-600 transition-all text-slate-800 dark:text-slate-100 font-bold text-xs shadow-md shadow-slate-200/50 dark:shadow-none focus:outline-hidden active:scale-95"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="Open User Profile Menu"
@@ -141,7 +147,6 @@ export function UserMenuDropdown({
               {displayName.charAt(0).toUpperCase()}
             </div>
           )}
-          <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
         </div>
 
         <div className="hidden sm:flex flex-col items-start min-w-0 text-left">
@@ -154,7 +159,7 @@ export function UserMenuDropdown({
         </div>
 
         <ChevronDown
-          className={`w-3.5 h-3.5 text-slate-400 dark:text-slate-300 transition-transform duration-200 ${
+          className={`w-3.5 h-3.5 text-slate-500 dark:text-slate-300 transition-transform duration-200 ${
             isOpen ? 'rotate-180 text-brand-600' : ''
           }`}
         />
@@ -163,12 +168,12 @@ export function UserMenuDropdown({
       {/* Dropdown Menu Modal */}
       {isOpen && (
         <div
-          className={`absolute mt-2 w-72 max-w-[calc(100vw-20px)] rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 ${
+          className={`absolute mt-2 w-80 max-w-[calc(100vw-20px)] rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 ${
             isRtl ? 'left-0' : 'right-0'
           }`}
         >
           {/* User Info Header with 1-Click Photo Upload */}
-          <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-linear-to-br from-slate-50 to-brand-50/30 dark:from-slate-800/60 dark:to-brand-950/20">
+          <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-linear-to-br from-slate-50 to-brand-50/40 dark:from-slate-800/80 dark:to-brand-950/30">
             <div className="flex items-center gap-3 min-w-0">
               <div className="relative group shrink-0">
                 {profilePhoto ? (
@@ -185,7 +190,7 @@ export function UserMenuDropdown({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 bg-black/50 text-white rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                  className="absolute inset-0 bg-black/60 text-white rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
                   title="Upload Profile Photo"
                 >
                   <Camera className="w-4 h-4" />
@@ -198,14 +203,14 @@ export function UserMenuDropdown({
                 </p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{displayEmail}</p>
 
-                <div className="mt-1 flex items-center gap-1.5">
+                <div className="mt-1.5 flex items-center gap-2">
                   {isAdmin ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black border border-purple-500/20">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-700 dark:text-purple-300 text-[10px] font-black border border-purple-500/30">
                       <ShieldCheck className="w-3 h-3" />
                       <span>SUPER ADMIN</span>
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-brand-500/10 text-brand-600 dark:text-brand-400 text-[10px] font-black border border-brand-500/20">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-brand-500/15 text-brand-700 dark:text-brand-300 text-[10px] font-black border border-brand-500/30">
                       <Sparkles className="w-3 h-3" />
                       <span>PRO MEMBER</span>
                     </span>
@@ -213,7 +218,7 @@ export function UserMenuDropdown({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-[10px] font-bold text-brand-600 hover:underline inline-flex items-center gap-0.5"
+                    className="text-[10px] font-bold text-brand-600 hover:text-brand-700 dark:text-brand-400 underline inline-flex items-center gap-0.5"
                   >
                     <Camera className="w-2.5 h-2.5" />
                     <span>Change Photo</span>
@@ -223,8 +228,42 @@ export function UserMenuDropdown({
             </div>
           </div>
 
+          {/* Quick Language Selector Inside Profile Menu */}
+          <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] font-extrabold text-slate-500 dark:text-slate-400 px-1">
+              <span className="flex items-center gap-1.5">
+                <Languages className="w-3.5 h-3.5 text-brand-600" />
+                <span>Select Language</span>
+              </span>
+              <span className="uppercase text-[9px] font-mono bg-brand-100 dark:bg-brand-950/80 text-brand-700 dark:text-brand-300 px-1.5 py-0.2 rounded font-black">
+                {language}
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-1">
+              {[
+                { id: 'en', label: 'English' },
+                { id: 'ur', label: 'اردو' },
+                { id: 'ar', label: 'العربية' },
+                { id: 'hi', label: 'हिन्दी' },
+              ].map((l) => (
+                <button
+                  key={l.id}
+                  type="button"
+                  onClick={() => setLanguage(l.id as any)}
+                  className={`py-1.5 px-1 rounded-xl text-xs font-black text-center transition-all ${
+                    language === l.id
+                      ? 'bg-brand-600 text-white shadow-xs'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-brand-500'
+                  }`}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Nav Items */}
-          <div className="py-2 px-1.5 space-y-0.5 max-h-[340px] overflow-y-auto">
+          <div className="py-2 px-1.5 space-y-0.5 max-h-[300px] overflow-y-auto">
             {menuItems.map((item, idx) => {
               const Icon = item.icon;
               return (
@@ -253,12 +292,42 @@ export function UserMenuDropdown({
             )}
           </div>
 
-          {/* Logout Section */}
-          <div className="p-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+          {/* Theme Quick Switcher & Logout Section */}
+          <div className="p-2.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Theme</span>
+              <div className="flex items-center gap-1 bg-slate-200 dark:bg-slate-800 p-0.5 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  className={`p-1 rounded-lg text-xs ${theme === 'light' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-400'}`}
+                  title="Light Mode"
+                >
+                  <Sun className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  className={`p-1 rounded-lg text-xs ${theme === 'dark' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-400'}`}
+                  title="Dark Mode"
+                >
+                  <Moon className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('system')}
+                  className={`p-1 rounded-lg text-xs ${theme === 'system' ? 'bg-white dark:bg-slate-900 text-brand-600 shadow-xs' : 'text-slate-400'}`}
+                  title="System Mode"
+                >
+                  <Laptop className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-2xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-black text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors"
             >
               <LogOut className="w-4 h-4 shrink-0" />
               <span>{t.nav.logout || 'Log Out'}</span>
