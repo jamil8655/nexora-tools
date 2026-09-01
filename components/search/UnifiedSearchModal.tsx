@@ -296,9 +296,10 @@ export function UnifiedSearchModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-mono text-slate-500 font-bold border border-slate-200 dark:border-slate-700"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-95 border border-slate-200 dark:border-slate-700"
+              aria-label="Close search"
             >
-              ESC
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -425,11 +426,11 @@ export function UnifiedSearchModal({
         {/* Footer Guidance */}
         <div className="px-6 py-3 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
           <div className="flex items-center gap-3">
-            <span>Type your task in plain words</span>
+            <span>Type your goal in plain words</span>
             <span>•</span>
-            <span>Zero cloud uploads</span>
+            <span>100% In-Browser Privacy</span>
           </div>
-          <span className="font-mono text-[10px]">⌘K / Ctrl+K</span>
+          <span className="font-semibold text-brand-600 dark:text-brand-400">75+ Utilities</span>
         </div>
       </div>
     </div>

@@ -48,7 +48,7 @@ export function NexoraAiAssistant() {
                 NEXORA AI Intent & Workflow Assistant
               </h2>
               <p className="text-xs text-brand-100">
-                Click any goal below or press <kbd className="px-1.5 py-0.5 rounded bg-white/20 font-mono text-[10px]">Ctrl+K</kbd> to launch instant in-browser workflows.
+                Tap any goal below or use Smart Search to launch instant in-browser workflows.
               </p>
             </div>
           </div>
@@ -62,7 +62,7 @@ export function NexoraAiAssistant() {
             className="px-4 py-2.5 bg-white text-brand-700 hover:bg-brand-50 text-xs font-black rounded-2xl shadow-md flex items-center gap-1.5 shrink-0 self-start sm:self-auto hover:scale-105 active:scale-95 transition-all"
           >
             <Search className="w-3.5 h-3.5" />
-            <span>Open Smart Search (⌘K)</span>
+            <span>Open Smart Search</span>
           </button>
         </div>
 
