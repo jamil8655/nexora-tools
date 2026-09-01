@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
-const isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
+const isCapacitor = process.env.CAPACITOR_BUILD === 'true' || process.env.BUILD_TARGET === 'android';
+const isGitHubActions = !isCapacitor && process.env.GITHUB_ACTIONS === 'true';
 
 const nextConfig = {
   output: 'export',

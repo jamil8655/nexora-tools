@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.2'
+        classpath 'com.android.tools.build:gradle:8.2.1'
     }
 }
 
@@ -36,6 +36,9 @@ android {
 repositories {
     google()
     mavenCentral()
+    flatDir{
+        dirs 'src/main/libs', 'libs'
+    }
 }
 
 dependencies {
