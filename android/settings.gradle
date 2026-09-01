@@ -1,2 +1,4 @@
 include ':app'
-rootProject.name = 'NEXORA Tools'
+rootProject.name = 'NEXORA Tools Pro'
+
+apply from: 'capacitor.settings.gradle'
