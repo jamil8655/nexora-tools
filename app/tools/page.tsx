@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Search } from 'lucide-react';
+import { Search, Sparkles, Filter } from 'lucide-react';
 import { TOOLS_LIST, CATEGORIES_CONFIG } from '@/lib/tools-config';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ToolCard } from '@/components/shared/ToolCard';
@@ -32,16 +32,20 @@ function ToolsDirectory() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <Breadcrumbs items={[{ label: t.allTools || 'All Tools' }]} />
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-5 sm:space-y-8">
+      <div className="hidden sm:block">
+        <Breadcrumbs items={[{ label: t.allTools || 'All Tools' }]} />
+      </div>
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 pb-3 sm:pb-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
-            {t.allTools || 'All Digital Utilities'} ({TOOLS_LIST.length})
+          <h1 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+            <span>{t.allTools || 'All Digital Utilities'}</span>
+            <span className="text-xs sm:text-sm font-bold text-slate-400 font-mono">({TOOLS_LIST.length})</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            {t.privacyNotice || 'Browse our complete collection of fast, private and client-side processing utilities'}
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            {t.privacyNotice || 'Fast, private and client-side processing utilities with zero cloud uploads.'}
           </p>
         </div>
 
@@ -52,21 +56,21 @@ function ToolsDirectory() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search within tools..."
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+            placeholder="Search within 75+ tools..."
+            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-brand-500/30 shadow-xs"
           />
         </div>
       </div>
 
-      {/* Category Tabs */}
-      <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+      {/* Android Horizontal Category Chips Strip */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
         <button
           type="button"
           onClick={() => setActiveCategory('all')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+          className={`px-3.5 py-2 rounded-xl sm:rounded-2xl text-xs font-extrabold transition-all shrink-0 active:scale-95 shadow-xs ${
             activeCategory === 'all'
-              ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
-              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
+              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
           {getLocalizedCategory('all', language)} ({TOOLS_LIST.length})
@@ -76,10 +80,10 @@ function ToolsDirectory() {
             key={cat.id}
             type="button"
             onClick={() => setActiveCategory(cat.id)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3.5 py-2 rounded-xl sm:rounded-2xl text-xs font-extrabold transition-all shrink-0 active:scale-95 shadow-xs ${
               activeCategory === cat.id
-                ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
             {getLocalizedCategory(cat.id, language)}
@@ -88,11 +92,24 @@ function ToolsDirectory() {
       </div>
 
       {/* Tools Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredTools.map((tool) => (
-          <ToolCard key={tool.id} tool={tool} />
-        ))}
-      </div>
+      {filteredTools.length === 0 ? (
+        <div className="p-12 text-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+          <p className="text-sm font-bold text-slate-700 dark:text-slate-300">No tools found matching &ldquo;{searchQuery}&rdquo;</p>
+          <p className="text-xs text-slate-400">Try checking another category or clearing your search.</p>
+          <button
+            onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
+            className="px-4 py-2 mt-2 rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-950 dark:text-brand-400 text-xs font-bold"
+          >
+            Reset Filters
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5">
+          {filteredTools.map((tool) => (
+            <ToolCard key={tool.id} tool={tool} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

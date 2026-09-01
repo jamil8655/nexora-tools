@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Download, RefreshCw, Copy, Check, CheckCircle2, Share2, Sparkles } from 'lucide-react';
+import { Download, RefreshCw, Copy, Check, CheckCircle2, Share2, Sparkles, FolderDown } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { formatBytes, calculatePercentageSaved } from '@/lib/utils/formatters';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { AdSlot } from '@/components/ads/AdSlot';
+import { shareFileNative, saveFileToDeviceStorage, isNativeAndroid } from '@/lib/native/android-bridge';
 
 interface ResultPreviewProps {
   files: {
@@ -31,6 +32,7 @@ export function ResultPreview({
   const { t } = useI18n();
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [shared, setShared] = useState(false);
+  const [savedNative, setSavedNative] = useState<number | null>(null);
 
   useEffect(() => {
     try {
@@ -50,7 +52,35 @@ export function ResultPreview({
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const handleShare = async () => {
+  const handleNativeSave = async (file: ResultPreviewProps['files'][0], index: number) => {
+    if (file.blob) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = (reader.result as string).split(',')[1];
+        if (base64) {
+          const res = await saveFileToDeviceStorage(file.name, base64);
+          if (res) {
+            setSavedNative(index);
+            setTimeout(() => setSavedNative(null), 3000);
+          }
+        }
+      };
+      reader.readAsDataURL(file.blob);
+    } else {
+      onDownloadSingle(index);
+    }
+  };
+
+  const handleShare = async (file?: ResultPreviewProps['files'][0]) => {
+    if (isNativeAndroid() && file?.name) {
+      await shareFileNative(
+        file.name,
+        `Check out my processed file: ${file.name}`,
+        typeof window !== 'undefined' ? window.location.href : undefined
+      );
+      return;
+    }
+
     if (typeof window !== 'undefined') {
       const shareData = {
         title: 'NEXORA Tools Pro',
@@ -76,13 +106,13 @@ export function ResultPreview({
   const totalSavedPercent = calculatePercentageSaved(totalOriginal, totalProcessed);
 
   return (
-    <div className="w-full space-y-6 animate-in fade-in zoom-in-95 duration-200">
+    <div className="w-full space-y-5 sm:space-y-6 animate-in fade-in zoom-in-95 duration-200">
       {/* Success Banner */}
-      <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl text-center space-y-2.5">
+      <div className="p-5 sm:p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl text-center space-y-2.5">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mb-1">
           <CheckCircle2 className="w-6 h-6" />
         </div>
-        <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
+        <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
           Your File is Ready!
         </h3>
         {totalSavedPercent > 0 ? (
@@ -110,19 +140,19 @@ export function ResultPreview({
           return (
             <div
               key={idx}
-              className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3"
+              className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-3"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1 min-w-0">
-                  <h4 className="text-sm font-bold text-slate-900 truncate">
+                <div className="space-y-0.5 min-w-0">
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
                     {file.name}
                   </h4>
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
                     {file.originalSize > 0 && <span>Original: {formatBytes(file.originalSize)}</span>}
                     {processedBytes !== undefined && (
                       <>
                         <span>•</span>
-                        <span className="font-bold text-emerald-600">
+                        <span className="font-bold text-emerald-600 dark:text-emerald-400">
                           Final: {formatBytes(processedBytes)}
                         </span>
                       </>
@@ -130,12 +160,12 @@ export function ResultPreview({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
                   {file.textResult && (
                     <button
                       type="button"
                       onClick={() => handleCopyText(file.textResult!, idx)}
-                      className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5 transition-colors border border-slate-200"
+                      className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center gap-1.5 transition-colors border border-slate-200 dark:border-slate-700 active:scale-95"
                     >
                       {copiedIndex === idx ? (
                         <>
@@ -154,24 +184,33 @@ export function ResultPreview({
                   <button
                     type="button"
                     onClick={() => onDownloadSingle(idx)}
-                    className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-95 text-white text-xs font-bold shadow-md shadow-brand-600/25 inline-flex items-center gap-1.5 transition-all"
+                    className="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-95 text-white text-xs font-bold shadow-md shadow-brand-600/25 inline-flex items-center gap-1.5 transition-all"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Download</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleShare(file)}
+                    className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 active:scale-95"
+                    title="Share File"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
 
               {/* Text Result Preview */}
               {file.textResult && (
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 max-h-48 overflow-y-auto text-xs font-mono text-slate-800 whitespace-pre-wrap">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 max-h-48 overflow-y-auto text-xs font-mono text-slate-800 dark:text-slate-200 whitespace-pre-wrap">
                   {file.textResult}
                 </div>
               )}
 
               {/* Image Preview */}
               {isImage && file.dataUrl && (
-                <div className="rounded-xl overflow-hidden bg-slate-50 border border-slate-200 flex items-center justify-center p-2 max-h-60">
+                <div className="rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center p-2 max-h-60">
                   <img
                     src={file.dataUrl}
                     alt={file.name}
@@ -188,12 +227,12 @@ export function ResultPreview({
       <AdSlot placement="result-page" />
 
       {/* Global Actions */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             type="button"
             onClick={onReset}
-            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors"
+            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors active:scale-95"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Process Another</span>
@@ -201,8 +240,8 @@ export function ResultPreview({
 
           <button
             type="button"
-            onClick={handleShare}
-            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors"
+            onClick={() => handleShare()}
+            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors active:scale-95"
           >
             {shared ? (
               <>
@@ -212,7 +251,7 @@ export function ResultPreview({
             ) : (
               <>
                 <Share2 className="w-3.5 h-3.5" />
-                <span>Share Tool</span>
+                <span>Share App</span>
               </>
             )}
           </button>

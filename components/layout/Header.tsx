@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Search,
   Sparkles,
@@ -13,6 +13,7 @@ import {
   LogIn,
   Info,
   HelpCircle,
+  ArrowLeft,
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useAuth } from '@/lib/auth/auth-context';
@@ -23,6 +24,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useI18n();
   const { isAuthenticated } = useAuth();
   const { unreadCount } = useUserStore();
@@ -84,6 +86,8 @@ export function Header() {
     { label: t.footer.aboutPlatform || 'About', href: '/about', icon: Info },
   ];
 
+  const isSubPage = pathname !== '/';
+
   return (
     <>
       <header
@@ -93,23 +97,34 @@ export function Header() {
             : 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs'
         }`}
       >
-        <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4 min-w-0">
-          {/* Left Area: Official Brand Logo & Name */}
-          <div className="flex items-center gap-3 sm:gap-6 min-w-0 shrink">
+        <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
+          {/* Left Area: Official Brand Logo & Name or Mobile Back Button */}
+          <div className="flex items-center gap-2 sm:gap-6 min-w-0 shrink">
+            {isSubPage && (
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 active:scale-95 transition-all"
+                aria-label="Back"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+            )}
+
             <Link
               href="/"
               className="flex items-center gap-2 sm:gap-2.5 group transition-transform active:scale-95 shrink-0"
               aria-label="NEXORA Tools Pro Home"
             >
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-linear-to-tr from-brand-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-brand-500/25 group-hover:scale-105 transition-transform shrink-0 border border-white/20">
-                <Sparkles className="w-5 h-5 fill-current" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-linear-to-tr from-brand-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-brand-500/25 group-hover:scale-105 transition-transform shrink-0 border border-white/20">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
               </div>
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-base sm:text-xl tracking-tight text-slate-900 dark:text-white">
+                  <span className="font-black text-sm sm:text-xl tracking-tight text-slate-900 dark:text-white">
                     NEXORA
                   </span>
-                  <span className="px-1.5 py-0.5 rounded-md bg-brand-600 text-white text-[9px] font-black tracking-wider uppercase shadow-xs">
+                  <span className="px-1.5 py-0.5 rounded-md bg-brand-600 text-white text-[8px] sm:text-[9px] font-black tracking-wider uppercase shadow-xs">
                     PRO
                   </span>
                 </div>
@@ -143,7 +158,7 @@ export function Header() {
           </div>
 
           {/* Right Action Bar (Search + Notification + Profile / Login) */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
             {/* Desktop Install App Trigger */}
             <button
               type="button"
@@ -159,18 +174,18 @@ export function Header() {
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 text-xs font-mono shrink-0 shadow-xs"
-              title="Quick Search (⌘K)"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 text-xs font-medium shrink-0 shadow-xs active:scale-95"
+              title="Quick Search"
               aria-label="Search"
             >
               <Search className="w-4 h-4 text-brand-600 dark:text-brand-400" />
-              <span className="hidden md:inline font-bold">⌘K</span>
+              <span className="hidden md:inline font-bold">Search</span>
             </button>
 
             {/* Notification Bell */}
             <Link
               href="/notifications"
-              className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shrink-0 shadow-xs"
+              className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shrink-0 shadow-xs active:scale-95"
               title={t.userDashboard.notificationsTitle}
               aria-label="Notifications"
             >
@@ -189,7 +204,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setIsAuthModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-black text-xs transition-all shadow-md shadow-brand-600/20 active:scale-95 shrink-0"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-black text-xs transition-all shadow-md shadow-brand-600/20 active:scale-95 shrink-0"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span className="text-xs">{t.nav.login || 'Log In'}</span>
@@ -199,7 +214,7 @@ export function Header() {
         </div>
       </header>
 
-      {/* Unified Search Modal */}
+      {/* Global Unified Intent Search Modal */}
       <UnifiedSearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
