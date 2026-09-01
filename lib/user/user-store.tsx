@@ -1,6 +1,18 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from '@/lib/auth/auth-context';
+import {
+  syncUserFavoriteFirestore,
+  fetchUserFavoritesFirestore,
+  saveUserHistoryFirestore,
+  fetchUserHistoryFirestore,
+  saveUserDownloadFirestore,
+  fetchUserDownloadsFirestore,
+  subscribeToUserNotifications,
+  markNotificationReadFirestore,
+  uploadUserProfilePhoto,
+} from '@/lib/firebase/firestore-service';
 
 export interface EnrolledCourseState {
   courseId: string;
@@ -50,7 +62,7 @@ export interface AppNotification {
 
 interface UserStoreContextType {
   profilePhoto: string | null;
-  updateProfilePhoto: (dataUrl: string | null) => void;
+  updateProfilePhoto: (dataUrlOrFile: string | File | Blob | null) => Promise<boolean>;
 
   pinnedTools: string[];
   togglePinTool: (toolId: string) => void;
@@ -90,46 +102,18 @@ interface UserStoreContextType {
 
 const UserStoreContext = createContext<UserStoreContextType | undefined>(undefined);
 
-const DEFAULT_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: 'notif-welcome',
-    title: 'Welcome to NEXORA PRO!',
-    message: 'Explore 75+ free client-side digital utilities and free developer courses with zero server tracking.',
-    type: 'system',
-    timestamp: Date.now() - 3600000 * 2,
-    read: false,
-    link: '/about',
-  },
-  {
-    id: 'notif-course-1',
-    title: 'New Course: Modern Full-Stack Web Mastery',
-    message: 'Master React, Next.js 14, and TypeScript. All curriculum lessons and previews are free to study.',
-    type: 'course',
-    timestamp: Date.now() - 3600000 * 8,
-    read: false,
-    link: '/courses/modern-fullstack-web-mastery',
-  },
-  {
-    id: 'notif-tool-1',
-    title: 'PDF Studio Engine 2.0 Released',
-    message: 'Enhanced client-side PDF OCR, compression, and 300 DPI conversion are now active.',
-    type: 'tool',
-    timestamp: Date.now() - 3600000 * 24,
-    read: true,
-    link: '/tools',
-  },
-];
-
 export function UserStoreProvider({ children }: { children: React.ReactNode }) {
+  const { user, firebaseUser } = useAuth();
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-  const [pinnedTools, setPinnedTools] = useState<string[]>(['pdf-to-docx', 'pdf-compress', 'image-studio', 'ocr']);
-  const [lastStudiedCourseId, setLastStudiedCourseIdState] = useState<string | null>('modern-fullstack-web-mastery');
+  const [pinnedTools, setPinnedTools] = useState<string[]>([]);
+  const [lastStudiedCourseId, setLastStudiedCourseIdState] = useState<string | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Record<string, EnrolledCourseState>>({});
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [history, setHistory] = useState<ActivityHistoryItem[]>([]);
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
-  const [notifications, setNotifications] = useState<AppNotification[]>(DEFAULT_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
+  // 1. Initialize local cache on mount
   useEffect(() => {
     try {
       const savedPhoto = localStorage.getItem('nexora_user_avatar');
@@ -138,11 +122,11 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
       const savedPinned = localStorage.getItem('nexora_pinned_tools');
       if (savedPinned) setPinnedTools(JSON.parse(savedPinned));
 
-      const savedLastCourse = localStorage.getItem('nexora_last_studied_course');
-      if (savedLastCourse) setLastStudiedCourseIdState(savedLastCourse);
+      const savedCourseId = localStorage.getItem('nexora_last_studied_course');
+      if (savedCourseId) setLastStudiedCourseIdState(savedCourseId);
 
-      const savedEnrolled = localStorage.getItem('nexora_enrolled_courses');
-      if (savedEnrolled) setEnrolledCourses(JSON.parse(savedEnrolled));
+      const savedEnrollments = localStorage.getItem('nexora_enrolled_courses');
+      if (savedEnrollments) setEnrolledCourses(JSON.parse(savedEnrollments));
 
       const savedFavs = localStorage.getItem('nexora_favorites');
       if (savedFavs) setFavorites(JSON.parse(savedFavs));
@@ -152,63 +136,98 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
 
       const savedDownloads = localStorage.getItem('nexora_downloads');
       if (savedDownloads) setDownloads(JSON.parse(savedDownloads));
-
-      const savedNotifs = localStorage.getItem('nexora_notifications');
-      if (savedNotifs) setNotifications(JSON.parse(savedNotifs));
     } catch (e) {
-      console.warn('Error loading user store from storage:', e);
+      console.warn('Failed to load local user cache:', e);
     }
   }, []);
 
-  const updateProfilePhoto = (dataUrl: string | null) => {
-    setProfilePhoto(dataUrl);
-    if (dataUrl) {
-      localStorage.setItem('nexora_user_avatar', dataUrl);
-    } else {
-      localStorage.removeItem('nexora_user_avatar');
+  // 2. Real Firestore Cloud Synchronization when Authenticated
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    // Use Google or Firebase Auth photo if available
+    if (user.photoURL) {
+      setProfilePhoto(user.photoURL);
     }
+
+    // Fetch cloud favorites
+    fetchUserFavoritesFirestore(user.uid).then((cloudFavs) => {
+      if (cloudFavs.length > 0) {
+        setFavorites(cloudFavs);
+        localStorage.setItem('nexora_favorites', JSON.stringify(cloudFavs));
+      }
+    });
+
+    // Fetch cloud history
+    fetchUserHistoryFirestore(user.uid).then((cloudHist) => {
+      if (cloudHist.length > 0) {
+        setHistory(cloudHist);
+        localStorage.setItem('nexora_history', JSON.stringify(cloudHist));
+      }
+    });
+
+    // Fetch cloud downloads
+    fetchUserDownloadsFirestore(user.uid).then((cloudDownloads) => {
+      if (cloudDownloads.length > 0) {
+        setDownloads(cloudDownloads);
+        localStorage.setItem('nexora_downloads', JSON.stringify(cloudDownloads));
+      }
+    });
+
+    // Realtime Notifications Listener
+    const unsubNotifs = subscribeToUserNotifications(user.uid, (cloudNotifs) => {
+      setNotifications(cloudNotifs);
+    });
+
+    return () => unsubNotifs();
+  }, [user?.uid, user?.photoURL]);
+
+  // Update Profile Photo
+  const updateProfilePhoto = async (dataUrlOrFile: string | File | Blob | null): Promise<boolean> => {
+    if (!dataUrlOrFile) {
+      setProfilePhoto(null);
+      localStorage.removeItem('nexora_user_avatar');
+      return true;
+    }
+
+    if (typeof dataUrlOrFile === 'string') {
+      setProfilePhoto(dataUrlOrFile);
+      localStorage.setItem('nexora_user_avatar', dataUrlOrFile);
+    }
+
+    if (user?.uid && typeof dataUrlOrFile !== 'string') {
+      const res = await uploadUserProfilePhoto(user.uid, dataUrlOrFile);
+      if (res.success && res.url) {
+        setProfilePhoto(res.url);
+        localStorage.setItem('nexora_user_avatar', res.url);
+        return true;
+      }
+    }
+    return true;
   };
 
+  // Pinned Tools
   const togglePinTool = (toolId: string) => {
     setPinnedTools((prev) => {
-      const exists = prev.includes(toolId);
-      const updated = exists ? prev.filter((id) => id !== toolId) : [...prev, toolId];
-      localStorage.setItem('nexora_pinned_tools', JSON.stringify(updated));
-      return updated;
+      const next = prev.includes(toolId) ? prev.filter((id) => id !== toolId) : [...prev, toolId];
+      localStorage.setItem('nexora_pinned_tools', JSON.stringify(next));
+      return next;
     });
   };
 
   const isToolPinned = (toolId: string) => pinnedTools.includes(toolId);
 
+  // Last Studied Course
   const setLastStudiedCourseId = (courseId: string) => {
     setLastStudiedCourseIdState(courseId);
     localStorage.setItem('nexora_last_studied_course', courseId);
   };
 
-  useEffect(() => {
-    localStorage.setItem('nexora_enrolled_courses', JSON.stringify(enrolledCourses));
-  }, [enrolledCourses]);
-
-  useEffect(() => {
-    localStorage.setItem('nexora_favorites', JSON.stringify(favorites));
-  }, [favorites]);
-
-  useEffect(() => {
-    localStorage.setItem('nexora_history', JSON.stringify(history));
-  }, [history]);
-
-  useEffect(() => {
-    localStorage.setItem('nexora_downloads', JSON.stringify(downloads));
-  }, [downloads]);
-
-  useEffect(() => {
-    localStorage.setItem('nexora_notifications', JSON.stringify(notifications));
-  }, [notifications]);
-
+  // Course Enrollment & Progress
   const enrollInCourse = (courseId: string) => {
     setEnrolledCourses((prev) => {
       if (prev[courseId]) return prev;
-      return {
+      const next = {
         ...prev,
         [courseId]: {
           courseId,
@@ -218,15 +237,18 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
           lastAccessedAt: Date.now(),
         },
       };
+      localStorage.setItem('nexora_enrolled_courses', JSON.stringify(next));
+      return next;
     });
     setLastStudiedCourseId(courseId);
   };
 
   const unenrollCourse = (courseId: string) => {
     setEnrolledCourses((prev) => {
-      const updated = { ...prev };
-      delete updated[courseId];
-      return updated;
+      const next = { ...prev };
+      delete next[courseId];
+      localStorage.setItem('nexora_enrolled_courses', JSON.stringify(next));
+      return next;
     });
   };
 
@@ -239,82 +261,137 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
         enrolledAt: Date.now(),
         lastAccessedAt: Date.now(),
       };
-
-      const completed = new Set(current.completedLessons);
-      completed.add(lessonId);
-      const completedArray = Array.from(completed);
-      const progress = Math.min(100, Math.round((completedArray.length / Math.max(1, totalLessons)) * 100));
-
-      return {
+      const completed = Array.from(new Set([...current.completedLessons, lessonId]));
+      const progress = Math.min(100, Math.round((completed.length / Math.max(1, totalLessons)) * 100));
+      const next = {
         ...prev,
         [courseId]: {
           ...current,
-          completedLessons: completedArray,
+          completedLessons: completed,
           progress,
           lastAccessedAt: Date.now(),
         },
       };
+      localStorage.setItem('nexora_enrolled_courses', JSON.stringify(next));
+      return next;
     });
-    setLastStudiedCourseId(courseId);
   };
 
-  const isEnrolled = (courseId: string) => !!enrolledCourses[courseId];
+  const isEnrolled = (courseId: string) => Boolean(enrolledCourses[courseId]);
+
   const getCourseProgress = (courseId: string) => enrolledCourses[courseId]?.progress || 0;
 
+  // Favorites
   const toggleFavorite = (item: Omit<FavoriteItem, 'addedAt'>) => {
     setFavorites((prev) => {
       const exists = prev.some((f) => f.id === item.id);
+      let next: FavoriteItem[];
       if (exists) {
-        return prev.filter((f) => f.id !== item.id);
+        next = prev.filter((f) => f.id !== item.id);
+        if (user?.uid) syncUserFavoriteFirestore(user.uid, { ...item, addedAt: Date.now() }, false);
       } else {
-        return [{ ...item, addedAt: Date.now() }, ...prev];
+        const fullItem: FavoriteItem = { ...item, addedAt: Date.now() };
+        next = [fullItem, ...prev];
+        if (user?.uid) syncUserFavoriteFirestore(user.uid, fullItem, true);
       }
+      localStorage.setItem('nexora_favorites', JSON.stringify(next));
+      return next;
     });
   };
 
   const isFavorite = (id: string) => favorites.some((f) => f.id === id);
-  const removeFavorite = (id: string) => setFavorites((prev) => prev.filter((f) => f.id !== id));
 
+  const removeFavorite = (id: string) => {
+    setFavorites((prev) => {
+      const next = prev.filter((f) => f.id !== id);
+      localStorage.setItem('nexora_favorites', JSON.stringify(next));
+      if (user?.uid) syncUserFavoriteFirestore(user.uid, { id, type: 'tool', title: '', category: '', url: '', addedAt: 0 }, false);
+      return next;
+    });
+  };
+
+  // Activity History
   const addHistory = (item: Omit<ActivityHistoryItem, 'id' | 'timestamp'>) => {
+    const fullItem: ActivityHistoryItem = {
+      ...item,
+      id: 'hist_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      timestamp: Date.now(),
+    };
     setHistory((prev) => {
-      const filtered = prev.filter((h) => h.url !== item.url);
-      const newItem: ActivityHistoryItem = {
-        ...item,
-        id: `hist-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-        timestamp: Date.now(),
-      };
-      return [newItem, ...filtered].slice(0, 50);
+      const next = [fullItem, ...prev.filter((h) => h.url !== item.url)].slice(0, 50);
+      localStorage.setItem('nexora_history', JSON.stringify(next));
+      return next;
+    });
+    if (user?.uid) {
+      saveUserHistoryFirestore(user.uid, fullItem);
+    }
+  };
+
+  const removeHistoryItem = (id: string) => {
+    setHistory((prev) => {
+      const next = prev.filter((h) => h.id !== id);
+      localStorage.setItem('nexora_history', JSON.stringify(next));
+      return next;
     });
   };
 
-  const removeHistoryItem = (id: string) => setHistory((prev) => prev.filter((h) => h.id !== id));
-  const clearHistory = () => setHistory([]);
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem('nexora_history');
+  };
 
+  // Downloads
   const addDownload = (item: Omit<DownloadItem, 'id' | 'timestamp'>) => {
+    const fullItem: DownloadItem = {
+      ...item,
+      id: 'dl_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      timestamp: Date.now(),
+    };
     setDownloads((prev) => {
-      const newItem: DownloadItem = {
-        ...item,
-        id: `dl-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-        timestamp: Date.now(),
-      };
-      return [newItem, ...prev].slice(0, 50);
+      const next = [fullItem, ...prev].slice(0, 50);
+      localStorage.setItem('nexora_downloads', JSON.stringify(next));
+      return next;
+    });
+    if (user?.uid) {
+      saveUserDownloadFirestore(user.uid, fullItem);
+    }
+  };
+
+  const removeDownload = (id: string) => {
+    setDownloads((prev) => {
+      const next = prev.filter((d) => d.id !== id);
+      localStorage.setItem('nexora_downloads', JSON.stringify(next));
+      return next;
     });
   };
 
-  const removeDownload = (id: string) => setDownloads((prev) => prev.filter((d) => d.id !== id));
-  const clearDownloads = () => setDownloads([]);
+  const clearDownloads = () => {
+    setDownloads([]);
+    localStorage.removeItem('nexora_downloads');
+  };
 
+  // Notifications
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const markNotificationRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+    if (user?.uid) {
+      markNotificationReadFirestore(user.uid, id);
+    }
   };
 
   const markAllNotificationsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    if (user?.uid) {
+      notifications.forEach((n) => markNotificationReadFirestore(user.uid, n.id));
+    }
   };
 
-  const clearNotifications = () => setNotifications([]);
+  const clearNotifications = () => {
+    setNotifications([]);
+  };
 
   return (
     <UserStoreContext.Provider
@@ -326,29 +403,24 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
         isToolPinned,
         lastStudiedCourseId,
         setLastStudiedCourseId,
-
         enrolledCourses,
         enrollInCourse,
         unenrollCourse,
         markLessonComplete,
         isEnrolled,
         getCourseProgress,
-
         favorites,
         toggleFavorite,
         isFavorite,
         removeFavorite,
-
         history,
         addHistory,
         removeHistoryItem,
         clearHistory,
-
         downloads,
         addDownload,
         removeDownload,
         clearDownloads,
-
         notifications,
         unreadCount,
         markNotificationRead,
@@ -361,7 +433,7 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useUserStore() {
+export function useUserStore(): UserStoreContextType {
   const context = useContext(UserStoreContext);
   if (!context) {
     throw new Error('useUserStore must be used within a UserStoreProvider');
