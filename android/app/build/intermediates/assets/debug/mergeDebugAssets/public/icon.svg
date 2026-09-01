@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#026fc7" />
+      <stop offset="50%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+    <linearGradient id="nGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e0e7ff" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <!-- Background Rounded Squircle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
+  
+  <!-- Outer Ring Accent -->
+  <rect x="24" y="24" width="464" height="464" rx="108" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="4" />
+  
+  <!-- Modern Geometric "N" Symbol -->
+  <g filter="url(#glow)">
+    <!-- Left Column -->
+    <rect x="120" y="128" width="64" height="256" rx="20" fill="url(#nGrad)" />
+    <!-- Diagonal Dynamic Connector -->
+    <path d="M120 160 L392 352 L392 384 L120 192 Z" fill="url(#nGrad)" opacity="0.95" />
+    <!-- Right Column -->
+    <rect x="328" y="128" width="64" height="256" rx="20" fill="url(#nGrad)" />
+    <!-- Center Jewel Node -->
+    <circle cx="256" cy="256" r="28" fill="#38bdf8" stroke="#ffffff" stroke-width="6" />
+  </g>
+</svg>

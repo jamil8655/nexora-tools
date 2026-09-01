@@ -1,0 +1,70 @@
+[
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xxxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/xml_config.xml.flat",
+        "source": "com.nexoratools.app-main-7:/xml/config.xml"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/xml_file_paths.xml.flat",
+        "source": "com.nexoratools.app-main-7:/xml/file_paths.xml"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-hdpi_ic_launcher_foreground.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-hdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.nexoratools.app-debug-5:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.nexoratools.app-main-7:/mipmap-xxhdpi/ic_launcher.png"
+    }
+]
