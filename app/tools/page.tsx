@@ -32,7 +32,7 @@ function ToolsDirectory() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-5 sm:space-y-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 pb-24">
       <div className="hidden sm:block">
         <Breadcrumbs items={[{ label: t.allTools || 'All Tools' }]} />
       </div>
@@ -41,7 +41,7 @@ function ToolsDirectory() {
         <div>
           <h1 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-brand-600 dark:text-brand-400" />
-            <span>{t.allTools || 'All Digital Utilities'}</span>
+            <span>{t.allTools || 'All Document & Productivity Utilities'}</span>
             <span className="text-xs sm:text-sm font-bold text-slate-400 font-mono">({TOOLS_LIST.length})</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
@@ -56,7 +56,7 @@ function ToolsDirectory() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search within 75+ tools..."
+            placeholder="Search within 220+ tools..."
             className="w-full pl-10 pr-4 py-2.5 text-xs rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-brand-500/30 shadow-xs"
           />
         </div>
@@ -73,7 +73,7 @@ function ToolsDirectory() {
               : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
-          {getLocalizedCategory('all', language)} ({TOOLS_LIST.length})
+          All Tools ({TOOLS_LIST.length})
         </button>
         {CATEGORIES_CONFIG.map((cat) => (
           <button
@@ -98,13 +98,13 @@ function ToolsDirectory() {
           <p className="text-xs text-slate-400">Try checking another category or clearing your search.</p>
           <button
             onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
-            className="px-4 py-2 mt-2 rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-950 dark:text-brand-400 text-xs font-bold"
+            className="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold"
           >
-            Reset Filters
+            Clear Search
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4">
           {filteredTools.map((tool) => (
             <ToolCard key={tool.id} tool={tool} />
           ))}
@@ -116,7 +116,7 @@ function ToolsDirectory() {
 
 export default function ToolsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-400">Loading tools directory...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading tools directory...</div>}>
       <ToolsDirectory />
     </Suspense>
   );
