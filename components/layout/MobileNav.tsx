@@ -3,13 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Sparkles, GraduationCap, HelpCircle } from 'lucide-react';
+import { Home, Sparkles, Workflow, Download, User } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/i18n-context';
 
 /**
- * Clean 4-Item Mobile Bottom Navigation Bar.
- * Essential Navigation Only: Home | Tools | Courses | Quiz
- * (Profile is exclusively accessible via the Top Right Header Avatar Dropdown).
+ * Standard Production Android & Mobile Navigation Bar
+ * 5 Canonical Tabs: Home | Tools | Workflows | Downloads | Profile
  */
 export function MobileNav() {
   const pathname = usePathname();
@@ -18,16 +17,17 @@ export function MobileNav() {
   const navItems = [
     { label: t.nav.home || 'Home', href: '/', icon: Home },
     { label: t.nav.allTools || 'Tools', href: '/tools', icon: Sparkles },
-    { label: t.nav.courses || 'Courses', href: '/courses', icon: GraduationCap },
-    { label: t.quiz?.title || 'Quiz', href: '/quiz', icon: HelpCircle },
+    { label: t.nav.workflows || 'Workflows', href: '/workflows', icon: Workflow },
+    { label: t.userDashboard.downloadsTitle || 'Downloads', href: '/downloads', icon: Download },
+    { label: t.nav.myProfile || 'Profile', href: '/account', icon: User },
   ];
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 lg:hidden px-3 py-1.5 shadow-lg shadow-black/5 safe-bottom"
-      aria-label="Mobile Navigation"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 lg:hidden px-2 py-1.5 shadow-lg shadow-black/5 safe-bottom"
+      aria-label="Android Bottom Navigation"
     >
-      <div className="grid grid-cols-4 items-center max-w-sm mx-auto gap-2">
+      <div className="grid grid-cols-5 items-center max-w-md mx-auto gap-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -39,9 +39,9 @@ export function MobileNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl text-[10px] font-extrabold transition-all duration-150 active:scale-95 ${
+              className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl text-[10px] font-extrabold transition-all duration-150 active:scale-95 ${
                 isActive
-                  ? 'text-brand-600 dark:text-brand-400 bg-brand-50/80 dark:bg-brand-950/60 shadow-xs'
+                  ? 'text-brand-600 dark:text-brand-400 bg-brand-50/90 dark:bg-brand-950/70 shadow-xs'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
@@ -50,7 +50,7 @@ export function MobileNav() {
                   isActive ? 'scale-110 stroke-[2.5]' : 'stroke-2'
                 }`}
               />
-              <span className="truncate max-w-[65px] text-center leading-tight">
+              <span className="truncate max-w-[58px] text-center leading-tight">
                 {item.label}
               </span>
             </Link>

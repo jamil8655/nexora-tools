@@ -9,6 +9,7 @@ import { Footer } from '@/components/layout/Footer';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { PwaInstallBanner } from '@/components/shared/PwaInstallBanner';
 import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister';
+import { NativeAndroidRuntime } from '@/components/layout/NativeAndroidRuntime';
 import { siteConfig } from '@/config/site';
 import { adConfig } from '@/config/ads';
 
@@ -124,6 +125,7 @@ export default function RootLayout({
             <I18nProvider>
               <UserStoreProvider>
                 <Header />
+                <NativeAndroidRuntime />
                 <main className="flex-1 w-full max-w-full overflow-x-hidden pb-20 lg:pb-0">{children}</main>
                 <Footer />
                 <MobileNav />

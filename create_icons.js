@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const zlib = require('zlib');
 
 function crc32(buf) {
@@ -28,11 +29,11 @@ function makeChunk(type, data) {
   return Buffer.concat([len, body, crc]);
 }
 
-function generatePng(size) {
+function generatePng(size, isRound = false) {
   const width = size;
   const height = size;
 
-  // Raw RGBA scanlines (with filter byte 0 at beginning of each row)
+  // Raw RGBA scanlines
   const rowSize = 1 + width * 4;
   const rawData = Buffer.alloc(rowSize * height);
 
@@ -42,24 +43,32 @@ function generatePng(size) {
 
     for (let x = 0; x < width; x++) {
       const pxOffset = rowOffset + 1 + x * 4;
-      // Blue/Sapphire gradient with white N
-      const t = (x + y) / (width + height);
-      let r = Math.floor(2 * (1 - t) + 79 * t);
-      let g = Math.floor(111 * (1 - t) + 70 * t);
-      let b = Math.floor(199 * (1 - t) + 229 * t);
 
-      // Rounded squircle check
       const cx = x - width / 2;
       const cy = y - height / 2;
-      const rOuter = size * 0.46;
+      const radius = size * 0.48;
       const dist = Math.sqrt(cx * cx + cy * cy);
 
-      // Draw stylized N
+      if (isRound && dist > radius) {
+        rawData[pxOffset] = 0;
+        rawData[pxOffset + 1] = 0;
+        rawData[pxOffset + 2] = 0;
+        rawData[pxOffset + 3] = 0;
+        continue;
+      }
+
+      // Premium Indigo/Blue/Violet gradient
+      const t = (x + y) / (width + height);
+      let r = Math.floor(15 * (1 - t) + 99 * t);
+      let g = Math.floor(23 * (1 - t) + 102 * t);
+      let b = Math.floor(42 * (1 - t) + 241 * t);
+
+      // Draw stylized NEXORA "N" symbol
       const nx = x / size;
       const ny = y / size;
-      const inLeftBar = nx >= 0.22 && nx <= 0.35 && ny >= 0.25 && ny <= 0.75;
-      const inRightBar = nx >= 0.65 && nx <= 0.78 && ny >= 0.25 && ny <= 0.75;
-      const inDiag = ny >= 0.25 && ny <= 0.75 && Math.abs(ny - (0.25 + (nx - 0.25) * 1.0)) < 0.1;
+      const inLeftBar = nx >= 0.24 && nx <= 0.36 && ny >= 0.22 && ny <= 0.78;
+      const inRightBar = nx >= 0.64 && nx <= 0.76 && ny >= 0.22 && ny <= 0.78;
+      const inDiag = ny >= 0.22 && ny <= 0.78 && Math.abs(ny - (0.22 + (nx - 0.24) * 1.08)) < 0.08;
 
       if (inLeftBar || inRightBar || inDiag) {
         r = 255;
@@ -83,11 +92,11 @@ function generatePng(size) {
   const ihdrData = Buffer.alloc(13);
   ihdrData.writeUInt32BE(width, 0);
   ihdrData.writeUInt32BE(height, 4);
-  ihdrData[8] = 8; // bit depth
-  ihdrData[9] = 6; // color type: RGBA
-  ihdrData[10] = 0; // compression method
-  ihdrData[11] = 0; // filter method
-  ihdrData[12] = 0; // interlace method
+  ihdrData[8] = 8;
+  ihdrData[9] = 6;
+  ihdrData[10] = 0;
+  ihdrData[11] = 0;
+  ihdrData[12] = 0;
   const ihdr = makeChunk('IHDR', ihdrData);
 
   // IDAT chunk
@@ -99,6 +108,31 @@ function generatePng(size) {
   return Buffer.concat([signature, ihdr, idat, iend]);
 }
 
+// 1. Web PWA Icons
+if (!fs.existsSync('public')) fs.mkdirSync('public', { recursive: true });
 fs.writeFileSync('public/icon-192.png', generatePng(192));
 fs.writeFileSync('public/icon-512.png', generatePng(512));
-console.log('Icons generated successfully in public/');
+console.log('✅ Generated Web Icons in public/');
+
+// 2. Android Mipmap Icons
+const mipmaps = [
+  { dir: 'mipmap-mdpi', size: 48 },
+  { dir: 'mipmap-hdpi', size: 72 },
+  { dir: 'mipmap-xhdpi', size: 96 },
+  { dir: 'mipmap-xxhdpi', size: 144 },
+  { dir: 'mipmap-xxxhdpi', size: 192 },
+];
+
+const resDir = path.join(__dirname, 'android/app/src/main/res');
+
+mipmaps.forEach(({ dir, size }) => {
+  const targetDir = path.join(resDir, dir);
+  if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+
+  fs.writeFileSync(path.join(targetDir, 'ic_launcher.png'), generatePng(size, false));
+  fs.writeFileSync(path.join(targetDir, 'ic_launcher_round.png'), generatePng(size, true));
+  fs.writeFileSync(path.join(targetDir, 'ic_launcher_foreground.png'), generatePng(size, false));
+  console.log(`✅ Generated ${dir} (${size}x${size})`);
+});
+
+console.log('🎉 All Android Launcher & Adaptive Icons Generated Successfully!');
