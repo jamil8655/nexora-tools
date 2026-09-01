@@ -1,1256 +1,6198 @@
 import { ToolDefinition, ToolCategory } from './types';
 
 export const TOOLS_LIST: ToolDefinition[] = [
-  // ==================== 1. PDF TOOLS ====================
   {
-    id: 'pdf-merge',
-    slug: 'merge-pdf',
-    name: 'Merge PDF',
-    shortDesc: 'Combine multiple PDF files into one single organized document.',
-    fullDesc: 'Merge multiple PDF documents together in any order you choose. Fast, secure, and preserves fonts and visual styling.',
-    category: 'pdf',
-    icon: 'Combine',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 50,
-    maxFileSizeMB: 100,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    tags: ['merge', 'combine', 'join', 'pdf', 'pdf merge', 'bind pdf'],
-    faq: [
-      { question: 'Will the original formatting and fonts be preserved?', answer: 'Yes, pages and font tables are preserved with 100% fidelity.' },
-      { question: 'Is my data secure?', answer: 'Files are processed locally in your browser memory via WebAssembly and never uploaded.' },
+    "id": "pdf-merge",
+    "slug": "merge-pdf",
+    "name": "Merge PDF",
+    "shortDesc": "Combine multiple PDF files into one single organized document.",
+    "fullDesc": "Combine multiple PDF files into one single organized document.",
+    "category": "pdf",
+    "icon": "Combine",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
     ],
-  },
-  {
-    id: 'pdf-split',
-    slug: 'split-pdf',
-    name: 'Split PDF',
-    shortDesc: 'Extract pages or separate a PDF into multiple individual files.',
-    fullDesc: 'Split a large PDF file into separate single-page documents or select custom page ranges to extract.',
-    category: 'pdf',
-    icon: 'Split',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 1,
-    maxFileSizeMB: 100,
-    outputExtension: 'zip',
-    outputMimeType: 'application/zip',
-    options: [
-      {
-        id: 'splitMode',
-        label: 'Split Mode',
-        type: 'select',
-        defaultValue: 'all',
-        options: [
-          { label: 'Split into single pages', value: 'all' },
-          { label: 'Extract custom page range', value: 'range' },
-        ],
-      },
-      {
-        id: 'pageRange',
-        label: 'Page Range (e.g. 1-3, 5, 7-9)',
-        type: 'text',
-        defaultValue: '1-2',
-        placeholder: 'e.g. 1-3, 5',
-      },
+    "acceptedExtensions": [
+      ".pdf"
     ],
-    tags: ['split', 'extract', 'separate', 'pages', 'pdf split'],
+    "maxFiles": 50,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "merge pdf",
+      "pdf",
+      "merge pdf"
+    ]
   },
   {
-    id: 'pdf-compress',
-    slug: 'compress-pdf',
-    name: 'Compress PDF',
-    shortDesc: 'Reduce PDF file size while maintaining sharp visual clarity.',
-    fullDesc: 'Optimize and shrink the size of your PDF files for email attachments, web publishing, and storage reduction.',
-    category: 'compress',
-    icon: 'Minimize2',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 20,
-    maxFileSizeMB: 150,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    options: [
-      {
-        id: 'targetSizeLimit',
-        label: 'Target Size Requirement (KB / MB Limit)',
-        type: 'select',
-        defaultValue: 'auto',
-        options: [
-          { label: 'Auto Adaptive (Optimal Balance)', value: 'auto' },
-          { label: 'Under 100 KB (Govt Job & Exam Portals)', value: '100kb' },
-          { label: 'Under 200 KB (Passport / KYC Uploads)', value: '200kb' },
-          { label: 'Under 500 KB (Standard Web Portals)', value: '500kb' },
-          { label: 'Under 1 MB (Email Standard)', value: '1mb' },
-          { label: 'Under 2 MB (Max 2MB Official Upload Limit)', value: '2mb' },
-          { label: 'Under 5 MB (High Res Archival)', value: '5mb' },
-        ],
-      },
-      {
-        id: 'level',
-        label: 'Compression Level & Quality',
-        type: 'select',
-        defaultValue: 'medium',
-        options: [
-          { label: 'Extreme (~75% size reduction - Smallest File)', value: 'extreme' },
-          { label: 'Recommended (~55% size reduction - Good Quality)', value: 'medium' },
-          { label: 'Light (~30% size reduction - Maximum Clarity)', value: 'light' },
-        ],
-      },
+    "id": "pdf-split",
+    "slug": "split-pdf",
+    "name": "Split PDF",
+    "shortDesc": "Extract pages or separate a PDF into multiple individual files.",
+    "fullDesc": "Extract pages or separate a PDF into multiple individual files.",
+    "category": "pdf",
+    "icon": "Split",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
     ],
-    tags: ['compress', 'shrink', 'reduce size', 'optimize', 'pdf compress', 'compress pdf to mb', 'reduce pdf size'],
-  },
-  {
-    id: 'image-to-pdf',
-    slug: 'image-to-pdf',
-    name: 'Image to PDF',
-    shortDesc: 'Convert JPG, PNG, WebP, and BMP images into a clean PDF document.',
-    fullDesc: 'Convert single or multiple pictures into a standard PDF with custom orientation, margins, and layout.',
-    category: 'pdf',
-    icon: 'FileImage',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/bmp', 'image/gif'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif'],
-    maxFiles: 50,
-    maxFileSizeMB: 50,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    options: [
-      {
-        id: 'orientation',
-        label: 'Page Orientation',
-        type: 'select',
-        defaultValue: 'auto',
-        options: [
-          { label: 'Auto (Fit Image)', value: 'auto' },
-          { label: 'Portrait (A4)', value: 'portrait' },
-          { label: 'Landscape (A4)', value: 'landscape' },
-        ],
-      },
-      {
-        id: 'margin',
-        label: 'Page Margin',
-        type: 'select',
-        defaultValue: 'small',
-        options: [
-          { label: 'No Margin', value: 'none' },
-          { label: 'Small Margin', value: 'small' },
-          { label: 'Big Margin', value: 'big' },
-        ],
-      },
+    "acceptedExtensions": [
+      ".pdf"
     ],
-    tags: ['jpg to pdf', 'png to pdf', 'webp to pdf', 'photos to pdf', 'images to pdf'],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "zip",
+    "outputMimeType": "application/zip",
+    "tags": [
+      "split pdf",
+      "pdf",
+      "split pdf"
+    ]
   },
   {
-    id: 'pdf-to-image',
-    slug: 'pdf-to-jpg',
-    name: 'PDF to Image (JPG/PNG)',
-    shortDesc: 'Convert PDF pages into high-resolution JPG, PNG or WebP images.',
-    fullDesc: 'Extract every page of a PDF document into standalone picture files. Download pages individually or packed in a single ZIP.',
-    category: 'pdf',
-    icon: 'Image',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 5,
-    maxFileSizeMB: 50,
-    outputExtension: 'zip',
-    outputMimeType: 'application/zip',
-    options: [
-      {
-        id: 'format',
-        label: 'Image Format',
-        type: 'select',
-        defaultValue: 'image/jpeg',
-        options: [
-          { label: 'JPG (Best for photos & small size)', value: 'image/jpeg' },
-          { label: 'PNG (Lossless, sharp text)', value: 'image/png' },
-          { label: 'WebP (Modern, high efficiency)', value: 'image/webp' },
-        ],
-      },
+    "id": "pdf-extract-pages",
+    "slug": "extract-pdf-pages",
+    "name": "Extract PDF Pages",
+    "shortDesc": "Extract specific page ranges into a new standalone PDF.",
+    "fullDesc": "Extract specific page ranges into a new standalone PDF.",
+    "category": "pdf",
+    "icon": "FileCheck",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
     ],
-    tags: ['pdf to jpg', 'pdf to png', 'pdf to image', 'export pdf pages'],
-  },
-  {
-    id: 'pdf-rotate',
-    slug: 'rotate-pdf',
-    name: 'Rotate PDF Pages',
-    shortDesc: 'Rotate PDF pages 90°, 180°, or 270° clockwise or counter-clockwise.',
-    fullDesc: 'Fix upside-down or sideways pages in your PDF document permanently with one click.',
-    category: 'pdf',
-    icon: 'RotateCw',
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 10,
-    maxFileSizeMB: 100,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    options: [
-      {
-        id: 'angle',
-        label: 'Rotation Angle',
-        type: 'select',
-        defaultValue: '90',
-        options: [
-          { label: '90° Clockwise', value: '90' },
-          { label: '180° Upside Down', value: '180' },
-          { label: '270° Counter-Clockwise', value: '270' },
-        ],
-      },
+    "acceptedExtensions": [
+      ".pdf"
     ],
-    tags: ['rotate', 'turn', 'orientation', 'pdf rotate'],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "extract pdf pages",
+      "pdf",
+      "extract pdf pages"
+    ]
   },
   {
-    id: 'pdf-watermark',
-    slug: 'watermark-pdf',
-    name: 'Add PDF Watermark',
-    shortDesc: 'Overlay copyright, confidential, or brand stamps across PDF pages.',
-    fullDesc: 'Protect your intellectual property by embedding custom text watermarks with customizable opacity, angle, and position.',
-    category: 'pdf',
-    icon: 'Stamp',
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 10,
-    maxFileSizeMB: 50,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    options: [
-      { id: 'text', label: 'Watermark Text', type: 'text', defaultValue: 'CONFIDENTIAL', placeholder: 'e.g. CONFIDENTIAL, DRAFT' },
-      { id: 'opacity', label: 'Opacity (0.1 - 1.0)', type: 'slider', defaultValue: 0.3, min: 0.1, max: 1.0, step: 0.05 },
-      { id: 'color', label: 'Text Color', type: 'color', defaultValue: '#ff0000' },
+    "id": "pdf-delete-pages",
+    "slug": "delete-pdf-pages",
+    "name": "Delete PDF Pages",
+    "shortDesc": "Remove unwanted or blank pages from your PDF.",
+    "fullDesc": "Remove unwanted or blank pages from your PDF.",
+    "category": "pdf",
+    "icon": "Trash2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
     ],
-    tags: ['watermark', 'stamp', 'confidential', 'branding', 'pdf watermark'],
-  },
-  {
-    id: 'pdf-page-numbers',
-    slug: 'add-page-numbers-pdf',
-    name: 'Add Page Numbers',
-    shortDesc: 'Insert numbered headers or footers with customizable formatting.',
-    fullDesc: 'Add elegant page numbering (e.g. "Page 1 of 10", "1/10", or simple numbers) to any position on your PDF.',
-    category: 'pdf',
-    icon: 'Hash',
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 10,
-    maxFileSizeMB: 50,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    options: [
-      {
-        id: 'position',
-        label: 'Position',
-        type: 'select',
-        defaultValue: 'bottom-center',
-        options: [
-          { label: 'Bottom Center', value: 'bottom-center' },
-          { label: 'Bottom Right', value: 'bottom-right' },
-          { label: 'Bottom Left', value: 'bottom-left' },
-          { label: 'Top Right', value: 'top-right' },
-        ],
-      },
-      {
-        id: 'format',
-        label: 'Format Style',
-        type: 'select',
-        defaultValue: 'Page {n} of {total}',
-        options: [
-          { label: 'Page 1 of 10', value: 'Page {n} of {total}' },
-          { label: '1 / 10', value: '{n} / {total}' },
-          { label: 'Page 1', value: 'Page {n}' },
-          { label: '1', value: '{n}' },
-        ],
-      },
+    "acceptedExtensions": [
+      ".pdf"
     ],
-    tags: ['page numbers', 'footer', 'header', 'pagination', 'number pdf'],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "delete pdf pages",
+      "pdf",
+      "delete pdf pages"
+    ]
   },
   {
-    id: 'pdf-metadata',
-    slug: 'edit-pdf-metadata',
-    name: 'Edit PDF Metadata',
-    shortDesc: 'View and update Title, Author, Subject, and Keywords in your PDF.',
-    fullDesc: 'Clean or update document properties and metadata tags for SEO and document indexing.',
-    category: 'pdf',
-    icon: 'Tag',
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 1,
-    maxFileSizeMB: 50,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    options: [
-      { id: 'title', label: 'Document Title', type: 'text', defaultValue: '', placeholder: 'e.g. Annual Financial Report' },
-      { id: 'author', label: 'Author Name', type: 'text', defaultValue: '', placeholder: 'e.g. John Doe' },
-      { id: 'subject', label: 'Subject', type: 'text', defaultValue: '', placeholder: 'e.g. Business Summary' },
-      { id: 'keywords', label: 'Keywords (comma-separated)', type: 'text', defaultValue: '', placeholder: 'e.g. report, 2026, finance' },
+    "id": "pdf-reorder-pages",
+    "slug": "reorder-pdf-pages",
+    "name": "Reorder PDF Pages",
+    "shortDesc": "Rearrange and resequence PDF page order.",
+    "fullDesc": "Rearrange and resequence PDF page order.",
+    "category": "pdf",
+    "icon": "Layers",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
     ],
-    tags: ['metadata', 'author', 'title', 'properties', 'pdf info'],
-  },
-  {
-    id: 'text-to-pdf',
-    slug: 'text-to-pdf',
-    name: 'Text & TXT to PDF',
-    shortDesc: 'Convert plain text, notes, and TXT files into clean formatted PDF documents.',
-    fullDesc: 'Type or paste plain text or upload .txt files to generate elegant, paginated PDF documents with custom typography.',
-    category: 'pdf',
-    icon: 'FileText',
-    isClientSide: true,
-    acceptedMimeTypes: ['text/plain'],
-    acceptedExtensions: ['.txt', '.log'],
-    maxFiles: 5,
-    maxFileSizeMB: 10,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    options: [
-      {
-        id: 'fontSize',
-        label: 'Font Size',
-        type: 'select',
-        defaultValue: '12',
-        options: [
-          { label: '10 pt (Compact)', value: '10' },
-          { label: '12 pt (Standard)', value: '12' },
-          { label: '14 pt (Large)', value: '14' },
-        ],
-      },
+    "acceptedExtensions": [
+      ".pdf"
     ],
-    tags: ['txt to pdf', 'text to pdf', 'notes to pdf', 'convert text'],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "reorder pdf pages",
+      "pdf",
+      "reorder pdf pages"
+    ]
   },
   {
-    id: 'markdown-to-pdf',
-    slug: 'markdown-to-pdf',
-    name: 'Markdown to PDF',
-    shortDesc: 'Convert Markdown (.md) documents with headers, tables, and code to PDF.',
-    fullDesc: 'Renders GitHub Flavored Markdown into beautiful, professionally styled PDF pages.',
-    category: 'pdf',
-    icon: 'FileCode',
-    isClientSide: true,
-    acceptedMimeTypes: ['text/markdown', 'text/plain'],
-    acceptedExtensions: ['.md', '.markdown'],
-    maxFiles: 5,
-    maxFileSizeMB: 10,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    tags: ['md to pdf', 'markdown to pdf', 'readme to pdf'],
-  },
-
-  // ==================== 2. IMAGE TOOLS ====================
-  {
-    id: 'image-converter',
-    slug: 'image-converter',
-    name: 'Universal Image Converter',
-    shortDesc: 'Convert pictures between JPG, PNG, WebP, SVG, and BMP instantly.',
-    fullDesc: 'High-speed image format converter. Converts single images or bulk batches with zero quality degradation.',
-    category: 'image',
-    icon: 'Repeat',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'image/bmp', 'image/gif'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.bmp', '.gif'],
-    maxFiles: 50,
-    maxFileSizeMB: 50,
-    outputExtension: 'png',
-    outputMimeType: 'image/png',
-    options: [
-      {
-        id: 'targetFormat',
-        label: 'Convert To',
-        type: 'select',
-        defaultValue: 'image/png',
-        options: [
-          { label: 'PNG (Lossless & transparent)', value: 'image/png' },
-          { label: 'JPG (Smallest file size)', value: 'image/jpeg' },
-          { label: 'WebP (Next-gen modern web)', value: 'image/webp' },
-        ],
-      },
+    "id": "pdf-organizer",
+    "slug": "organize-pdf",
+    "name": "Organize PDF",
+    "shortDesc": "Interactive grid to rotate, delete, and reorder PDF pages.",
+    "fullDesc": "Interactive grid to rotate, delete, and reorder PDF pages.",
+    "category": "pdf",
+    "icon": "Layers",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
     ],
-    tags: ['jpg to png', 'png to jpg', 'webp to png', 'png to webp', 'convert image'],
-  },
-  {
-    id: 'jpg-to-png',
-    slug: 'jpg-to-png',
-    name: 'JPG to PNG',
-    shortDesc: 'Convert JPEG photos to lossless PNG format.',
-    fullDesc: 'Convert JPG images to PNG format to support transparent background workflows and lossless editing.',
-    category: 'image',
-    icon: 'ArrowRightLeft',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg'],
-    acceptedExtensions: ['.jpg', '.jpeg'],
-    maxFiles: 30,
-    maxFileSizeMB: 30,
-    outputExtension: 'png',
-    outputMimeType: 'image/png',
-    tags: ['jpg to png', 'jpeg to png', 'convert jpg'],
-  },
-  {
-    id: 'png-to-jpg',
-    slug: 'png-to-jpg',
-    name: 'PNG to JPG',
-    shortDesc: 'Convert heavy PNG graphics to lightweight JPG photos.',
-    fullDesc: 'Reduce file sizes dramatically by converting PNG graphics into compressed JPG images with solid background.',
-    category: 'image',
-    icon: 'ArrowRightLeft',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/png'],
-    acceptedExtensions: ['.png'],
-    maxFiles: 30,
-    maxFileSizeMB: 30,
-    outputExtension: 'jpg',
-    outputMimeType: 'image/jpeg',
-    tags: ['png to jpg', 'png to jpeg', 'compress png to jpg'],
-  },
-  {
-    id: 'image-compressor',
-    slug: 'image-compressor',
-    name: 'Image Compressor',
-    shortDesc: 'Compress JPG, PNG, and WebP images up to 80% with minimal visual loss.',
-    fullDesc: 'Smart lossy and lossless image compressor. See live before/after size comparisons and download optimized files.',
-    category: 'compress',
-    icon: 'Minimize',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp'],
-    maxFiles: 50,
-    maxFileSizeMB: 50,
-    outputExtension: 'jpg',
-    outputMimeType: 'image/jpeg',
-    options: [
-      {
-        id: 'targetSizeLimit',
-        label: 'Target Size Requirement (KB / MB Limit)',
-        type: 'select',
-        defaultValue: 'auto',
-        options: [
-          { label: 'Auto Adaptive (Optimal Balance)', value: 'auto' },
-          { label: 'Under 50 KB (Passport Photo & Signature)', value: '50kb' },
-          { label: 'Under 100 KB (Govt Job & Exam Portals)', value: '100kb' },
-          { label: 'Under 200 KB (Web Portal Uploads)', value: '200kb' },
-          { label: 'Under 500 KB (KYC & Documents)', value: '500kb' },
-          { label: 'Under 1 MB (Web & Email Images)', value: '1mb' },
-          { label: 'Under 2 MB (Max 2MB Official Upload Limit)', value: '2mb' },
-        ],
-      },
-      {
-        id: 'quality',
-        label: 'Compression Strength & Quality',
-        type: 'select',
-        defaultValue: '0.75',
-        options: [
-          { label: 'Medium (Balanced - recommended)', value: '0.75' },
-          { label: 'High (Smallest file size)', value: '0.5' },
-          { label: 'Low (Maximum clarity)', value: '0.9' },
-        ],
-      },
+    "acceptedExtensions": [
+      ".pdf"
     ],
-    tags: ['compress image', 'shrink photo', 'reduce image size', 'optimize image'],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "organize pdf",
+      "pdf",
+      "organize pdf"
+    ]
   },
   {
-    id: 'image-resizer',
-    slug: 'image-resizer',
-    name: 'Image Resizer',
-    shortDesc: 'Resize photos by exact pixel dimensions or percentage ratio.',
-    fullDesc: 'Change image width and height smoothly. Maintain aspect ratio or stretch to custom dimensions.',
-    category: 'image',
-    icon: 'Maximize2',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/bmp'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.bmp'],
-    maxFiles: 20,
-    maxFileSizeMB: 40,
-    outputExtension: 'png',
-    outputMimeType: 'image/png',
-    options: [
-      { id: 'width', label: 'Width (px)', type: 'number', defaultValue: 1200 },
-      { id: 'height', label: 'Height (px)', type: 'number', defaultValue: 800 },
-      { id: 'maintainAspect', label: 'Maintain Aspect Ratio', type: 'checkbox', defaultValue: true },
+    "id": "pdf-rotate",
+    "slug": "rotate-pdf",
+    "name": "Rotate PDF",
+    "shortDesc": "Rotate PDF pages 90, 180, or 270 degrees.",
+    "fullDesc": "Rotate PDF pages 90, 180, or 270 degrees.",
+    "category": "pdf",
+    "icon": "RotateCw",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
     ],
-    tags: ['resize', 'dimensions', 'width', 'height', 'scale photo'],
-  },
-  {
-    id: 'passport-photo-maker',
-    slug: 'passport-photo-maker',
-    name: 'Passport Photo Maker & Background Studio',
-    shortDesc: 'Create 3.5x4.5cm or 2x2" Passport Photos with official White/Blue background and 8-Photo 4x6" print sheets.',
-    fullDesc: 'Automatic passport size photo generator. Crop to official India, US Visa, Schengen, or UAE dimensions, replace background with white/blue, add Name & Date stamps, and generate printable 4x6" multi-photo sheets.',
-    category: 'image',
-    icon: 'User',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp'],
-    maxFiles: 1,
-    maxFileSizeMB: 50,
-    outputExtension: 'jpg',
-    outputMimeType: 'image/jpeg',
-    tags: ['passport photo', 'passport size photo maker', 'white background photo', '3.5x4.5 cm', '2x2 inch visa', 'upsc photo with date', 'print 8 photos'],
-  },
-  {
-    id: 'background-remover',
-    slug: 'background-remover',
-    name: 'AI Background Remover',
-    shortDesc: 'Erase photo backgrounds and create transparent PNGs or passport backdrops.',
-    fullDesc: 'Automatic in-browser AI cutout engine. Remove backgrounds, adjust edge tolerance, and replace backdrops with white, passport blue, or transparent PNG.',
-    category: 'image',
-    icon: 'Sparkles',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp'],
-    maxFiles: 1,
-    maxFileSizeMB: 50,
-    outputExtension: 'png',
-    outputMimeType: 'image/png',
-    tags: ['remove bg', 'background remover', 'transparent png', 'passport photo', 'cutout photo', 'erase background'],
-  },
-  {
-    id: 'image-rotate-flip',
-    slug: 'rotate-image',
-    name: 'Rotate & Flip Image',
-    shortDesc: 'Rotate photos 90°/180° and flip horizontally or vertically.',
-    fullDesc: 'Easily mirror or reorient your pictures with real-time visual preview.',
-    category: 'image',
-    icon: 'FlipHorizontal',
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp'],
-    maxFiles: 10,
-    maxFileSizeMB: 30,
-    outputExtension: 'png',
-    outputMimeType: 'image/png',
-    options: [
-      {
-        id: 'action',
-        label: 'Transformation',
-        type: 'select',
-        defaultValue: 'rotate-90',
-        options: [
-          { label: 'Rotate 90° Clockwise', value: 'rotate-90' },
-          { label: 'Rotate 180°', value: 'rotate-180' },
-          { label: 'Rotate 270° (90° CCW)', value: 'rotate-270' },
-          { label: 'Flip Horizontal (Mirror)', value: 'flip-h' },
-          { label: 'Flip Vertical', value: 'flip-v' },
-        ],
-      },
+    "acceptedExtensions": [
+      ".pdf"
     ],
-    tags: ['rotate image', 'flip photo', 'mirror image'],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "rotate pdf",
+      "pdf",
+      "rotate pdf"
+    ]
   },
   {
-    id: 'image-exif',
-    slug: 'image-metadata',
-    name: 'Image Metadata & EXIF Stripper',
-    shortDesc: 'Inspect and remove camera, GPS, and timestamp EXIF tags for privacy.',
-    fullDesc: 'Protect your privacy by sanitizing all hidden location and device metadata before sharing photos online.',
-    category: 'image',
-    icon: 'ShieldCheck',
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp'],
-    maxFiles: 10,
-    maxFileSizeMB: 30,
-    outputExtension: 'jpg',
-    outputMimeType: 'image/jpeg',
-    tags: ['exif', 'metadata', 'gps remove', 'privacy', 'strip metadata'],
-  },
-
-  // ==================== 3. DOCUMENT TOOLS ====================
-  {
-    id: 'pdf-to-docx',
-    slug: 'pdf-to-word',
-    name: 'PDF to Word (DOCX)',
-    shortDesc: 'Convert PDF documents into editable Microsoft Word (.docx) files.',
-    fullDesc: 'Extracts text, headings, and formatting from PDF files and converts them into native, fully editable Word (.docx) documents 100% in your browser.',
-    category: 'document',
-    icon: 'FileText',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 10,
-    maxFileSizeMB: 50,
-    outputExtension: 'docx',
-    outputMimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    tags: ['pdf to word', 'pdf to docx', 'convert pdf to word', 'pdf convert', 'pdf word'],
-    faq: [
-      { question: 'Will the Word document be editable?', answer: 'Yes! The resulting .docx file contains fully editable text, headings, and paragraphs compatible with Microsoft Word and Google Docs.' },
-      { question: 'Is my document private?', answer: 'Yes, your file is processed entirely in your browser memory and never uploaded to any server.' },
+    "id": "pdf-rotate-single",
+    "slug": "rotate-single-pages",
+    "name": "Rotate Individual Pages",
+    "shortDesc": "Select and rotate specific orientation of individual pages.",
+    "fullDesc": "Select and rotate specific orientation of individual pages.",
+    "category": "pdf",
+    "icon": "RotateCcw",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
     ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "rotate individual pages",
+      "pdf",
+      "rotate single pages"
+    ]
   },
   {
-    id: 'docx-to-pdf',
-    slug: 'word-to-pdf',
-    name: 'Word (DOCX) to PDF',
-    shortDesc: 'Convert Microsoft Word (.docx) documents into clean PDF files.',
-    fullDesc: 'Parses Word documents client-side using mammoth engine and compiles them into clean, paginated PDF format.',
-    category: 'document',
-    icon: 'FileText',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-    acceptedExtensions: ['.docx'],
-    maxFiles: 5,
-    maxFileSizeMB: 25,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    tags: ['word to pdf', 'docx to pdf', 'doc to pdf'],
+    "id": "pdf-reverse-pages",
+    "slug": "reverse-pdf-pages",
+    "name": "Reverse PDF Pages",
+    "shortDesc": "Invert the entire page order of a PDF document from end to start.",
+    "fullDesc": "Invert the entire page order of a PDF document from end to start.",
+    "category": "pdf",
+    "icon": "Repeat",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "reverse pdf pages",
+      "pdf",
+      "reverse pdf pages"
+    ]
   },
   {
-    id: 'excel-to-pdf',
-    slug: 'excel-to-pdf',
-    name: 'Excel (XLSX/CSV) to PDF',
-    shortDesc: 'Convert Excel spreadsheets and CSV data sheets into formatted PDF tables.',
-    fullDesc: 'Turns spreadsheet worksheets and tabular CSV files into clean, readable PDF tables with headers and row borders.',
-    category: 'document',
-    icon: 'Table',
-    isClientSide: true,
-    acceptedMimeTypes: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv', 'application/vnd.ms-excel'],
-    acceptedExtensions: ['.xlsx', '.xls', '.csv'],
-    maxFiles: 5,
-    maxFileSizeMB: 20,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    tags: ['excel to pdf', 'xlsx to pdf', 'csv to pdf', 'spreadsheet to pdf'],
-  },
-
-  // ==================== 4. TEXT & WRITING TOOLS ====================
-  {
-    id: 'word-counter',
-    slug: 'word-counter',
-    name: 'Word & Character Counter',
-    shortDesc: 'Real-time word, character, sentence, paragraph, and reading time counter.',
-    fullDesc: 'Analyze your text in real time with detailed statistics on character counts with and without spaces, reading duration, and speaking pace.',
-    category: 'text',
-    icon: 'FileText',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['word counter', 'character count', 'reading time', 'text statistics', 'wordcount'],
+    "id": "pdf-duplicate-pages",
+    "slug": "duplicate-pdf-pages",
+    "name": "Duplicate PDF Pages",
+    "shortDesc": "Duplicate each page in your PDF document multiple times.",
+    "fullDesc": "Duplicate each page in your PDF document multiple times.",
+    "category": "pdf",
+    "icon": "Copy",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "duplicate pdf pages",
+      "pdf",
+      "duplicate pdf pages"
+    ]
   },
   {
-    id: 'case-converter',
-    slug: 'case-converter',
-    name: 'Case Converter',
-    shortDesc: 'Convert text between UPPERCASE, lowercase, Title Case, camelCase, snake_case, and kebab-case.',
-    fullDesc: 'Transform text formatting instantly across 8 standard programming and writing case styles.',
-    category: 'text',
-    icon: 'Type',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['case converter', 'uppercase', 'lowercase', 'title case', 'camelcase', 'snake_case'],
+    "id": "pdf-insert-pages",
+    "slug": "insert-pdf-pages",
+    "name": "Insert PDF Pages",
+    "shortDesc": "Insert blank pages or add pages between existing PDF sheets.",
+    "fullDesc": "Insert blank pages or add pages between existing PDF sheets.",
+    "category": "pdf",
+    "icon": "FilePlus",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "insert pdf pages",
+      "pdf",
+      "insert pdf pages"
+    ]
   },
   {
-    id: 'text-diff',
-    slug: 'text-compare',
-    name: 'Text Compare & Diff Checker',
-    shortDesc: 'Compare two text blocks side-by-side and highlight additions, deletions, and differences.',
-    fullDesc: 'Find differences between two versions of code, contracts, or text snippets with visual line highlighting.',
-    category: 'text',
-    icon: 'GitCompare',
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['text diff', 'compare text', 'diff checker', 'text comparison'],
+    "id": "pdf-replace-pages",
+    "slug": "replace-pdf-pages",
+    "name": "Replace PDF Pages",
+    "shortDesc": "Replace specific damaged pages with new sheets in a PDF.",
+    "fullDesc": "Replace specific damaged pages with new sheets in a PDF.",
+    "category": "pdf",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "replace pdf pages",
+      "pdf",
+      "replace pdf pages"
+    ]
   },
   {
-    id: 'duplicate-remover',
-    slug: 'remove-duplicate-lines',
-    name: 'Remove Duplicate Lines',
-    shortDesc: 'Deduplicate text lines and clean up lists with one click.',
-    fullDesc: 'Clean lists, CSV columns, and logs by stripping repeated entries while preserving natural order.',
-    category: 'text',
-    icon: 'ListFilter',
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['remove duplicates', 'dedupe lines', 'clean list', 'unique lines'],
-  },
-
-  // ==================== 5. CALCULATORS & CONVERTERS ====================
-  {
-    id: 'file-size-converter',
-    slug: 'mb-to-kb',
-    name: 'File Size & Storage Unit Converter',
-    shortDesc: 'Convert Bytes, KB, MB, GB, TB, PB (Decimal 1000 & Binary 1024 KiB/MiB).',
-    fullDesc: 'Instant bidirectional digital storage unit converter with interactive slider, step-by-step formula breakdown, and memory reference tables.',
-    category: 'calculator',
-    icon: 'Binary',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['bytes to kb', 'kb to mb', 'mb to gb', 'gb to tb', 'kib mib gib', 'storage calculator'],
+    "id": "pdf-extract-selected",
+    "slug": "extract-selected-pages",
+    "name": "Extract Selected Pages",
+    "shortDesc": "Pick custom page numbers to create a new PDF.",
+    "fullDesc": "Pick custom page numbers to create a new PDF.",
+    "category": "pdf",
+    "icon": "FileCheck",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "extract selected pages",
+      "pdf",
+      "extract selected pages"
+    ]
   },
   {
-    id: 'general-unit-converter',
-    slug: 'unit-converter',
-    name: 'Universal Unit Converter',
-    shortDesc: 'Convert Length, Weight, Temperature, Area, Volume, Speed, Time, and Pressure.',
-    fullDesc: 'Comprehensive conversion suite supporting Metric, Imperial, and Scientific measurement units with instant calculation.',
-    category: 'calculator',
-    icon: 'Scale',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['unit converter', 'length', 'weight', 'temperature', 'inches to cm', 'lbs to kg'],
+    "id": "pdf-extract-odd",
+    "slug": "extract-odd-pages",
+    "name": "Extract Odd Pages",
+    "shortDesc": "Extract only odd-numbered pages (1, 3, 5, 7) for duplex printing.",
+    "fullDesc": "Extract only odd-numbered pages (1, 3, 5, 7) for duplex printing.",
+    "category": "pdf",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "extract odd pages",
+      "pdf",
+      "extract odd pages"
+    ]
   },
   {
-    id: 'bandwidth-calculator',
-    slug: 'download-time-calculator',
-    name: 'Download & Upload Time Calculator',
-    shortDesc: 'Estimate file transfer duration based on file size and internet connection speed.',
-    fullDesc: 'Calculate exactly how long it takes to download or upload games, 4K videos, backups, and large files over 4G, 5G, Fiber, or custom bandwidth.',
-    category: 'calculator',
-    icon: 'Activity',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['download time', 'upload time', 'transfer speed', 'bandwidth calculator', 'mbps to mb/s'],
+    "id": "pdf-extract-even",
+    "slug": "extract-even-pages",
+    "name": "Extract Even Pages",
+    "shortDesc": "Extract only even-numbered pages (2, 4, 6, 8) for double-sided scans.",
+    "fullDesc": "Extract only even-numbered pages (2, 4, 6, 8) for double-sided scans.",
+    "category": "pdf",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "extract even pages",
+      "pdf",
+      "extract even pages"
+    ]
   },
   {
-    id: 'math-calculators',
-    slug: 'percentage-calculator',
-    name: 'Percentage & Ratio Calculator',
-    shortDesc: 'Compute percentages, proportion ratios, averages, and date/age differences.',
-    fullDesc: 'Solve percentage increase/decrease, fractions, proportions, and date elapsed durations with clean formulas.',
-    category: 'calculator',
-    icon: 'Percent',
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['percentage calculator', 'ratio', 'average', 'age calculator', 'date math'],
-  },
-
-  // ==================== 6. DEVELOPER & WEB UTILITIES ====================
-  {
-    id: 'json-formatter',
-    slug: 'json-formatter',
-    name: 'JSON Formatter & Validator',
-    shortDesc: 'Format, validate, beautify, and minify JSON strings with instant syntax error detection.',
-    fullDesc: 'Format nested JSON structures, fix indentation, validate RFC 8259 syntax, and copy clean or minified output.',
-    category: 'dev',
-    icon: 'Code2',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['json formatter', 'json validator', 'beautify json', 'minify json', 'json lint'],
+    "id": "pdf-remove-blank",
+    "slug": "remove-blank-pages",
+    "name": "Remove Blank PDF Pages",
+    "shortDesc": "Detect and remove empty blank pages from scanned PDFs.",
+    "fullDesc": "Detect and remove empty blank pages from scanned PDFs.",
+    "category": "pdf",
+    "icon": "Trash2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "remove blank pdf pages",
+      "pdf",
+      "remove blank pages"
+    ]
   },
   {
-    id: 'base64-converter',
-    slug: 'base64-encode-decode',
-    name: 'Base64 Encoder & Decoder',
-    shortDesc: 'Encode and decode plain text, UTF-8 strings, and file data into Base64 format.',
-    fullDesc: 'Convert text or upload binary images/files to generate clean Base64 data URIs and strings.',
-    category: 'dev',
-    icon: 'FileCode',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['base64', 'base64 encode', 'base64 decode', 'data uri'],
+    "id": "pdf-sort-pages",
+    "slug": "sort-pdf-pages",
+    "name": "Sort PDF Pages",
+    "shortDesc": "Sort PDF pages alphabetically or numerically.",
+    "fullDesc": "Sort PDF pages alphabetically or numerically.",
+    "category": "pdf",
+    "icon": "ArrowUpDown",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "sort pdf pages",
+      "pdf",
+      "sort pdf pages"
+    ]
   },
   {
-    id: 'timestamp-converter',
-    slug: 'unix-timestamp-converter',
-    name: 'Unix Timestamp Converter',
-    shortDesc: 'Convert Unix Epoch seconds and milliseconds to UTC, ISO, and Local date/time.',
-    fullDesc: 'Interactive epoch converter with live real-time timestamp clock, relative time calculation, and timezone parsing.',
-    category: 'dev',
-    icon: 'Clock',
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['unix timestamp', 'epoch converter', 'time converter', 'iso date'],
+    "id": "pdf-page-numbers",
+    "slug": "page-numbering",
+    "name": "PDF Page Numbering",
+    "shortDesc": "Add customizable page numbers to top or bottom of PDF sheets.",
+    "fullDesc": "Add customizable page numbers to top or bottom of PDF sheets.",
+    "category": "pdf",
+    "icon": "Binary",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf page numbering",
+      "pdf",
+      "page numbering"
+    ]
   },
   {
-    id: 'color-converter',
-    slug: 'color-converter',
-    name: 'Color Converter & Palette Studio',
-    shortDesc: 'Convert colors between HEX, RGB, HSL, CMYK, and CSS variables.',
-    fullDesc: 'Inspect color codes, pick palette hues, and convert color models with live visual swatch preview.',
-    category: 'dev',
-    icon: 'Palette',
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['hex to rgb', 'rgb to hex', 'hsl converter', 'cmyk', 'color picker'],
-  },
-
-  // ==================== 7. SECURITY & CRYPTOGRAPHY ====================
-  {
-    id: 'hash-generator',
-    slug: 'hash-generator',
-    name: 'Hash Generator & File Checksum',
-    shortDesc: 'Generate SHA-256, SHA-512, and SHA-1 hashes for text strings and local files.',
-    fullDesc: 'Compute cryptographically secure cryptographic hash digests using browser Web Crypto API. Verify file integrity and checksums.',
-    category: 'security',
-    icon: 'Fingerprint',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['sha256', 'sha512', 'hash generator', 'file checksum', 'crypto hash'],
+    "id": "pdf-add-header",
+    "slug": "add-pdf-header",
+    "name": "Add PDF Header",
+    "shortDesc": "Insert official header titles and reference numbers across all pages.",
+    "fullDesc": "Insert official header titles and reference numbers across all pages.",
+    "category": "pdf",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "add pdf header",
+      "pdf",
+      "add pdf header"
+    ]
   },
   {
-    id: 'password-generator',
-    slug: 'password-generator',
-    name: 'Password Generator & Strength Meter',
-    shortDesc: 'Generate cryptographically strong passwords and test entropy security.',
-    fullDesc: 'Create secure passwords with customizable length, character sets, and crack-time entropy estimations.',
-    category: 'security',
-    icon: 'KeyRound',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: '',
-    outputMimeType: '',
-    tags: ['password generator', 'password strength', 'entropy', 'random password', 'uuid generator'],
-  },
-
-  // ==================== 8. OCR TOOLS ====================
-  {
-    id: 'ocr-image-to-text',
-    slug: 'ocr-image-to-text',
-    name: 'OCR Image to Text',
-    shortDesc: 'Extract text from scanned documents, receipts, photos, and screenshots.',
-    fullDesc: 'Optical Character Recognition powered by client-side Web Workers. Supports English, Arabic, Urdu, Hindi, Spanish, French and German with one-click copy and text export.',
-    category: 'ocr',
-    icon: 'ScanText',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/bmp'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.bmp'],
-    maxFiles: 5,
-    maxFileSizeMB: 20,
-    outputExtension: 'txt',
-    outputMimeType: 'text/plain',
-    tags: ['ocr', 'image to text', 'extract text', 'arabic ocr', 'urdu ocr', 'hindi ocr', 'receipt scanner'],
-  },
-
-  // ==================== 9. QR & BARCODE TOOLS ====================
-  {
-    id: 'qr-generator',
-    slug: 'qr-code-generator',
-    name: 'QR Code Generator',
-    shortDesc: 'Generate custom styled QR codes for URLs, Wi-Fi, vCard contacts, emails, and text.',
-    fullDesc: 'Create high-resolution QR codes with customizable colors, background transparency, and margin sizes. Download in PNG format.',
-    category: 'qr',
-    icon: 'QrCode',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'png',
-    outputMimeType: 'image/png',
-    tags: ['qr code', 'make qr', 'wifi qr', 'vcard qr', 'barcode'],
+    "id": "pdf-add-footer",
+    "slug": "add-pdf-footer",
+    "name": "Add PDF Footer",
+    "shortDesc": "Insert copyright notices, page counts, or disclaimer footers.",
+    "fullDesc": "Insert copyright notices, page counts, or disclaimer footers.",
+    "category": "pdf",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "add pdf footer",
+      "pdf",
+      "add pdf footer"
+    ]
   },
   {
-    id: 'barcode-generator',
-    slug: 'barcode-generator',
-    name: 'Barcode Generator',
-    shortDesc: 'Create Code128, EAN-13, UPC-A, and Code39 barcodes for products and inventory.',
-    fullDesc: 'Generate professional, scan-compliant barcodes for retail, shipping labels, and inventory systems. Export crisp PNG images.',
-    category: 'qr',
-    icon: 'Barcode',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'png',
-    outputMimeType: 'image/png',
-    tags: ['barcode', 'code128', 'ean13', 'upc', 'inventory barcode'],
-  },
-
-  // ==================== 11. SOCIAL MEDIA & VIDEO DOWNLOADER TOOLS ====================
-  {
-    id: 'media-downloader',
-    slug: 'video-downloader',
-    name: 'Social Media Video & Audio Downloader',
-    shortDesc: 'Download 4K / 1080p videos & MP3 audio from YouTube, Instagram, Facebook, TikTok & X.',
-    fullDesc: 'Universal multi-platform media extractor. Paste any link to download high-resolution MP4 video streams, extract 320kbps MP3 audio, or save HD thumbnails with zero watermarks.',
-    category: 'media',
-    icon: 'Video',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'mp4',
-    outputMimeType: 'video/mp4',
-    tags: ['video downloader', 'youtube downloader', 'instagram reel download', 'facebook video', 'tiktok download', 'mp3 extractor', 'save video'],
+    "id": "pdf-crop",
+    "slug": "crop-pdf",
+    "name": "PDF Crop",
+    "shortDesc": "Trim margins and crop unwanted white borders from PDF pages.",
+    "fullDesc": "Trim margins and crop unwanted white borders from PDF pages.",
+    "category": "pdf",
+    "icon": "Crop",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf crop",
+      "pdf",
+      "crop pdf"
+    ]
   },
   {
-    id: 'youtube-downloader',
-    slug: 'youtube-downloader',
-    name: 'YouTube 4K & MP3 Downloader',
-    shortDesc: 'Extract YouTube Shorts, full videos in 4K/1080p and high-bitrate MP3 audio.',
-    fullDesc: 'Save YouTube videos in ultra-high resolution or convert any video to 320kbps studio MP3 audio with one click.',
-    category: 'media',
-    icon: 'Youtube',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'mp4',
-    outputMimeType: 'video/mp4',
-    tags: ['youtube', 'youtube mp3', 'youtube 4k', 'yt shorts download'],
+    "id": "pdf-resize-pages",
+    "slug": "resize-pdf-pages",
+    "name": "PDF Resize Pages",
+    "shortDesc": "Resize page dimensions to standard A4, Letter, Legal, or A3.",
+    "fullDesc": "Resize page dimensions to standard A4, Letter, Legal, or A3.",
+    "category": "pdf",
+    "icon": "Scaling",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf resize pages",
+      "pdf",
+      "resize pdf pages"
+    ]
   },
   {
-    id: 'instagram-downloader',
-    slug: 'instagram-downloader',
-    name: 'Instagram Reels & Video Saver',
-    shortDesc: 'Download Instagram Reels, video posts, and IGTV clips in original HD quality.',
-    fullDesc: 'Save your favorite Instagram Reels and videos directly to your device without quality loss.',
-    category: 'media',
-    icon: 'Instagram',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'mp4',
-    outputMimeType: 'video/mp4',
-    tags: ['instagram reel', 'ig download', 'instagram video', 'insta reels'],
+    "id": "pdf-change-size",
+    "slug": "change-pdf-page-size",
+    "name": "PDF Change Page Size",
+    "shortDesc": "Change PDF dimensions and scale content proportionally.",
+    "fullDesc": "Change PDF dimensions and scale content proportionally.",
+    "category": "pdf",
+    "icon": "Scaling",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf change page size",
+      "pdf",
+      "change pdf page size"
+    ]
   },
   {
-    id: 'tiktok-downloader',
-    slug: 'tiktok-downloader',
-    name: 'TikTok Video Downloader (No Watermark)',
-    shortDesc: 'Save viral TikTok videos in crystal-clear Full HD without any watermark logo.',
-    fullDesc: 'Clean TikTok video saver. Download TikTok clips and sounds in crisp MP4 and MP3 format.',
-    category: 'media',
-    icon: 'Music',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'mp4',
-    outputMimeType: 'video/mp4',
-    tags: ['tiktok without watermark', 'tiktok mp4', 'tiktok sound', 'tik tok saver'],
+    "id": "pdf-orientation",
+    "slug": "landscape-portrait-pdf",
+    "name": "PDF Landscape/Portrait Converter",
+    "shortDesc": "Convert landscape slides into portrait sheets or vice versa.",
+    "fullDesc": "Convert landscape slides into portrait sheets or vice versa.",
+    "category": "pdf",
+    "icon": "Maximize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf landscape/portrait converter",
+      "pdf",
+      "landscape portrait pdf"
+    ]
   },
   {
-    id: 'whatsapp-status-saver',
-    slug: 'whatsapp-status-saver',
-    name: 'WhatsApp Status & Media Saver',
-    shortDesc: 'Save WhatsApp status videos, photos, and voice notes before they disappear.',
-    fullDesc: 'Easily preserve high-quality WhatsApp status updates, voice notes, and shared video clips.',
-    category: 'media',
-    icon: 'MessageCircle',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'mp4',
-    outputMimeType: 'video/mp4',
-    tags: ['whatsapp status', 'status saver', 'whatsapp video download', 'wa status'],
+    "id": "pdf-booklet",
+    "slug": "pdf-booklet-maker",
+    "name": "PDF Booklet Maker",
+    "shortDesc": "Format PDF pages side-by-side for fold-over 2-up booklet printing.",
+    "fullDesc": "Format PDF pages side-by-side for fold-over 2-up booklet printing.",
+    "category": "pdf",
+    "icon": "BookOpen",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf booklet maker",
+      "pdf",
+      "pdf booklet maker"
+    ]
   },
   {
-    id: 'video-to-mp3',
-    slug: 'video-to-mp3',
-    name: 'Video to Audio (MP3/WAV)',
-    shortDesc: 'Extract crystal-clear MP3 & WAV audio tracks from any video file.',
-    fullDesc: 'Extracts full uncompressed audio from MP4, WebM, MOV, and AVI videos up to 500 MB directly in your browser.',
-    category: 'media',
-    icon: 'Music',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-matroska', 'video/avi'],
-    acceptedExtensions: ['.mp4', '.webm', '.mov', '.mkv', '.avi'],
-    maxFiles: 10,
-    maxFileSizeMB: 500,
-    outputExtension: 'wav',
-    outputMimeType: 'audio/wav',
-    tags: ['video to mp3', 'extract audio', 'video to audio', 'mp4 to mp3', 'sound extractor'],
+    "id": "pdf-compress",
+    "slug": "compress-pdf",
+    "name": "Compress PDF",
+    "shortDesc": "Reduce PDF file size while maintaining sharp visual clarity.",
+    "fullDesc": "Reduce PDF file size while maintaining sharp visual clarity.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "compress pdf",
+      "compress",
+      "compress pdf"
+    ]
   },
   {
-    id: 'favicon-generator',
-    slug: 'favicon-generator',
-    name: 'Favicon & Web Icon Pack',
-    shortDesc: 'Generate 16x16, 32x32, 48x48, 180x180, and 512x512 icons + HTML code.',
-    fullDesc: 'Upload your brand logo and generate complete, ready-to-deploy favicon packages with webmanifest and HTML tags.',
-    category: 'image',
-    icon: 'Layers',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp'],
-    acceptedExtensions: ['.png', '.jpg', '.jpeg', '.svg', '.webp'],
-    maxFiles: 5,
-    maxFileSizeMB: 150,
-    outputExtension: 'zip',
-    outputMimeType: 'application/zip',
-    tags: ['favicon generator', 'icon maker', 'apple touch icon', 'web icon', 'ico generator'],
+    "id": "pdf-extreme-compress",
+    "slug": "extreme-pdf-compression",
+    "name": "Extreme PDF Compression",
+    "shortDesc": "Maximum compression for strict email attachments and portal limits.",
+    "fullDesc": "Maximum compression for strict email attachments and portal limits.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "extreme pdf compression",
+      "compress",
+      "extreme pdf compression"
+    ]
   },
   {
-    id: 'jwt-decoder',
-    slug: 'jwt-decoder',
-    name: 'JWT Token Inspector & Decoder',
-    shortDesc: 'Decode JSON Web Token headers, payloads, claims, and expiry dates.',
-    fullDesc: 'Inspect and debug JWT authentication tokens safely in browser without exposing secret keys.',
-    category: 'dev',
-    icon: 'KeyRound',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'json',
-    outputMimeType: 'application/json',
-    tags: ['jwt decoder', 'jwt inspector', 'token parser', 'json web token'],
+    "id": "pdf-balanced-compress",
+    "slug": "balanced-pdf-compression",
+    "name": "Balanced PDF Compression",
+    "shortDesc": "Optimal trade-off between compact file size and high resolution.",
+    "fullDesc": "Optimal trade-off between compact file size and high resolution.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "balanced pdf compression",
+      "compress",
+      "balanced pdf compression"
+    ]
   },
   {
-    id: 'uuid-generator',
-    slug: 'uuid-generator',
-    name: 'UUID / GUID Generator (v4)',
-    shortDesc: 'Bulk generate cryptographically secure Version-4 Unique Identifiers.',
-    fullDesc: 'Create randomized, unique GUIDs and UUIDs with customizable casing, count, and hyphen formatting.',
-    category: 'dev',
-    icon: 'Fingerprint',
-    popular: true,
-    isClientSide: true,
-    acceptedMimeTypes: [],
-    acceptedExtensions: [],
-    maxFiles: 0,
-    maxFileSizeMB: 0,
-    outputExtension: 'txt',
-    outputMimeType: 'text/plain',
-    tags: ['uuid generator', 'guid generator', 'uuid v4', 'random id'],
+    "id": "pdf-hq-compress",
+    "slug": "high-quality-pdf-compression",
+    "name": "High Quality PDF Compression",
+    "shortDesc": "Gentle compression preserving ultra-crisp print quality.",
+    "fullDesc": "Gentle compression preserving ultra-crisp print quality.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "high quality pdf compression",
+      "compress",
+      "high quality pdf compression"
+    ]
   },
   {
-    id: 'audio-cutter',
-    slug: 'audio-cutter',
-    name: 'Audio Cutter & Ringtone Trimmer',
-    shortDesc: 'Trim, cut, and slice MP3, WAV, and audio tracks with millisecond accuracy.',
-    fullDesc: 'Upload any music or audio file up to 500 MB, choose start and end times, and export clean trimmed audio instantly.',
-    category: 'media',
-    icon: 'Scissors',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/x-m4a', 'audio/flac'],
-    acceptedExtensions: ['.mp3', '.wav', '.aac', '.ogg', '.m4a', '.flac'],
-    maxFiles: 5,
-    maxFileSizeMB: 500,
-    outputExtension: 'wav',
-    outputMimeType: 'audio/wav',
-    tags: ['audio cutter', 'mp3 trimmer', 'cut audio', 'ringtone maker', 'audio slice'],
+    "id": "pdf-image-compress",
+    "slug": "pdf-image-compression",
+    "name": "PDF Image Compression",
+    "shortDesc": "Recompress embedded JPEG/PNG photos inside PDFs.",
+    "fullDesc": "Recompress embedded JPEG/PNG photos inside PDFs.",
+    "category": "compress",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf image compression",
+      "compress",
+      "pdf image compression"
+    ]
   },
   {
-    id: 'audio-booster',
-    slug: 'audio-booster',
-    name: 'Audio Volume Booster',
-    shortDesc: 'Boost and amplify quiet MP3, WAV, and audio recordings up to 300%.',
-    fullDesc: 'Increase the loudness of low-volume audio files, phone recordings, and lectures with soft saturation peak protection.',
-    category: 'media',
-    icon: 'Volume2',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/x-m4a', 'audio/flac'],
-    acceptedExtensions: ['.mp3', '.wav', '.aac', '.ogg', '.m4a', '.flac'],
-    maxFiles: 5,
-    maxFileSizeMB: 500,
-    outputExtension: 'wav',
-    outputMimeType: 'audio/wav',
-    tags: ['volume booster', 'audio boost', 'amplify audio', 'louder mp3', 'gain boost'],
+    "id": "pdf-font-opt",
+    "slug": "pdf-font-optimization",
+    "name": "PDF Font Optimization",
+    "shortDesc": "Subset and compress embedded fonts in PDF files.",
+    "fullDesc": "Subset and compress embedded fonts in PDF files.",
+    "category": "compress",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf font optimization",
+      "compress",
+      "pdf font optimization"
+    ]
   },
   {
-    id: 'audio-speed',
-    slug: 'audio-speed',
-    name: 'Audio Speed & Tempo Changer',
-    shortDesc: 'Speed up or slow down MP3 and WAV audio playback from 0.5x to 2.5x.',
-    fullDesc: 'Change audio speed for language learning, fast lecture listening, or slow transcription without quality loss.',
-    category: 'media',
-    icon: 'FastForward',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/x-m4a', 'audio/flac'],
-    acceptedExtensions: ['.mp3', '.wav', '.aac', '.ogg', '.m4a', '.flac'],
-    maxFiles: 5,
-    maxFileSizeMB: 500,
-    outputExtension: 'wav',
-    outputMimeType: 'audio/wav',
-    tags: ['audio speed', 'tempo changer', 'speed up mp3', 'slow audio', 'pitch change'],
+    "id": "pdf-metadata-cleaner",
+    "slug": "pdf-metadata-cleaner",
+    "name": "PDF Metadata Cleaner",
+    "shortDesc": "Strip hidden author info, revision history, and GPS tracking tags.",
+    "fullDesc": "Strip hidden author info, revision history, and GPS tracking tags.",
+    "category": "security",
+    "icon": "ShieldCheck",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf metadata cleaner",
+      "security",
+      "pdf metadata cleaner"
+    ]
   },
   {
-    id: 'image-palette',
-    slug: 'image-palette',
-    name: 'Image Color Palette Extractor',
-    shortDesc: 'Extract dominant HEX, RGB color swatches and CSS palettes from images.',
-    fullDesc: 'Upload logos, photos, and artwork to extract primary color harmonies and copy CSS variables instantly.',
-    category: 'image',
-    icon: 'Palette',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
-    acceptedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.svg'],
-    maxFiles: 1,
-    maxFileSizeMB: 150,
-    outputExtension: 'txt',
-    outputMimeType: 'text/plain',
-    tags: ['color palette', 'extract colors', 'hex codes', 'image colors', 'color picker'],
+    "id": "pdf-size-analyzer",
+    "slug": "pdf-size-analyzer",
+    "name": "PDF Size Analyzer",
+    "shortDesc": "Inspect how much space images, fonts, and streams consume in a PDF.",
+    "fullDesc": "Inspect how much space images, fonts, and streams consume in a PDF.",
+    "category": "calculator",
+    "icon": "BarChart2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf size analyzer",
+      "calculator",
+      "pdf size analyzer"
+    ]
   },
   {
-    id: 'pdf-organizer',
-    slug: 'pdf-organizer',
-    name: 'PDF Page Organizer & Reorder',
-    shortDesc: 'Visually rearrange, rotate, and delete pages from PDF documents.',
-    fullDesc: 'Interactive thumbnail grid to drag and drop page order, rotate individual pages, and remove unwanted pages.',
-    category: 'pdf',
-    icon: 'Layers',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['application/pdf'],
-    acceptedExtensions: ['.pdf'],
-    maxFiles: 1,
-    maxFileSizeMB: 500,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    tags: ['reorder pdf', 'pdf organizer', 'delete pdf pages', 'rotate pages', 'arrange pdf'],
+    "id": "pdf-optimize",
+    "slug": "pdf-optimization",
+    "name": "PDF Optimization",
+    "shortDesc": "Optimize PDF structure for web rendering and rapid downloading.",
+    "fullDesc": "Optimize PDF structure for web rendering and rapid downloading.",
+    "category": "compress",
+    "icon": "Zap",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf optimization",
+      "compress",
+      "pdf optimization"
+    ]
   },
   {
-    id: 'markdown-editor',
-    slug: 'markdown-editor',
-    name: 'Live Markdown to PDF Studio',
-    shortDesc: 'Write Markdown with real-time preview and export formatted PDF.',
-    fullDesc: 'Split-screen live Markdown documentation editor with table formatting, code syntax highlighting, and 1-click PDF download.',
-    category: 'dev',
-    icon: 'FileCode',
-    popular: true,
-    featured: true,
-    isClientSide: true,
-    acceptedMimeTypes: ['text/markdown', 'text/plain'],
-    acceptedExtensions: ['.md', '.txt'],
-    maxFiles: 1,
-    maxFileSizeMB: 10,
-    outputExtension: 'pdf',
-    outputMimeType: 'application/pdf',
-    tags: ['markdown editor', 'md to pdf', 'live markdown', 'doc generator', 'markdown preview'],
+    "id": "pdf-linearize",
+    "slug": "pdf-fast-web-view",
+    "name": "PDF Fast Web View (Linearize)",
+    "shortDesc": "Reorder PDF streams for instant byte-range streaming in browsers.",
+    "fullDesc": "Reorder PDF streams for instant byte-range streaming in browsers.",
+    "category": "pdf",
+    "icon": "Zap",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf fast web view (linearize)",
+      "pdf",
+      "pdf fast web view"
+    ]
   },
+  {
+    "id": "pdf-remove-objects",
+    "slug": "remove-unused-pdf-objects",
+    "name": "Remove Unused PDF Objects",
+    "shortDesc": "Clean orphan cross-references, hidden metadata, and duplicate objects.",
+    "fullDesc": "Clean orphan cross-references, hidden metadata, and duplicate objects.",
+    "category": "compress",
+    "icon": "Trash2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "remove unused pdf objects",
+      "compress",
+      "remove unused pdf objects"
+    ]
+  },
+  {
+    "id": "pdf-optimize-scan",
+    "slug": "optimize-scanned-pdf",
+    "name": "Optimize Scanned PDF",
+    "shortDesc": "Clean background noise and compress heavy scanned document pages.",
+    "fullDesc": "Clean background noise and compress heavy scanned document pages.",
+    "category": "ocr",
+    "icon": "ScanText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "optimize scanned pdf",
+      "ocr",
+      "optimize scanned pdf"
+    ]
+  },
+  {
+    "id": "pdf-optimize-images",
+    "slug": "optimize-image-heavy-pdf",
+    "name": "Optimize Image-Heavy PDF",
+    "shortDesc": "Compress high-res graphical manuals and catalogs.",
+    "fullDesc": "Compress high-res graphical manuals and catalogs.",
+    "category": "compress",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "optimize image-heavy pdf",
+      "compress",
+      "optimize image heavy pdf"
+    ]
+  },
+  {
+    "id": "pdf-resolution-reducer",
+    "slug": "pdf-resolution-reducer",
+    "name": "PDF Resolution Reducer",
+    "shortDesc": "Downsample high DPI scan images to 150 DPI or 72 DPI.",
+    "fullDesc": "Downsample high DPI scan images to 150 DPI or 72 DPI.",
+    "category": "compress",
+    "icon": "Scaling",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf resolution reducer",
+      "compress",
+      "pdf resolution reducer"
+    ]
+  },
+  {
+    "id": "pdf-to-smaller",
+    "slug": "pdf-to-smaller-pdf",
+    "name": "PDF to Smaller PDF",
+    "shortDesc": "Adaptive size shrinker guaranteed never to make files larger.",
+    "fullDesc": "Adaptive size shrinker guaranteed never to make files larger.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf to smaller pdf",
+      "compress",
+      "pdf to smaller pdf"
+    ]
+  },
+  {
+    "id": "pdf-to-docx",
+    "slug": "pdf-to-word",
+    "name": "PDF to Word",
+    "shortDesc": "Convert PDF documents into editable Microsoft Word DOCX files.",
+    "fullDesc": "Convert PDF documents into editable Microsoft Word DOCX files.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "docx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "tags": [
+      "pdf to word",
+      "document",
+      "pdf to word"
+    ]
+  },
+  {
+    "id": "pdf-to-doc",
+    "slug": "pdf-to-doc-converter",
+    "name": "PDF to DOC",
+    "shortDesc": "Convert PDF files into standard DOC documents.",
+    "fullDesc": "Convert PDF files into standard DOC documents.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "docx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "tags": [
+      "pdf to doc",
+      "document",
+      "pdf to doc converter"
+    ]
+  },
+  {
+    "id": "pdf-to-txt",
+    "slug": "pdf-to-txt",
+    "name": "PDF to TXT",
+    "shortDesc": "Extract clean UTF-8 text from any PDF document.",
+    "fullDesc": "Extract clean UTF-8 text from any PDF document.",
+    "category": "text",
+    "icon": "FileCode",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to txt",
+      "text",
+      "pdf to txt"
+    ]
+  },
+  {
+    "id": "pdf-to-rtf",
+    "slug": "pdf-to-rtf",
+    "name": "PDF to RTF",
+    "shortDesc": "Export formatted Rich Text with typography and paragraphs.",
+    "fullDesc": "Export formatted Rich Text with typography and paragraphs.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "rtf",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to rtf",
+      "document",
+      "pdf to rtf"
+    ]
+  },
+  {
+    "id": "pdf-to-excel",
+    "slug": "pdf-to-excel",
+    "name": "PDF to Excel",
+    "shortDesc": "Extract data tables and columns from PDF into Excel spreadsheets.",
+    "fullDesc": "Extract data tables and columns from PDF into Excel spreadsheets.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "xlsx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "tags": [
+      "pdf to excel",
+      "document",
+      "pdf to excel"
+    ]
+  },
+  {
+    "id": "pdf-to-xlsx",
+    "slug": "pdf-to-xlsx",
+    "name": "PDF to XLSX",
+    "shortDesc": "Export structured PDF sheets into XLSX format.",
+    "fullDesc": "Export structured PDF sheets into XLSX format.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "xlsx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "tags": [
+      "pdf to xlsx",
+      "document",
+      "pdf to xlsx"
+    ]
+  },
+  {
+    "id": "pdf-to-csv",
+    "slug": "pdf-to-csv",
+    "name": "PDF to CSV",
+    "shortDesc": "Extract structured tabular data from PDF into comma-separated rows.",
+    "fullDesc": "Extract structured tabular data from PDF into comma-separated rows.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "csv",
+    "outputMimeType": "text/csv",
+    "tags": [
+      "pdf to csv",
+      "document",
+      "pdf to csv"
+    ]
+  },
+  {
+    "id": "pdf-to-pptx",
+    "slug": "pdf-to-powerpoint",
+    "name": "PDF to PowerPoint",
+    "shortDesc": "Convert PDF presentation slides into editable PowerPoint slides.",
+    "fullDesc": "Convert PDF presentation slides into editable PowerPoint slides.",
+    "category": "document",
+    "icon": "Presentation",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pptx",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to powerpoint",
+      "document",
+      "pdf to powerpoint"
+    ]
+  },
+  {
+    "id": "pdf-to-ppt",
+    "slug": "pdf-to-ppt-slides",
+    "name": "PDF to PPT",
+    "shortDesc": "Convert PDF pages to PowerPoint slide decks.",
+    "fullDesc": "Convert PDF pages to PowerPoint slide decks.",
+    "category": "document",
+    "icon": "Presentation",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pptx",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to ppt",
+      "document",
+      "pdf to ppt slides"
+    ]
+  },
+  {
+    "id": "pdf-to-jpg",
+    "slug": "pdf-to-jpg",
+    "name": "PDF to JPG",
+    "shortDesc": "Convert PDF pages into high-resolution JPG images.",
+    "fullDesc": "Convert PDF pages into high-resolution JPG images.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "pdf to jpg",
+      "image",
+      "pdf to jpg"
+    ]
+  },
+  {
+    "id": "pdf-to-jpeg",
+    "slug": "pdf-to-jpeg",
+    "name": "PDF to JPEG",
+    "shortDesc": "Convert PDF pages into standard JPEG files.",
+    "fullDesc": "Convert PDF pages into standard JPEG files.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "pdf to jpeg",
+      "image",
+      "pdf to jpeg"
+    ]
+  },
+  {
+    "id": "pdf-to-png",
+    "slug": "pdf-to-png",
+    "name": "PDF to PNG",
+    "shortDesc": "Convert PDF pages into crisp, transparent-capable PNG images.",
+    "fullDesc": "Convert PDF pages into crisp, transparent-capable PNG images.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "pdf to png",
+      "image",
+      "pdf to png"
+    ]
+  },
+  {
+    "id": "pdf-to-webp",
+    "slug": "pdf-to-webp",
+    "name": "PDF to WEBP",
+    "shortDesc": "Convert PDF pages into lightweight, modern WEBP images.",
+    "fullDesc": "Convert PDF pages into lightweight, modern WEBP images.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "webp",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to webp",
+      "image",
+      "pdf to webp"
+    ]
+  },
+  {
+    "id": "pdf-to-tiff",
+    "slug": "pdf-to-tiff",
+    "name": "PDF to TIFF",
+    "shortDesc": "Convert PDF sheets into high-depth uncompressed TIFF graphics.",
+    "fullDesc": "Convert PDF sheets into high-depth uncompressed TIFF graphics.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "pdf to tiff",
+      "image",
+      "pdf to tiff"
+    ]
+  },
+  {
+    "id": "pdf-to-bmp",
+    "slug": "pdf-to-bmp",
+    "name": "PDF to BMP",
+    "shortDesc": "Convert PDF pages to lossless Bitmap BMP format.",
+    "fullDesc": "Convert PDF pages to lossless Bitmap BMP format.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "pdf to bmp",
+      "image",
+      "pdf to bmp"
+    ]
+  },
+  {
+    "id": "pdf-to-html",
+    "slug": "pdf-to-html",
+    "name": "PDF to HTML",
+    "shortDesc": "Convert PDF content and formatting into web-ready HTML code.",
+    "fullDesc": "Convert PDF content and formatting into web-ready HTML code.",
+    "category": "dev",
+    "icon": "Code",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "html",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to html",
+      "dev",
+      "pdf to html"
+    ]
+  },
+  {
+    "id": "pdf-to-markdown",
+    "slug": "pdf-to-markdown",
+    "name": "PDF to Markdown",
+    "shortDesc": "Convert PDF document text and headings into structured Markdown.",
+    "fullDesc": "Convert PDF document text and headings into structured Markdown.",
+    "category": "dev",
+    "icon": "FileCode",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "md",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to markdown",
+      "dev",
+      "pdf to markdown"
+    ]
+  },
+  {
+    "id": "pdf-to-epub",
+    "slug": "pdf-to-epub",
+    "name": "PDF to EPUB",
+    "shortDesc": "Convert PDF documents into readable EPUB eBooks.",
+    "fullDesc": "Convert PDF documents into readable EPUB eBooks.",
+    "category": "document",
+    "icon": "BookOpen",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "epub",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to epub",
+      "document",
+      "pdf to epub"
+    ]
+  },
+  {
+    "id": "pdf-to-svg",
+    "slug": "pdf-to-svg",
+    "name": "PDF to SVG",
+    "shortDesc": "Export PDF vector graphics and text to SVG format.",
+    "fullDesc": "Export PDF vector graphics and text to SVG format.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "svg",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pdf to svg",
+      "image",
+      "pdf to svg"
+    ]
+  },
+  {
+    "id": "pdf-to-pdfa",
+    "slug": "pdf-to-pdf-a",
+    "name": "PDF to PDF/A",
+    "shortDesc": "Convert standard PDF documents into ISO-compliant PDF/A archival.",
+    "fullDesc": "Convert standard PDF documents into ISO-compliant PDF/A archival.",
+    "category": "pdf",
+    "icon": "ShieldCheck",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf to pdf/a",
+      "pdf",
+      "pdf to pdf a"
+    ]
+  },
+  {
+    "id": "pdf-to-pdfx",
+    "slug": "pdf-to-pdf-x",
+    "name": "PDF to PDF/X",
+    "shortDesc": "Prepare PDF files for high-end professional printing and prepress.",
+    "fullDesc": "Prepare PDF files for high-end professional printing and prepress.",
+    "category": "pdf",
+    "icon": "Printer",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf to pdf/x",
+      "pdf",
+      "pdf to pdf x"
+    ]
+  },
+  {
+    "id": "pdf-to-grayscale",
+    "slug": "pdf-to-grayscale",
+    "name": "PDF to Grayscale",
+    "shortDesc": "Convert full-color PDF documents into black-and-white / grayscale.",
+    "fullDesc": "Convert full-color PDF documents into black-and-white / grayscale.",
+    "category": "pdf",
+    "icon": "Layers",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf to grayscale",
+      "pdf",
+      "pdf to grayscale"
+    ]
+  },
+  {
+    "id": "pdf-to-bw",
+    "slug": "pdf-to-black-and-white",
+    "name": "PDF to Black & White",
+    "shortDesc": "Convert PDFs to pure binary 1-bit high-contrast black and white.",
+    "fullDesc": "Convert PDFs to pure binary 1-bit high-contrast black and white.",
+    "category": "pdf",
+    "icon": "Layers",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf to black & white",
+      "pdf",
+      "pdf to black and white"
+    ]
+  },
+  {
+    "id": "pdf-to-images",
+    "slug": "pdf-to-images-zip",
+    "name": "PDF to Images ZIP",
+    "shortDesc": "Export all PDF pages into a zipped archive of 300 DPI images.",
+    "fullDesc": "Export all PDF pages into a zipped archive of 300 DPI images.",
+    "category": "image",
+    "icon": "Archive",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "zip",
+    "outputMimeType": "application/zip",
+    "tags": [
+      "pdf to images zip",
+      "image",
+      "pdf to images zip"
+    ]
+  },
+  {
+    "id": "docx-to-pdf",
+    "slug": "word-to-pdf",
+    "name": "Word to PDF",
+    "shortDesc": "Convert Microsoft Word DOCX documents into standard PDF files.",
+    "fullDesc": "Convert Microsoft Word DOCX documents into standard PDF files.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx",
+      ".doc"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "word to pdf",
+      "document",
+      "word to pdf"
+    ]
+  },
+  {
+    "id": "doc-to-pdf",
+    "slug": "doc-to-pdf",
+    "name": "DOC to PDF",
+    "shortDesc": "Convert legacy DOC files to modern PDF.",
+    "fullDesc": "Convert legacy DOC files to modern PDF.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".doc"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "doc to pdf",
+      "document",
+      "doc to pdf"
+    ]
+  },
+  {
+    "id": "docx-direct-pdf",
+    "slug": "docx-to-pdf",
+    "name": "DOCX to PDF",
+    "shortDesc": "Convert modern DOCX files to PDF.",
+    "fullDesc": "Convert modern DOCX files to PDF.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "docx to pdf",
+      "document",
+      "docx to pdf"
+    ]
+  },
+  {
+    "id": "xlsx-to-pdf",
+    "slug": "excel-to-pdf",
+    "name": "Excel to PDF",
+    "shortDesc": "Convert Excel spreadsheets and worksheets into printable PDF tables.",
+    "fullDesc": "Convert Excel spreadsheets and worksheets into printable PDF tables.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ],
+    "acceptedExtensions": [
+      ".xlsx",
+      ".xls"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "excel to pdf",
+      "document",
+      "excel to pdf"
+    ]
+  },
+  {
+    "id": "xls-to-pdf",
+    "slug": "xls-to-pdf",
+    "name": "XLS to PDF",
+    "shortDesc": "Convert legacy XLS spreadsheets to PDF.",
+    "fullDesc": "Convert legacy XLS spreadsheets to PDF.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".xls"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "xls to pdf",
+      "document",
+      "xls to pdf"
+    ]
+  },
+  {
+    "id": "xlsx-direct-pdf",
+    "slug": "xlsx-to-pdf",
+    "name": "XLSX to PDF",
+    "shortDesc": "Convert XLSX workbooks into clean PDF tables.",
+    "fullDesc": "Convert XLSX workbooks into clean PDF tables.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ],
+    "acceptedExtensions": [
+      ".xlsx"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "xlsx to pdf",
+      "document",
+      "xlsx to pdf"
+    ]
+  },
+  {
+    "id": "csv-to-pdf",
+    "slug": "csv-to-pdf",
+    "name": "CSV to PDF",
+    "shortDesc": "Render comma-separated CSV records into clean formatted PDF pages.",
+    "fullDesc": "Render comma-separated CSV records into clean formatted PDF pages.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/csv"
+    ],
+    "acceptedExtensions": [
+      ".csv"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "csv to pdf",
+      "document",
+      "csv to pdf"
+    ]
+  },
+  {
+    "id": "pptx-to-pdf",
+    "slug": "powerpoint-to-pdf",
+    "name": "PowerPoint to PDF",
+    "shortDesc": "Convert PowerPoint slide presentations into clean PDF documents.",
+    "fullDesc": "Convert PowerPoint slide presentations into clean PDF documents.",
+    "category": "document",
+    "icon": "Presentation",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".pptx",
+      ".ppt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "powerpoint to pdf",
+      "document",
+      "powerpoint to pdf"
+    ]
+  },
+  {
+    "id": "ppt-to-pdf",
+    "slug": "ppt-to-pdf",
+    "name": "PPT to PDF",
+    "shortDesc": "Convert legacy PPT presentations to PDF.",
+    "fullDesc": "Convert legacy PPT presentations to PDF.",
+    "category": "document",
+    "icon": "Presentation",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".ppt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "ppt to pdf",
+      "document",
+      "ppt to pdf"
+    ]
+  },
+  {
+    "id": "pptx-direct-pdf",
+    "slug": "pptx-to-pdf",
+    "name": "PPTX to PDF",
+    "shortDesc": "Convert modern PPTX slide decks to PDF.",
+    "fullDesc": "Convert modern PPTX slide decks to PDF.",
+    "category": "document",
+    "icon": "Presentation",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".pptx"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pptx to pdf",
+      "document",
+      "pptx to pdf"
+    ]
+  },
+  {
+    "id": "txt-to-pdf",
+    "slug": "txt-to-pdf",
+    "name": "TXT to PDF",
+    "shortDesc": "Format and convert plain text files into clean paginated PDF documents.",
+    "fullDesc": "Format and convert plain text files into clean paginated PDF documents.",
+    "category": "text",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "txt to pdf",
+      "text",
+      "txt to pdf"
+    ]
+  },
+  {
+    "id": "rtf-to-pdf",
+    "slug": "rtf-to-pdf",
+    "name": "RTF to PDF",
+    "shortDesc": "Convert Rich Text files into styled PDF documents.",
+    "fullDesc": "Convert Rich Text files into styled PDF documents.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".rtf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "rtf to pdf",
+      "document",
+      "rtf to pdf"
+    ]
+  },
+  {
+    "id": "html-to-pdf",
+    "slug": "html-to-pdf",
+    "name": "HTML to PDF",
+    "shortDesc": "Render HTML files and web layouts into high-resolution PDF pages.",
+    "fullDesc": "Render HTML files and web layouts into high-resolution PDF pages.",
+    "category": "dev",
+    "icon": "Code",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".html",
+      ".htm"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "html to pdf",
+      "dev",
+      "html to pdf"
+    ]
+  },
+  {
+    "id": "markdown-to-pdf",
+    "slug": "markdown-to-pdf",
+    "name": "Markdown to PDF",
+    "shortDesc": "Convert Markdown documentation into styled PDF reports.",
+    "fullDesc": "Convert Markdown documentation into styled PDF reports.",
+    "category": "dev",
+    "icon": "FileCode",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".md"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "markdown to pdf",
+      "dev",
+      "markdown to pdf"
+    ]
+  },
+  {
+    "id": "jpg-to-pdf",
+    "slug": "jpg-to-pdf",
+    "name": "JPG to PDF",
+    "shortDesc": "Convert JPG photos into a high-quality PDF page.",
+    "fullDesc": "Convert JPG photos into a high-quality PDF page.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "jpg to pdf",
+      "image",
+      "jpg to pdf"
+    ]
+  },
+  {
+    "id": "jpeg-to-pdf",
+    "slug": "jpeg-to-pdf",
+    "name": "JPEG to PDF",
+    "shortDesc": "Convert JPEG images to PDF.",
+    "fullDesc": "Convert JPEG images to PDF.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".jpeg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "jpeg to pdf",
+      "image",
+      "jpeg to pdf"
+    ]
+  },
+  {
+    "id": "png-to-pdf",
+    "slug": "png-to-pdf",
+    "name": "PNG to PDF",
+    "shortDesc": "Convert transparent PNG graphics into clean PDF sheets.",
+    "fullDesc": "Convert transparent PNG graphics into clean PDF sheets.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/png",
+      "image/jpeg"
+    ],
+    "acceptedExtensions": [
+      ".png"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "png to pdf",
+      "image",
+      "png to pdf"
+    ]
+  },
+  {
+    "id": "webp-to-pdf",
+    "slug": "webp-to-pdf",
+    "name": "WEBP to PDF",
+    "shortDesc": "Convert modern WebP images into universal PDF documents.",
+    "fullDesc": "Convert modern WebP images into universal PDF documents.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "webp to pdf",
+      "image",
+      "webp to pdf"
+    ]
+  },
+  {
+    "id": "tiff-to-pdf",
+    "slug": "tiff-to-pdf",
+    "name": "TIFF to PDF",
+    "shortDesc": "Convert multi-page TIFF scans to PDF.",
+    "fullDesc": "Convert multi-page TIFF scans to PDF.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".tiff",
+      ".tif"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "tiff to pdf",
+      "image",
+      "tiff to pdf"
+    ]
+  },
+  {
+    "id": "bmp-to-pdf",
+    "slug": "bmp-to-pdf",
+    "name": "BMP to PDF",
+    "shortDesc": "Convert Bitmap BMP images to PDF.",
+    "fullDesc": "Convert Bitmap BMP images to PDF.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".bmp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "bmp to pdf",
+      "image",
+      "bmp to pdf"
+    ]
+  },
+  {
+    "id": "svg-to-pdf",
+    "slug": "svg-to-pdf",
+    "name": "SVG to PDF",
+    "shortDesc": "Convert scalable SVG vectors into vector PDF pages.",
+    "fullDesc": "Convert scalable SVG vectors into vector PDF pages.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".svg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "svg to pdf",
+      "image",
+      "svg to pdf"
+    ]
+  },
+  {
+    "id": "epub-to-pdf",
+    "slug": "epub-to-pdf",
+    "name": "EPUB to PDF",
+    "shortDesc": "Convert EPUB eBooks into printable PDF books.",
+    "fullDesc": "Convert EPUB eBooks into printable PDF books.",
+    "category": "document",
+    "icon": "BookOpen",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".epub"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "epub to pdf",
+      "document",
+      "epub to pdf"
+    ]
+  },
+  {
+    "id": "image-to-pdf",
+    "slug": "images-to-pdf",
+    "name": "Images to PDF",
+    "shortDesc": "Combine single or multiple JPG, PNG, and WebP images into one PDF.",
+    "fullDesc": "Combine single or multiple JPG, PNG, and WebP images into one PDF.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp",
+      ".bmp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "images to pdf",
+      "image",
+      "images to pdf"
+    ]
+  },
+  {
+    "id": "multi-images-to-pdf",
+    "slug": "multiple-images-to-pdf",
+    "name": "Multiple Images to PDF",
+    "shortDesc": "Batch bind 50+ photos into a single PDF album.",
+    "fullDesc": "Batch bind 50+ photos into a single PDF album.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp",
+      ".bmp"
+    ],
+    "maxFiles": 50,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "multiple images to pdf",
+      "image",
+      "multiple images to pdf"
+    ]
+  },
+  {
+    "id": "screenshot-to-pdf",
+    "slug": "screenshot-to-pdf",
+    "name": "Screenshot to PDF",
+    "shortDesc": "Convert app screenshots into organized PDF reports.",
+    "fullDesc": "Convert app screenshots into organized PDF reports.",
+    "category": "image",
+    "icon": "Monitor",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".png",
+      ".jpg",
+      ".jpeg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "screenshot to pdf",
+      "image",
+      "screenshot to pdf"
+    ]
+  },
+  {
+    "id": "webpage-to-pdf",
+    "slug": "webpage-to-pdf",
+    "name": "Webpage to PDF",
+    "shortDesc": "Convert webpage HTML files into paginated PDF documents.",
+    "fullDesc": "Convert webpage HTML files into paginated PDF documents.",
+    "category": "dev",
+    "icon": "Globe",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".html",
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "webpage to pdf",
+      "dev",
+      "webpage to pdf"
+    ]
+  },
+  {
+    "id": "pdf-editor",
+    "slug": "edit-pdf",
+    "name": "Edit PDF",
+    "shortDesc": "Add text, signatures, highlights, drawings, and shapes to PDF documents.",
+    "fullDesc": "Add text, signatures, highlights, drawings, and shapes to PDF documents.",
+    "category": "pdf",
+    "icon": "Edit3",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "edit pdf",
+      "pdf",
+      "edit pdf"
+    ]
+  },
+  {
+    "id": "pdf-add-text",
+    "slug": "add-text-to-pdf",
+    "name": "Add Text to PDF",
+    "shortDesc": "Insert custom text boxes, dates, and form entries into PDF sheets.",
+    "fullDesc": "Insert custom text boxes, dates, and form entries into PDF sheets.",
+    "category": "pdf",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "add text to pdf",
+      "pdf",
+      "add text to pdf"
+    ]
+  },
+  {
+    "id": "pdf-add-image",
+    "slug": "add-image-to-pdf",
+    "name": "Add Image to PDF",
+    "shortDesc": "Place photos, seals, and logos directly onto PDF pages.",
+    "fullDesc": "Place photos, seals, and logos directly onto PDF pages.",
+    "category": "pdf",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "add image to pdf",
+      "pdf",
+      "add image to pdf"
+    ]
+  },
+  {
+    "id": "pdf-add-shape",
+    "slug": "add-shape-to-pdf",
+    "name": "Add Shape to PDF",
+    "shortDesc": "Draw rectangles, circles, lines, and callout shapes on PDF.",
+    "fullDesc": "Draw rectangles, circles, lines, and callout shapes on PDF.",
+    "category": "pdf",
+    "icon": "Square",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "add shape to pdf",
+      "pdf",
+      "add shape to pdf"
+    ]
+  },
+  {
+    "id": "pdf-draw",
+    "slug": "draw-on-pdf",
+    "name": "Draw on PDF",
+    "shortDesc": "Freehand sketching, markup pen, and touch drawing on PDF.",
+    "fullDesc": "Freehand sketching, markup pen, and touch drawing on PDF.",
+    "category": "pdf",
+    "icon": "PenTool",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "draw on pdf",
+      "pdf",
+      "draw on pdf"
+    ]
+  },
+  {
+    "id": "pdf-highlight",
+    "slug": "highlight-pdf",
+    "name": "Highlight PDF",
+    "shortDesc": "Highlight important lines and terms with transparent yellow/green tint.",
+    "fullDesc": "Highlight important lines and terms with transparent yellow/green tint.",
+    "category": "pdf",
+    "icon": "Highlighter",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "highlight pdf",
+      "pdf",
+      "highlight pdf"
+    ]
+  },
+  {
+    "id": "pdf-sign",
+    "slug": "sign-pdf",
+    "name": "Add Signature",
+    "shortDesc": "Draw, type, or upload electronic signatures to place anywhere on PDFs.",
+    "fullDesc": "Draw, type, or upload electronic signatures to place anywhere on PDFs.",
+    "category": "pdf",
+    "icon": "PenTool",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "add signature",
+      "pdf",
+      "sign pdf"
+    ]
+  },
+  {
+    "id": "pdf-add-stamp",
+    "slug": "add-stamp-to-pdf",
+    "name": "Add Stamp",
+    "shortDesc": "Insert APPROVED, REJECTED, PAID, and OFFICIAL stamps on documents.",
+    "fullDesc": "Insert APPROVED, REJECTED, PAID, and OFFICIAL stamps on documents.",
+    "category": "pdf",
+    "icon": "Stamp",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "add stamp",
+      "pdf",
+      "add stamp to pdf"
+    ]
+  },
+  {
+    "id": "pdf-watermark",
+    "slug": "watermark-pdf",
+    "name": "Add Watermark",
+    "shortDesc": "Add confidential, draft, or custom logo watermarks across all pages.",
+    "fullDesc": "Add confidential, draft, or custom logo watermarks across all pages.",
+    "category": "pdf",
+    "icon": "Stamp",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "add watermark",
+      "pdf",
+      "watermark pdf"
+    ]
+  },
+  {
+    "id": "pdf-remove-watermark",
+    "slug": "remove-watermark-pdf",
+    "name": "Remove Watermark",
+    "shortDesc": "Clean background watermark stamps from PDF documents.",
+    "fullDesc": "Clean background watermark stamps from PDF documents.",
+    "category": "pdf",
+    "icon": "Trash2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "remove watermark",
+      "pdf",
+      "remove watermark pdf"
+    ]
+  },
+  {
+    "id": "pdf-protect",
+    "slug": "protect-pdf",
+    "name": "Protect PDF with Password",
+    "shortDesc": "Encrypt PDF files with AES-256 password protection.",
+    "fullDesc": "Encrypt PDF files with AES-256 password protection.",
+    "category": "security",
+    "icon": "Lock",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "protect pdf with password",
+      "security",
+      "protect pdf"
+    ]
+  },
+  {
+    "id": "pdf-encrypt",
+    "slug": "encrypt-pdf",
+    "name": "Encrypt PDF",
+    "shortDesc": "Strong AES cryptographic protection for confidential documents.",
+    "fullDesc": "Strong AES cryptographic protection for confidential documents.",
+    "category": "security",
+    "icon": "Lock",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "encrypt pdf",
+      "security",
+      "encrypt pdf"
+    ]
+  },
+  {
+    "id": "pdf-unlock",
+    "slug": "unlock-pdf",
+    "name": "Unlock PDF",
+    "shortDesc": "Remove password restrictions and owner locks from authorized PDFs.",
+    "fullDesc": "Remove password restrictions and owner locks from authorized PDFs.",
+    "category": "security",
+    "icon": "Unlock",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "unlock pdf",
+      "security",
+      "unlock pdf"
+    ]
+  },
+  {
+    "id": "pdf-remove-password",
+    "slug": "remove-pdf-password",
+    "name": "Remove PDF Password",
+    "shortDesc": "Permanently decrypt unlocked PDF files for open sharing.",
+    "fullDesc": "Permanently decrypt unlocked PDF files for open sharing.",
+    "category": "security",
+    "icon": "Unlock",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "remove pdf password",
+      "security",
+      "remove pdf password"
+    ]
+  },
+  {
+    "id": "pdf-permissions",
+    "slug": "pdf-permission-manager",
+    "name": "PDF Permission Manager",
+    "shortDesc": "Set printing, editing, copying, and form filling permissions.",
+    "fullDesc": "Set printing, editing, copying, and form filling permissions.",
+    "category": "security",
+    "icon": "Shield",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "pdf permission manager",
+      "security",
+      "pdf permission manager"
+    ]
+  },
+  {
+    "id": "pdf-redact",
+    "slug": "redact-pdf",
+    "name": "Redact PDF",
+    "shortDesc": "Permanently blackout confidential text and sensitive figures.",
+    "fullDesc": "Permanently blackout confidential text and sensitive figures.",
+    "category": "security",
+    "icon": "EyeOff",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "redact pdf",
+      "security",
+      "redact pdf"
+    ]
+  },
+  {
+    "id": "pdf-sanitize",
+    "slug": "sanitize-pdf",
+    "name": "Sanitize PDF",
+    "shortDesc": "Remove embedded scripts, hidden metadata, and attachments.",
+    "fullDesc": "Remove embedded scripts, hidden metadata, and attachments.",
+    "category": "security",
+    "icon": "Shield",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "sanitize pdf",
+      "security",
+      "sanitize pdf"
+    ]
+  },
+  {
+    "id": "ocr-pdf",
+    "slug": "ocr-pdf",
+    "name": "OCR PDF",
+    "shortDesc": "Make scanned PDF documents searchable and editable in Word.",
+    "fullDesc": "Make scanned PDF documents searchable and editable in Word.",
+    "category": "ocr",
+    "icon": "ScanText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "docx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "tags": [
+      "ocr pdf",
+      "ocr",
+      "ocr pdf"
+    ]
+  },
+  {
+    "id": "ocr-image",
+    "slug": "ocr-image",
+    "name": "OCR Image",
+    "shortDesc": "Extract editable text from pictures and photos in 7+ languages.",
+    "fullDesc": "Extract editable text from pictures and photos in 7+ languages.",
+    "category": "ocr",
+    "icon": "ScanText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "ocr image",
+      "ocr",
+      "ocr image"
+    ]
+  },
+  {
+    "id": "scan-to-pdf",
+    "slug": "scan-to-pdf",
+    "name": "Scan to PDF",
+    "shortDesc": "Capture documents with your device camera and convert to clean PDF.",
+    "fullDesc": "Capture documents with your device camera and convert to clean PDF.",
+    "category": "ocr",
+    "icon": "Camera",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".png",
+      ".jpeg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "scan to pdf",
+      "ocr",
+      "scan to pdf"
+    ]
+  },
+  {
+    "id": "image-searchable-pdf",
+    "slug": "image-to-searchable-pdf",
+    "name": "Image to Searchable PDF",
+    "shortDesc": "Turn photo receipts and scans into searchable text-layer PDFs.",
+    "fullDesc": "Turn photo receipts and scans into searchable text-layer PDFs.",
+    "category": "ocr",
+    "icon": "ScanText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "image to searchable pdf",
+      "ocr",
+      "image to searchable pdf"
+    ]
+  },
+  {
+    "id": "make-pdf-searchable",
+    "slug": "make-pdf-searchable",
+    "name": "Make PDF Searchable",
+    "shortDesc": "Overlay OCR text layer over scanned PDF pages for full-text search.",
+    "fullDesc": "Overlay OCR text layer over scanned PDF pages for full-text search.",
+    "category": "ocr",
+    "icon": "Search",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "make pdf searchable",
+      "ocr",
+      "make pdf searchable"
+    ]
+  },
+  {
+    "id": "extract-text-pdf",
+    "slug": "extract-text-from-pdf",
+    "name": "Extract Text from PDF",
+    "shortDesc": "Extract pure text from PDF documents instantly.",
+    "fullDesc": "Extract pure text from PDF documents instantly.",
+    "category": "text",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "extract text from pdf",
+      "text",
+      "extract text from pdf"
+    ]
+  },
+  {
+    "id": "extract-text-image",
+    "slug": "extract-text-from-image",
+    "name": "Extract Text from Image",
+    "shortDesc": "Extract text lines and sentences from photos.",
+    "fullDesc": "Extract text lines and sentences from photos.",
+    "category": "ocr",
+    "icon": "ScanText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".png",
+      ".jpeg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "extract text from image",
+      "ocr",
+      "extract text from image"
+    ]
+  },
+  {
+    "id": "ocr-to-word",
+    "slug": "ocr-to-word",
+    "name": "OCR to Word",
+    "shortDesc": "Convert scanned images and non-selectable PDFs into DOCX.",
+    "fullDesc": "Convert scanned images and non-selectable PDFs into DOCX.",
+    "category": "ocr",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf",
+      ".jpg",
+      ".png"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "docx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "tags": [
+      "ocr to word",
+      "ocr",
+      "ocr to word"
+    ]
+  },
+  {
+    "id": "ocr-to-txt",
+    "slug": "ocr-to-txt",
+    "name": "OCR to TXT",
+    "shortDesc": "Convert scanned pages into plain TXT text.",
+    "fullDesc": "Convert scanned pages into plain TXT text.",
+    "category": "ocr",
+    "icon": "FileCode",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf",
+      ".jpg",
+      ".png"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "ocr to txt",
+      "ocr",
+      "ocr to txt"
+    ]
+  },
+  {
+    "id": "ocr-to-excel",
+    "slug": "ocr-to-excel",
+    "name": "OCR to Excel",
+    "shortDesc": "Extract scanned tabular data into editable Excel sheets.",
+    "fullDesc": "Extract scanned tabular data into editable Excel sheets.",
+    "category": "ocr",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf",
+      ".jpg",
+      ".png"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "xlsx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "tags": [
+      "ocr to excel",
+      "ocr",
+      "ocr to excel"
+    ]
+  },
+  {
+    "id": "ocr-to-csv",
+    "slug": "ocr-to-csv",
+    "name": "OCR to CSV",
+    "shortDesc": "Extract scanned receipts and tables into CSV format.",
+    "fullDesc": "Extract scanned receipts and tables into CSV format.",
+    "category": "ocr",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".pdf",
+      ".jpg",
+      ".png"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "csv",
+    "outputMimeType": "text/csv",
+    "tags": [
+      "ocr to csv",
+      "ocr",
+      "ocr to csv"
+    ]
+  },
+  {
+    "id": "word-to-txt",
+    "slug": "word-to-txt",
+    "name": "Word to TXT",
+    "shortDesc": "Extract plain text from Word DOCX without formatting.",
+    "fullDesc": "Extract plain text from Word DOCX without formatting.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx",
+      ".doc"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "word to txt",
+      "document",
+      "word to txt"
+    ]
+  },
+  {
+    "id": "word-to-html",
+    "slug": "word-to-html",
+    "name": "Word to HTML",
+    "shortDesc": "Convert Word documents into semantic HTML markup.",
+    "fullDesc": "Convert Word documents into semantic HTML markup.",
+    "category": "document",
+    "icon": "Code",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx",
+      ".doc"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "html",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "word to html",
+      "document",
+      "word to html"
+    ]
+  },
+  {
+    "id": "word-to-markdown",
+    "slug": "word-to-markdown",
+    "name": "Word to Markdown",
+    "shortDesc": "Convert Word DOCX documents into clean Markdown.",
+    "fullDesc": "Convert Word DOCX documents into clean Markdown.",
+    "category": "document",
+    "icon": "FileCode",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx",
+      ".doc"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "md",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "word to markdown",
+      "document",
+      "word to markdown"
+    ]
+  },
+  {
+    "id": "word-counter-doc",
+    "slug": "word-file-analyzer",
+    "name": "Word File Analyzer",
+    "shortDesc": "Calculate word count, character count, and reading time.",
+    "fullDesc": "Calculate word count, character count, and reading time.",
+    "category": "text",
+    "icon": "BarChart2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/pdf"
+    ],
+    "acceptedExtensions": [
+      ".docx",
+      ".doc",
+      ".txt",
+      ".pdf"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "word file analyzer",
+      "text",
+      "word file analyzer"
+    ]
+  },
+  {
+    "id": "word-meta-cleaner",
+    "slug": "word-metadata-cleaner",
+    "name": "Word Metadata Cleaner",
+    "shortDesc": "Remove tracked changes, author revisions, and comments from Word.",
+    "fullDesc": "Remove tracked changes, author revisions, and comments from Word.",
+    "category": "security",
+    "icon": "ShieldCheck",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "docx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "tags": [
+      "word metadata cleaner",
+      "security",
+      "word metadata cleaner"
+    ]
+  },
+  {
+    "id": "word-compressor",
+    "slug": "word-compressor",
+    "name": "Word Compressor",
+    "shortDesc": "Compress embedded pictures and strip revision history in Word.",
+    "fullDesc": "Compress embedded pictures and strip revision history in Word.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "docx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "tags": [
+      "word compressor",
+      "compress",
+      "word compressor"
+    ]
+  },
+  {
+    "id": "word-cleanup",
+    "slug": "word-document-cleanup",
+    "name": "Word Document Cleanup",
+    "shortDesc": "Strip bad formatting, double spaces, and hidden tags from Word docs.",
+    "fullDesc": "Strip bad formatting, double spaces, and hidden tags from Word docs.",
+    "category": "document",
+    "icon": "Sparkles",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx",
+      ".doc"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "word document cleanup",
+      "document",
+      "word document cleanup"
+    ]
+  },
+  {
+    "id": "remove-word-formatting",
+    "slug": "remove-word-formatting",
+    "name": "Remove Word Formatting",
+    "shortDesc": "Strip all styles, fonts, and colors to get pure clean text.",
+    "fullDesc": "Strip all styles, fonts, and colors to get pure clean text.",
+    "category": "document",
+    "icon": "Eraser",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx",
+      ".doc"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "remove word formatting",
+      "document",
+      "remove word formatting"
+    ]
+  },
+  {
+    "id": "find-replace-word",
+    "slug": "find-replace-in-word",
+    "name": "Find & Replace in Word",
+    "shortDesc": "Search and replace names, terms, and values across Word documents.",
+    "fullDesc": "Search and replace names, terms, and values across Word documents.",
+    "category": "document",
+    "icon": "Search",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".docx",
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "docx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "tags": [
+      "find & replace in word",
+      "document",
+      "find replace in word"
+    ]
+  },
+  {
+    "id": "xlsx-to-csv",
+    "slug": "xlsx-to-csv",
+    "name": "XLSX to CSV",
+    "shortDesc": "Convert Excel spreadsheets into comma-separated CSV format.",
+    "fullDesc": "Convert Excel spreadsheets into comma-separated CSV format.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ],
+    "acceptedExtensions": [
+      ".xlsx",
+      ".xls"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "csv",
+    "outputMimeType": "text/csv",
+    "tags": [
+      "xlsx to csv",
+      "document",
+      "xlsx to csv"
+    ]
+  },
+  {
+    "id": "csv-to-xlsx",
+    "slug": "csv-to-xlsx",
+    "name": "CSV to XLSX",
+    "shortDesc": "Convert CSV data files into formatted Microsoft Excel workbooks.",
+    "fullDesc": "Convert CSV data files into formatted Microsoft Excel workbooks.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/csv"
+    ],
+    "acceptedExtensions": [
+      ".csv"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "xlsx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "tags": [
+      "csv to xlsx",
+      "document",
+      "csv to xlsx"
+    ]
+  },
+  {
+    "id": "excel-to-json",
+    "slug": "excel-to-json",
+    "name": "Excel to JSON",
+    "shortDesc": "Convert Excel spreadsheet records into structured JSON objects.",
+    "fullDesc": "Convert Excel spreadsheet records into structured JSON objects.",
+    "category": "dev",
+    "icon": "Code",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ],
+    "acceptedExtensions": [
+      ".xlsx",
+      ".xls",
+      ".csv"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "json",
+    "outputMimeType": "application/json",
+    "tags": [
+      "excel to json",
+      "dev",
+      "excel to json"
+    ]
+  },
+  {
+    "id": "json-to-excel",
+    "slug": "json-to-excel",
+    "name": "JSON to Excel",
+    "shortDesc": "Convert JSON array objects into a downloadable Excel spreadsheet.",
+    "fullDesc": "Convert JSON array objects into a downloadable Excel spreadsheet.",
+    "category": "dev",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/json"
+    ],
+    "acceptedExtensions": [
+      ".json"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "xlsx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "tags": [
+      "json to excel",
+      "dev",
+      "json to excel"
+    ]
+  },
+  {
+    "id": "excel-to-txt",
+    "slug": "excel-to-txt",
+    "name": "Excel to TXT",
+    "shortDesc": "Export Excel sheet rows as tab-delimited text.",
+    "fullDesc": "Export Excel sheet rows as tab-delimited text.",
+    "category": "document",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ],
+    "acceptedExtensions": [
+      ".xlsx",
+      ".xls"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "excel to txt",
+      "document",
+      "excel to txt"
+    ]
+  },
+  {
+    "id": "excel-to-html",
+    "slug": "excel-to-html",
+    "name": "Excel to HTML",
+    "shortDesc": "Convert Excel workbooks into interactive HTML table pages.",
+    "fullDesc": "Convert Excel workbooks into interactive HTML table pages.",
+    "category": "dev",
+    "icon": "Code",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ],
+    "acceptedExtensions": [
+      ".xlsx",
+      ".xls"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "html",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "excel to html",
+      "dev",
+      "excel to html"
+    ]
+  },
+  {
+    "id": "csv-cleaner",
+    "slug": "csv-cleaner",
+    "name": "CSV Cleaner",
+    "shortDesc": "Remove blank lines, duplicate rows, and invalid CSV records.",
+    "fullDesc": "Remove blank lines, duplicate rows, and invalid CSV records.",
+    "category": "document",
+    "icon": "Filter",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/csv"
+    ],
+    "acceptedExtensions": [
+      ".csv"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "csv",
+    "outputMimeType": "text/csv",
+    "tags": [
+      "csv cleaner",
+      "document",
+      "csv cleaner"
+    ]
+  },
+  {
+    "id": "csv-formatter",
+    "slug": "csv-formatter",
+    "name": "CSV Formatter",
+    "shortDesc": "Align columns, trim white spaces, and standardize delimiters.",
+    "fullDesc": "Align columns, trim white spaces, and standardize delimiters.",
+    "category": "document",
+    "icon": "Table",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/csv"
+    ],
+    "acceptedExtensions": [
+      ".csv"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "csv",
+    "outputMimeType": "text/csv",
+    "tags": [
+      "csv formatter",
+      "document",
+      "csv formatter"
+    ]
+  },
+  {
+    "id": "csv-deduplicator",
+    "slug": "csv-deduplicator",
+    "name": "CSV Deduplicator",
+    "shortDesc": "Find and purge identical duplicated rows from large CSV files.",
+    "fullDesc": "Find and purge identical duplicated rows from large CSV files.",
+    "category": "document",
+    "icon": "Filter",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/csv"
+    ],
+    "acceptedExtensions": [
+      ".csv"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "csv",
+    "outputMimeType": "text/csv",
+    "tags": [
+      "csv deduplicator",
+      "document",
+      "csv deduplicator"
+    ]
+  },
+  {
+    "id": "pptx-to-txt",
+    "slug": "pptx-to-text",
+    "name": "PPTX to Text",
+    "shortDesc": "Extract all slide speeches, headings, and notes into plain text.",
+    "fullDesc": "Extract all slide speeches, headings, and notes into plain text.",
+    "category": "document",
+    "icon": "Presentation",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".pptx",
+      ".ppt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "pptx to text",
+      "document",
+      "pptx to text"
+    ]
+  },
+  {
+    "id": "ppt-to-images",
+    "slug": "ppt-to-images",
+    "name": "PPT to Images",
+    "shortDesc": "Convert slides into image slides in a ZIP file.",
+    "fullDesc": "Convert slides into image slides in a ZIP file.",
+    "category": "document",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".pptx",
+      ".ppt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "zip",
+    "outputMimeType": "application/zip",
+    "tags": [
+      "ppt to images",
+      "document",
+      "ppt to images"
+    ]
+  },
+  {
+    "id": "ppt-slide-counter",
+    "slug": "ppt-slide-counter",
+    "name": "PPT Slide Counter",
+    "shortDesc": "Count total slides, speaker notes, and shapes in PowerPoint.",
+    "fullDesc": "Count total slides, speaker notes, and shapes in PowerPoint.",
+    "category": "document",
+    "icon": "BarChart2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".pptx",
+      ".ppt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "ppt slide counter",
+      "document",
+      "ppt slide counter"
+    ]
+  },
+  {
+    "id": "image-compress",
+    "slug": "image-compressor",
+    "name": "Image Compressor",
+    "shortDesc": "Shrink image file size with adaptive WebP / JPEG compression.",
+    "fullDesc": "Shrink image file size with adaptive WebP / JPEG compression.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image compressor",
+      "compress",
+      "image compressor"
+    ]
+  },
+  {
+    "id": "jpg-compressor",
+    "slug": "jpg-compressor",
+    "name": "JPG Compressor",
+    "shortDesc": "Compress JPG photos for quick web and email delivery.",
+    "fullDesc": "Compress JPG photos for quick web and email delivery.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "jpg compressor",
+      "compress",
+      "jpg compressor"
+    ]
+  },
+  {
+    "id": "png-compressor",
+    "slug": "png-compressor",
+    "name": "PNG Compressor",
+    "shortDesc": "Lossless compression for transparent PNG graphics.",
+    "fullDesc": "Lossless compression for transparent PNG graphics.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/png",
+      "image/jpeg"
+    ],
+    "acceptedExtensions": [
+      ".png"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "png compressor",
+      "compress",
+      "png compressor"
+    ]
+  },
+  {
+    "id": "webp-compressor",
+    "slug": "webp-compressor",
+    "name": "WEBP Compressor",
+    "shortDesc": "Shrink WebP files to minimum byte footprint.",
+    "fullDesc": "Shrink WebP files to minimum byte footprint.",
+    "category": "compress",
+    "icon": "Minimize2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "webp",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "webp compressor",
+      "compress",
+      "webp compressor"
+    ]
+  },
+  {
+    "id": "image-resizer",
+    "slug": "image-resizer",
+    "name": "Image Resizer",
+    "shortDesc": "Resize dimensions and compress to exact KB limits (e.g. under 50KB).",
+    "fullDesc": "Resize dimensions and compress to exact KB limits (e.g. under 50KB).",
+    "category": "image",
+    "icon": "Scaling",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image resizer",
+      "image",
+      "image resizer"
+    ]
+  },
+  {
+    "id": "image-cropper",
+    "slug": "image-cropper",
+    "name": "Image Cropper",
+    "shortDesc": "Crop pictures to 1:1 square, 16:9 widescreen, 4:3, or custom ratios.",
+    "fullDesc": "Crop pictures to 1:1 square, 16:9 widescreen, 4:3, or custom ratios.",
+    "category": "image",
+    "icon": "Crop",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image cropper",
+      "image",
+      "image cropper"
+    ]
+  },
+  {
+    "id": "image-rotator",
+    "slug": "image-rotator",
+    "name": "Image Rotator",
+    "shortDesc": "Rotate photos 90, 180, 270 degrees or custom degree angles.",
+    "fullDesc": "Rotate photos 90, 180, 270 degrees or custom degree angles.",
+    "category": "image",
+    "icon": "RotateCw",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image rotator",
+      "image",
+      "image rotator"
+    ]
+  },
+  {
+    "id": "image-flipper",
+    "slug": "image-flipper",
+    "name": "Image Flipper",
+    "shortDesc": "Flip images horizontally (mirror) or vertically.",
+    "fullDesc": "Flip images horizontally (mirror) or vertically.",
+    "category": "image",
+    "icon": "FlipHorizontal",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image flipper",
+      "image",
+      "image flipper"
+    ]
+  },
+  {
+    "id": "image-converter",
+    "slug": "image-converter",
+    "name": "Image Converter",
+    "shortDesc": "Universal image format conversion studio.",
+    "fullDesc": "Universal image format conversion studio.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp",
+      ".bmp",
+      ".tiff"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "image converter",
+      "image",
+      "image converter"
+    ]
+  },
+  {
+    "id": "jpg-to-png",
+    "slug": "jpg-to-png",
+    "name": "JPG to PNG",
+    "shortDesc": "Convert JPEG images to high-fidelity PNG format.",
+    "fullDesc": "Convert JPEG images to high-fidelity PNG format.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "jpg to png",
+      "image",
+      "jpg to png"
+    ]
+  },
+  {
+    "id": "png-to-jpg",
+    "slug": "png-to-jpg",
+    "name": "PNG to JPG",
+    "shortDesc": "Convert PNG graphics into lightweight compressed JPG images.",
+    "fullDesc": "Convert PNG graphics into lightweight compressed JPG images.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/png",
+      "image/jpeg"
+    ],
+    "acceptedExtensions": [
+      ".png"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "png to jpg",
+      "image",
+      "png to jpg"
+    ]
+  },
+  {
+    "id": "jpg-to-webp",
+    "slug": "jpg-to-webp",
+    "name": "JPG to WEBP",
+    "shortDesc": "Convert JPG to modern lightweight WebP.",
+    "fullDesc": "Convert JPG to modern lightweight WebP.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "webp",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "jpg to webp",
+      "image",
+      "jpg to webp"
+    ]
+  },
+  {
+    "id": "png-to-webp",
+    "slug": "png-to-webp",
+    "name": "PNG to WEBP",
+    "shortDesc": "Convert PNG with transparency to WebP.",
+    "fullDesc": "Convert PNG with transparency to WebP.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/png",
+      "image/jpeg"
+    ],
+    "acceptedExtensions": [
+      ".png"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "webp",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "png to webp",
+      "image",
+      "png to webp"
+    ]
+  },
+  {
+    "id": "webp-to-jpg",
+    "slug": "webp-to-jpg",
+    "name": "WEBP to JPG",
+    "shortDesc": "Convert WebP images back into universally compatible JPGs.",
+    "fullDesc": "Convert WebP images back into universally compatible JPGs.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "webp to jpg",
+      "image",
+      "webp to jpg"
+    ]
+  },
+  {
+    "id": "webp-to-png",
+    "slug": "webp-to-png",
+    "name": "WEBP to PNG",
+    "shortDesc": "Convert WebP images to lossless PNG format.",
+    "fullDesc": "Convert WebP images to lossless PNG format.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "webp to png",
+      "image",
+      "webp to png"
+    ]
+  },
+  {
+    "id": "tiff-to-jpg",
+    "slug": "tiff-to-jpg",
+    "name": "TIFF to JPG",
+    "shortDesc": "Convert high-depth TIFF scans to JPG.",
+    "fullDesc": "Convert high-depth TIFF scans to JPG.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".tiff",
+      ".tif"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "tiff to jpg",
+      "image",
+      "tiff to jpg"
+    ]
+  },
+  {
+    "id": "bmp-to-jpg",
+    "slug": "bmp-to-jpg",
+    "name": "BMP to JPG",
+    "shortDesc": "Convert uncompressed Bitmap BMP images to compact JPG.",
+    "fullDesc": "Convert uncompressed Bitmap BMP images to compact JPG.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".bmp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "bmp to jpg",
+      "image",
+      "bmp to jpg"
+    ]
+  },
+  {
+    "id": "heic-to-jpg",
+    "slug": "heic-to-jpg",
+    "name": "HEIC to JPG",
+    "shortDesc": "Convert Apple iPhone HEIC/HEIF photos to universally readable JPG.",
+    "fullDesc": "Convert Apple iPhone HEIC/HEIF photos to universally readable JPG.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".heic",
+      ".heif"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "heic to jpg",
+      "image",
+      "heic to jpg"
+    ]
+  },
+  {
+    "id": "heic-to-png",
+    "slug": "heic-to-png",
+    "name": "HEIC to PNG",
+    "shortDesc": "Convert iPhone HEIC photos to lossless PNG.",
+    "fullDesc": "Convert iPhone HEIC photos to lossless PNG.",
+    "category": "image",
+    "icon": "Image",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".heic",
+      ".heif"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "heic to png",
+      "image",
+      "heic to png"
+    ]
+  },
+  {
+    "id": "passport-photo-maker",
+    "slug": "passport-photo-maker",
+    "name": "Passport Photo Studio",
+    "shortDesc": "Create official 3.5x4.5cm passport photos with white background and print sheets.",
+    "fullDesc": "Create official 3.5x4.5cm passport photos with white background and print sheets.",
+    "category": "image",
+    "icon": "Camera",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "passport photo studio",
+      "image",
+      "passport photo maker"
+    ]
+  },
+  {
+    "id": "background-remover",
+    "slug": "background-remover",
+    "name": "AI Background Remover",
+    "shortDesc": "Remove image backgrounds locally with AI smart cutout.",
+    "fullDesc": "Remove image backgrounds locally with AI smart cutout.",
+    "category": "image",
+    "icon": "Sparkles",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "ai background remover",
+      "image",
+      "background remover"
+    ]
+  },
+  {
+    "id": "image-grayscale",
+    "slug": "grayscale-image",
+    "name": "Grayscale Image",
+    "shortDesc": "Convert color photos into artistic monochrome.",
+    "fullDesc": "Convert color photos into artistic monochrome.",
+    "category": "image",
+    "icon": "Layers",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "grayscale image",
+      "image",
+      "grayscale image"
+    ]
+  },
+  {
+    "id": "image-bw",
+    "slug": "black-and-white-image",
+    "name": "Black & White Image",
+    "shortDesc": "Convert pictures into high-contrast B&W.",
+    "fullDesc": "Convert pictures into high-contrast B&W.",
+    "category": "image",
+    "icon": "Layers",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "black & white image",
+      "image",
+      "black and white image"
+    ]
+  },
+  {
+    "id": "image-sharpen",
+    "slug": "image-sharpen",
+    "name": "Image Sharpen",
+    "shortDesc": "Enhance edge details and sharpness in blurry photos.",
+    "fullDesc": "Enhance edge details and sharpness in blurry photos.",
+    "category": "image",
+    "icon": "Sun",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image sharpen",
+      "image",
+      "image sharpen"
+    ]
+  },
+  {
+    "id": "image-blur",
+    "slug": "image-blur",
+    "name": "Image Blur",
+    "shortDesc": "Apply Gaussian blur effect to soften pictures or mask backgrounds.",
+    "fullDesc": "Apply Gaussian blur effect to soften pictures or mask backgrounds.",
+    "category": "image",
+    "icon": "Sun",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image blur",
+      "image",
+      "image blur"
+    ]
+  },
+  {
+    "id": "image-brightness",
+    "slug": "image-brightness-adjuster",
+    "name": "Image Brightness Adjuster",
+    "shortDesc": "Brighten dark underexposed photos or tone down overexposed images.",
+    "fullDesc": "Brighten dark underexposed photos or tone down overexposed images.",
+    "category": "image",
+    "icon": "Sun",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image brightness adjuster",
+      "image",
+      "image brightness adjuster"
+    ]
+  },
+  {
+    "id": "image-contrast",
+    "slug": "image-contrast-adjuster",
+    "name": "Image Contrast Adjuster",
+    "shortDesc": "Adjust color dynamic range and contrast pop.",
+    "fullDesc": "Adjust color dynamic range and contrast pop.",
+    "category": "image",
+    "icon": "Sun",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "jpg",
+    "outputMimeType": "image/jpeg",
+    "tags": [
+      "image contrast adjuster",
+      "image",
+      "image contrast adjuster"
+    ]
+  },
+  {
+    "id": "image-palette",
+    "slug": "image-palette",
+    "name": "Image Color Palette Extractor",
+    "shortDesc": "Extract dominant HEX color swatches and CSS palettes from images.",
+    "fullDesc": "Extract dominant HEX color swatches and CSS palettes from images.",
+    "category": "image",
+    "icon": "Palette",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "image color palette extractor",
+      "image",
+      "image palette"
+    ]
+  },
+  {
+    "id": "image-zip-creator",
+    "slug": "image-zip-creator",
+    "name": "Image ZIP Creator",
+    "shortDesc": "Pack multiple images into a zipped download file.",
+    "fullDesc": "Pack multiple images into a zipped download file.",
+    "category": "image",
+    "icon": "Archive",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp"
+    ],
+    "maxFiles": 50,
+    "maxFileSizeMB": 500,
+    "outputExtension": "zip",
+    "outputMimeType": "application/zip",
+    "tags": [
+      "image zip creator",
+      "image",
+      "image zip creator"
+    ]
+  },
+  {
+    "id": "word-counter",
+    "slug": "word-counter",
+    "name": "Word Counter",
+    "shortDesc": "Real-time word count, character count, sentence count, and reading time.",
+    "fullDesc": "Real-time word count, character count, sentence count, and reading time.",
+    "category": "text",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+    "acceptedExtensions": [
+      ".txt",
+      ".md",
+      ".doc",
+      ".docx"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "word counter",
+      "text",
+      "word counter"
+    ]
+  },
+  {
+    "id": "char-counter",
+    "slug": "character-counter",
+    "name": "Character Counter",
+    "shortDesc": "Count total characters including and excluding spaces.",
+    "fullDesc": "Count total characters including and excluding spaces.",
+    "category": "text",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "character counter",
+      "text",
+      "character counter"
+    ]
+  },
+  {
+    "id": "sentence-counter",
+    "slug": "sentence-counter",
+    "name": "Sentence Counter",
+    "shortDesc": "Calculate sentences and grammatical paragraph count.",
+    "fullDesc": "Calculate sentences and grammatical paragraph count.",
+    "category": "text",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "sentence counter",
+      "text",
+      "sentence counter"
+    ]
+  },
+  {
+    "id": "reading-time-calc",
+    "slug": "reading-time-calculator",
+    "name": "Reading Time Calculator",
+    "shortDesc": "Estimate silent reading and speaking presentation duration.",
+    "fullDesc": "Estimate silent reading and speaking presentation duration.",
+    "category": "text",
+    "icon": "Clock",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "reading time calculator",
+      "text",
+      "reading time calculator"
+    ]
+  },
+  {
+    "id": "case-converter",
+    "slug": "case-converter",
+    "name": "Text Case Converter",
+    "shortDesc": "Convert text to UPPERCASE, lowercase, Title Case, and Sentence case.",
+    "fullDesc": "Convert text to UPPERCASE, lowercase, Title Case, and Sentence case.",
+    "category": "text",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "text case converter",
+      "text",
+      "case converter"
+    ]
+  },
+  {
+    "id": "uppercase-converter",
+    "slug": "uppercase-converter",
+    "name": "UPPERCASE Converter",
+    "shortDesc": "Convert all letters to CAPITAL UPPERCASE.",
+    "fullDesc": "Convert all letters to CAPITAL UPPERCASE.",
+    "category": "text",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "uppercase converter",
+      "text",
+      "uppercase converter"
+    ]
+  },
+  {
+    "id": "lowercase-converter",
+    "slug": "lowercase-converter",
+    "name": "lowercase Converter",
+    "shortDesc": "Convert all letters to small lowercase.",
+    "fullDesc": "Convert all letters to small lowercase.",
+    "category": "text",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "lowercase converter",
+      "text",
+      "lowercase converter"
+    ]
+  },
+  {
+    "id": "title-case-converter",
+    "slug": "title-case-converter",
+    "name": "Title Case Converter",
+    "shortDesc": "Capitalize Major Words For Book Titles and Headers.",
+    "fullDesc": "Capitalize Major Words For Book Titles and Headers.",
+    "category": "text",
+    "icon": "Type",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "title case converter",
+      "text",
+      "title case converter"
+    ]
+  },
+  {
+    "id": "remove-extra-spaces",
+    "slug": "remove-extra-spaces",
+    "name": "Remove Extra Spaces",
+    "shortDesc": "Clean duplicate spaces, trailing whitespace, and tab indents.",
+    "fullDesc": "Clean duplicate spaces, trailing whitespace, and tab indents.",
+    "category": "text",
+    "icon": "Eraser",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "remove extra spaces",
+      "text",
+      "remove extra spaces"
+    ]
+  },
+  {
+    "id": "remove-blank-lines",
+    "slug": "remove-blank-lines",
+    "name": "Remove Blank Lines",
+    "shortDesc": "Strip empty lines and carriage returns from text.",
+    "fullDesc": "Strip empty lines and carriage returns from text.",
+    "category": "text",
+    "icon": "Eraser",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "remove blank lines",
+      "text",
+      "remove blank lines"
+    ]
+  },
+  {
+    "id": "duplicate-remover",
+    "slug": "remove-duplicate-lines",
+    "name": "Remove Duplicate Lines",
+    "shortDesc": "Deduplicate, sort A-Z, and strip blank lines from text files.",
+    "fullDesc": "Deduplicate, sort A-Z, and strip blank lines from text files.",
+    "category": "text",
+    "icon": "Filter",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "remove duplicate lines",
+      "text",
+      "remove duplicate lines"
+    ]
+  },
+  {
+    "id": "sort-lines-az",
+    "slug": "sort-lines-a-z",
+    "name": "Sort Lines A-Z",
+    "shortDesc": "Sort list items in alphabetical ascending order.",
+    "fullDesc": "Sort list items in alphabetical ascending order.",
+    "category": "text",
+    "icon": "ArrowUpDown",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "sort lines a-z",
+      "text",
+      "sort lines a z"
+    ]
+  },
+  {
+    "id": "sort-lines-za",
+    "slug": "sort-lines-z-a",
+    "name": "Sort Lines Z-A",
+    "shortDesc": "Sort list items in reverse alphabetical order.",
+    "fullDesc": "Sort list items in reverse alphabetical order.",
+    "category": "text",
+    "icon": "ArrowUpDown",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "sort lines z-a",
+      "text",
+      "sort lines z a"
+    ]
+  },
+  {
+    "id": "reverse-text",
+    "slug": "reverse-text",
+    "name": "Reverse Text",
+    "shortDesc": "Reverse entire text characters backwards.",
+    "fullDesc": "Reverse entire text characters backwards.",
+    "category": "text",
+    "icon": "Repeat",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "reverse text",
+      "text",
+      "reverse text"
+    ]
+  },
+  {
+    "id": "reverse-lines",
+    "slug": "reverse-lines",
+    "name": "Reverse Lines",
+    "shortDesc": "Invert the order of lines from bottom to top.",
+    "fullDesc": "Invert the order of lines from bottom to top.",
+    "category": "text",
+    "icon": "Repeat",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "reverse lines",
+      "text",
+      "reverse lines"
+    ]
+  },
+  {
+    "id": "text-diff",
+    "slug": "text-diff-viewer",
+    "name": "Text Diff / Compare",
+    "shortDesc": "Side-by-side visual diff comparison highlighting added and deleted words.",
+    "fullDesc": "Side-by-side visual diff comparison highlighting added and deleted words.",
+    "category": "text",
+    "icon": "GitCompare",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt",
+      ".json",
+      ".js",
+      ".py"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "text diff / compare",
+      "text",
+      "text diff viewer"
+    ]
+  },
+  {
+    "id": "find-replace-text",
+    "slug": "find-and-replace-text",
+    "name": "Find & Replace",
+    "shortDesc": "Fast global find and replace with regex support.",
+    "fullDesc": "Fast global find and replace with regex support.",
+    "category": "text",
+    "icon": "Search",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "find & replace",
+      "text",
+      "find and replace text"
+    ]
+  },
+  {
+    "id": "extract-emails",
+    "slug": "extract-emails",
+    "name": "Extract Emails",
+    "shortDesc": "Extract all email addresses from raw text data.",
+    "fullDesc": "Extract all email addresses from raw text data.",
+    "category": "text",
+    "icon": "Mail",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "extract emails",
+      "text",
+      "extract emails"
+    ]
+  },
+  {
+    "id": "extract-urls",
+    "slug": "extract-urls",
+    "name": "Extract URLs",
+    "shortDesc": "Extract all web links and HTTP URLs from documents.",
+    "fullDesc": "Extract all web links and HTTP URLs from documents.",
+    "category": "text",
+    "icon": "Globe",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "extract urls",
+      "text",
+      "extract urls"
+    ]
+  },
+  {
+    "id": "extract-phones",
+    "slug": "extract-phone-numbers",
+    "name": "Extract Phone Numbers",
+    "shortDesc": "Extract valid international phone and mobile numbers.",
+    "fullDesc": "Extract valid international phone and mobile numbers.",
+    "category": "text",
+    "icon": "Phone",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "extract phone numbers",
+      "text",
+      "extract phone numbers"
+    ]
+  },
+  {
+    "id": "extract-numbers",
+    "slug": "extract-numbers",
+    "name": "Extract Numbers",
+    "shortDesc": "Extract all integer and decimal numbers.",
+    "fullDesc": "Extract all integer and decimal numbers.",
+    "category": "text",
+    "icon": "Binary",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "extract numbers",
+      "text",
+      "extract numbers"
+    ]
+  },
+  {
+    "id": "extract-hashtags",
+    "slug": "extract-hashtags",
+    "name": "Extract Hashtags",
+    "shortDesc": "Extract social media hashtags from posts and captions.",
+    "fullDesc": "Extract social media hashtags from posts and captions.",
+    "category": "text",
+    "icon": "Hash",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "extract hashtags",
+      "text",
+      "extract hashtags"
+    ]
+  },
+  {
+    "id": "extract-mentions",
+    "slug": "extract-mentions",
+    "name": "Extract Mentions",
+    "shortDesc": "Extract @username handles from social feeds.",
+    "fullDesc": "Extract @username handles from social feeds.",
+    "category": "text",
+    "icon": "AtSign",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "extract mentions",
+      "text",
+      "extract mentions"
+    ]
+  },
+  {
+    "id": "text-to-docx-alt",
+    "slug": "text-to-word",
+    "name": "Text to Word",
+    "shortDesc": "Convert plain text notes into styled Microsoft Word DOCX.",
+    "fullDesc": "Convert plain text notes into styled Microsoft Word DOCX.",
+    "category": "text",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "docx",
+    "outputMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "tags": [
+      "text to word",
+      "text",
+      "text to word"
+    ]
+  },
+  {
+    "id": "markdown-editor",
+    "slug": "markdown-editor",
+    "name": "Live Markdown to PDF Studio",
+    "shortDesc": "Write Markdown with real-time preview and export formatted PDF.",
+    "fullDesc": "Write Markdown with real-time preview and export formatted PDF.",
+    "category": "dev",
+    "icon": "FileCode",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".md",
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "live markdown to pdf studio",
+      "dev",
+      "markdown editor"
+    ]
+  },
+  {
+    "id": "markdown-to-html",
+    "slug": "markdown-to-html",
+    "name": "Markdown to HTML",
+    "shortDesc": "Parse Markdown into clean semantic HTML.",
+    "fullDesc": "Parse Markdown into clean semantic HTML.",
+    "category": "dev",
+    "icon": "Code",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".md"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "html",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "markdown to html",
+      "dev",
+      "markdown to html"
+    ]
+  },
+  {
+    "id": "html-to-text",
+    "slug": "html-to-text",
+    "name": "HTML to Text",
+    "shortDesc": "Strip HTML tags to get pure readable text.",
+    "fullDesc": "Strip HTML tags to get pure readable text.",
+    "category": "dev",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".html"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "html to text",
+      "dev",
+      "html to text"
+    ]
+  },
+  {
+    "id": "lorem-ipsum-gen",
+    "slug": "lorem-ipsum-generator",
+    "name": "Lorem Ipsum Generator",
+    "shortDesc": "Generate placeholder dummy text paragraphs and sentences.",
+    "fullDesc": "Generate placeholder dummy text paragraphs and sentences.",
+    "category": "text",
+    "icon": "FileText",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "lorem ipsum generator",
+      "text",
+      "lorem ipsum generator"
+    ]
+  },
+  {
+    "id": "zip-creator",
+    "slug": "zip-file-creator",
+    "name": "ZIP Creator",
+    "shortDesc": "Compress multiple documents and images into a single ZIP file.",
+    "fullDesc": "Compress multiple documents and images into a single ZIP file.",
+    "category": "document",
+    "icon": "Archive",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      "*/*"
+    ],
+    "maxFiles": 50,
+    "maxFileSizeMB": 500,
+    "outputExtension": "zip",
+    "outputMimeType": "application/zip",
+    "tags": [
+      "zip creator",
+      "document",
+      "zip file creator"
+    ]
+  },
+  {
+    "id": "zip-extractor",
+    "slug": "zip-file-extractor",
+    "name": "ZIP Extractor",
+    "shortDesc": "Unzip and unpack archives directly inside your browser memory.",
+    "fullDesc": "Unzip and unpack archives directly inside your browser memory.",
+    "category": "document",
+    "icon": "FolderArchive",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".zip"
+    ],
+    "maxFiles": 50,
+    "maxFileSizeMB": 500,
+    "outputExtension": "zip",
+    "outputMimeType": "application/zip",
+    "tags": [
+      "zip extractor",
+      "document",
+      "zip file extractor"
+    ]
+  },
+  {
+    "id": "file-size-analyzer",
+    "slug": "file-size-analyzer",
+    "name": "File Size Analyzer",
+    "shortDesc": "Inspect exact byte weights and breakdown of file contents.",
+    "fullDesc": "Inspect exact byte weights and breakdown of file contents.",
+    "category": "calculator",
+    "icon": "BarChart2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      "*/*"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "file size analyzer",
+      "calculator",
+      "file size analyzer"
+    ]
+  },
+  {
+    "id": "file-hash-generator",
+    "slug": "file-hash-generator",
+    "name": "File Hash Generator",
+    "shortDesc": "Calculate SHA-256, SHA-512, and SHA-1 cryptographic hashes.",
+    "fullDesc": "Calculate SHA-256, SHA-512, and SHA-1 cryptographic hashes.",
+    "category": "security",
+    "icon": "Fingerprint",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      "*/*"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "file hash generator",
+      "security",
+      "file hash generator"
+    ]
+  },
+  {
+    "id": "md5-generator",
+    "slug": "md5-checksum-generator",
+    "name": "MD5 Generator",
+    "shortDesc": "Calculate MD5 checksums to verify file integrity.",
+    "fullDesc": "Calculate MD5 checksums to verify file integrity.",
+    "category": "security",
+    "icon": "Fingerprint",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      "*/*"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "md5 generator",
+      "security",
+      "md5 checksum generator"
+    ]
+  },
+  {
+    "id": "sha256-generator",
+    "slug": "sha-256-generator",
+    "name": "SHA-256 Generator",
+    "shortDesc": "Generate cryptographic SHA-256 signatures.",
+    "fullDesc": "Generate cryptographic SHA-256 signatures.",
+    "category": "security",
+    "icon": "Fingerprint",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      "*/*"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "sha-256 generator",
+      "security",
+      "sha 256 generator"
+    ]
+  },
+  {
+    "id": "base64-converter",
+    "slug": "base64-converter",
+    "name": "Base64 Encoder & Decoder",
+    "shortDesc": "Encode files and text to Base64 strings or decode back to files.",
+    "fullDesc": "Encode files and text to Base64 strings or decode back to files.",
+    "category": "dev",
+    "icon": "Binary",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      "*/*"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "base64 encoder & decoder",
+      "dev",
+      "base64 converter"
+    ]
+  },
+  {
+    "id": "password-generator",
+    "slug": "password-generator",
+    "name": "Password Generator",
+    "shortDesc": "Generate high-entropy randomized cryptographic passwords.",
+    "fullDesc": "Generate high-entropy randomized cryptographic passwords.",
+    "category": "security",
+    "icon": "Key",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "password generator",
+      "security",
+      "password generator"
+    ]
+  },
+  {
+    "id": "qr-generator",
+    "slug": "qr-code-generator",
+    "name": "QR Code Generator",
+    "shortDesc": "Generate custom styled QR codes with colors, icons, and logos.",
+    "fullDesc": "Generate custom styled QR codes with colors, icons, and logos.",
+    "category": "qr",
+    "icon": "QrCode",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "qr code generator",
+      "qr",
+      "qr code generator"
+    ]
+  },
+  {
+    "id": "barcode-generator",
+    "slug": "barcode-generator",
+    "name": "Barcode Generator",
+    "shortDesc": "Generate CODE128, EAN-13, and UPC barcodes for products.",
+    "fullDesc": "Generate CODE128, EAN-13, and UPC barcodes for products.",
+    "category": "qr",
+    "icon": "Barcode",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "png",
+    "outputMimeType": "image/png",
+    "tags": [
+      "barcode generator",
+      "qr",
+      "barcode generator"
+    ]
+  },
+  {
+    "id": "url-encoder-decoder",
+    "slug": "url-encoder-decoder",
+    "name": "URL Encoder / Decoder",
+    "shortDesc": "Encode URI components (%20) and decode web query strings.",
+    "fullDesc": "Encode URI components (%20) and decode web query strings.",
+    "category": "dev",
+    "icon": "Globe",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "url encoder / decoder",
+      "dev",
+      "url encoder decoder"
+    ]
+  },
+  {
+    "id": "json-formatter",
+    "slug": "json-formatter",
+    "name": "JSON Formatter",
+    "shortDesc": "Prettify, minify, and validate JSON data structures with syntax tree.",
+    "fullDesc": "Prettify, minify, and validate JSON data structures with syntax tree.",
+    "category": "dev",
+    "icon": "Code2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".json",
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "json",
+    "outputMimeType": "application/json",
+    "tags": [
+      "json formatter",
+      "dev",
+      "json formatter"
+    ]
+  },
+  {
+    "id": "json-validator",
+    "slug": "json-validator",
+    "name": "JSON Validator",
+    "shortDesc": "Validate syntax errors in JSON objects with line locations.",
+    "fullDesc": "Validate syntax errors in JSON objects with line locations.",
+    "category": "dev",
+    "icon": "CheckCircle",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".json",
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "json",
+    "outputMimeType": "application/json",
+    "tags": [
+      "json validator",
+      "dev",
+      "json validator"
+    ]
+  },
+  {
+    "id": "uuid-generator",
+    "slug": "uuid-generator",
+    "name": "UUID Generator",
+    "shortDesc": "Generate bulk RFC4122 compliant v4 UUIDs and GUIDs instantly.",
+    "fullDesc": "Generate bulk RFC4122 compliant v4 UUIDs and GUIDs instantly.",
+    "category": "dev",
+    "icon": "Cpu",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "uuid generator",
+      "dev",
+      "uuid generator"
+    ]
+  },
+  {
+    "id": "color-converter",
+    "slug": "color-converter",
+    "name": "Color Converter",
+    "shortDesc": "Convert between HEX, RGB, HSL, and CMYK color representations.",
+    "fullDesc": "Convert between HEX, RGB, HSL, and CMYK color representations.",
+    "category": "dev",
+    "icon": "Palette",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "color converter",
+      "dev",
+      "color converter"
+    ]
+  },
+  {
+    "id": "timestamp-converter",
+    "slug": "timestamp-converter",
+    "name": "Timestamp Converter",
+    "shortDesc": "Convert Epoch timestamps to human-readable dates across timezones.",
+    "fullDesc": "Convert Epoch timestamps to human-readable dates across timezones.",
+    "category": "dev",
+    "icon": "Clock",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "timestamp converter",
+      "dev",
+      "timestamp converter"
+    ]
+  },
+  {
+    "id": "general-unit-converter",
+    "slug": "general-unit-converter",
+    "name": "Unit Converter",
+    "shortDesc": "Convert length, mass, temperature, speed, area, and volume units.",
+    "fullDesc": "Convert length, mass, temperature, speed, area, and volume units.",
+    "category": "calculator",
+    "icon": "Sliders",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "unit converter",
+      "calculator",
+      "general unit converter"
+    ]
+  },
+  {
+    "id": "file-size-converter",
+    "slug": "storage-unit-converter",
+    "name": "File Size Converter",
+    "shortDesc": "Convert bytes, KB, MB, GB, TB, and petabytes seamlessly.",
+    "fullDesc": "Convert bytes, KB, MB, GB, TB, and petabytes seamlessly.",
+    "category": "calculator",
+    "icon": "HardDrive",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "file size converter",
+      "calculator",
+      "storage unit converter"
+    ]
+  },
+  {
+    "id": "math-calculators",
+    "slug": "percentage-calculator",
+    "name": "Percentage Calculator",
+    "shortDesc": "Calculate percentage increases, discounts, tips, and loan margins.",
+    "fullDesc": "Calculate percentage increases, discounts, tips, and loan margins.",
+    "category": "calculator",
+    "icon": "Percent",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "percentage calculator",
+      "calculator",
+      "percentage calculator"
+    ]
+  },
+  {
+    "id": "bandwidth-calculator",
+    "slug": "bandwidth-calculator",
+    "name": "Bandwidth ETA Calculator",
+    "shortDesc": "Calculate accurate file download and transfer time based on speed.",
+    "fullDesc": "Calculate accurate file download and transfer time based on speed.",
+    "category": "calculator",
+    "icon": "Wifi",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "bandwidth eta calculator",
+      "calculator",
+      "bandwidth calculator"
+    ]
+  },
+  {
+    "id": "dpi-calculator",
+    "slug": "dpi-aspect-ratio-calculator",
+    "name": "DPI & Aspect Ratio Calculator",
+    "shortDesc": "Calculate print resolutions, pixel dimensions, and 16:9 / 4:3 ratios.",
+    "fullDesc": "Calculate print resolutions, pixel dimensions, and 16:9 / 4:3 ratios.",
+    "category": "calculator",
+    "icon": "Monitor",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "txt",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "dpi & aspect ratio calculator",
+      "calculator",
+      "dpi aspect ratio calculator"
+    ]
+  },
+  {
+    "id": "media-downloader",
+    "slug": "media-downloader",
+    "name": "Social Media Video Downloader",
+    "shortDesc": "Download 4K videos from YouTube, Instagram, TikTok, and WhatsApp.",
+    "fullDesc": "Download 4K videos from YouTube, Instagram, TikTok, and WhatsApp.",
+    "category": "media",
+    "icon": "Video",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "text/plain"
+    ],
+    "acceptedExtensions": [
+      ".txt"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "mp4",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "social media video downloader",
+      "media",
+      "media downloader"
+    ]
+  },
+  {
+    "id": "video-to-mp3",
+    "slug": "video-to-mp3",
+    "name": "Video to MP3",
+    "shortDesc": "Extract crystal-clear studio audio from video files in your browser.",
+    "fullDesc": "Extract crystal-clear studio audio from video files in your browser.",
+    "category": "media",
+    "icon": "Music",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".mp4",
+      ".mov",
+      ".avi",
+      ".mkv",
+      ".webm"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "mp3",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "video to mp3",
+      "media",
+      "video to mp3"
+    ]
+  },
+  {
+    "id": "audio-booster",
+    "slug": "audio-volume-booster",
+    "name": "Audio Volume Booster",
+    "shortDesc": "Amplify quiet MP3, WAV, and lecture audio recordings up to 300%.",
+    "fullDesc": "Amplify quiet MP3, WAV, and lecture audio recordings up to 300%.",
+    "category": "media",
+    "icon": "Volume2",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".mp3",
+      ".wav",
+      ".m4a",
+      ".aac"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "wav",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "audio volume booster",
+      "media",
+      "audio volume booster"
+    ]
+  },
+  {
+    "id": "audio-cutter",
+    "slug": "audio-cutter",
+    "name": "Audio Cutter",
+    "shortDesc": "Trim and cut audio tracks with visual waveform selection.",
+    "fullDesc": "Trim and cut audio tracks with visual waveform selection.",
+    "category": "media",
+    "icon": "Scissors",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".mp3",
+      ".wav",
+      ".ogg",
+      ".m4a"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "mp3",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "audio cutter",
+      "media",
+      "audio cutter"
+    ]
+  },
+  {
+    "id": "audio-speed",
+    "slug": "audio-speed",
+    "name": "Audio Speed Changer",
+    "shortDesc": "Speed up or slow down MP3 and WAV playback from 0.5x to 2.5x.",
+    "fullDesc": "Speed up or slow down MP3 and WAV playback from 0.5x to 2.5x.",
+    "category": "media",
+    "icon": "FastForward",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "*/*"
+    ],
+    "acceptedExtensions": [
+      ".mp3",
+      ".wav",
+      ".m4a"
+    ],
+    "maxFiles": 10,
+    "maxFileSizeMB": 500,
+    "outputExtension": "wav",
+    "outputMimeType": "text/plain",
+    "tags": [
+      "audio speed changer",
+      "media",
+      "audio speed"
+    ]
+  }
 ];
 
 export const CATEGORIES_CONFIG: { id: ToolCategory; label: string; icon: string; desc: string }[] = [
-  { id: 'media', label: 'Video & Media', icon: 'Video', desc: 'Download 4K videos & MP3 audio from YouTube, Reels, TikTok, FB & WhatsApp.' },
   { id: 'pdf', label: 'PDF Tools', icon: 'FileText', desc: 'Merge, split, compress, edit, secure and convert PDF documents.' },
-  { id: 'image', label: 'Image Tools', icon: 'Image', desc: 'Convert, compress, crop, resize, and optimize pictures.' },
-  { id: 'document', label: 'Document Tools', icon: 'FileCheck', desc: 'Convert Word, Excel, CSV, and Markdown files.' },
+  { id: 'document', label: 'Document & Office', icon: 'FileCheck', desc: 'Convert Word, Excel, CSV, PowerPoint, and Markdown files.' },
+  { id: 'image', label: 'Image Studio', icon: 'Image', desc: 'Convert, compress, crop, resize, and optimize pictures.' },
+  { id: 'ocr', label: 'OCR & Scans', icon: 'ScanText', desc: 'Extract text from scanned PDFs and photos.' },
   { id: 'text', label: 'Text & Writing', icon: 'Type', desc: 'Word count, case converters, line sorters, and diff checker.' },
   { id: 'compress', label: 'Compression', icon: 'Minimize2', desc: 'Reduce file sizes of PDFs, images, and documents.' },
-  { id: 'ocr', label: 'OCR Center', icon: 'ScanText', desc: 'Extract text from scanned PDFs and images in 7+ languages.' },
-  { id: 'calculator', label: 'Calculators & Units', icon: 'Binary', desc: 'Storage units, bandwidth transfer ETA, general units, and ratios.' },
-  { id: 'dev', label: 'Developer Utilities', icon: 'Code2', desc: 'JSON formatter, Base64, timestamps, colors, and minifiers.' },
-  { id: 'security', label: 'Security & Hashes', icon: 'Fingerprint', desc: 'SHA-256 checksums, secure password generator, and strength meter.' },
+  { id: 'security', label: 'Security & Privacy', icon: 'Fingerprint', desc: 'SHA checksums, password protect, sanitize, and redact.' },
+  { id: 'media', label: 'Audio & Video', icon: 'Video', desc: '4K video downloader, MP3 converter, and volume booster.' },
+  { id: 'calculator', label: 'Calculators & Units', icon: 'Binary', desc: 'Storage units, bandwidth ETA, general units, and percentages.' },
+  { id: 'dev', label: 'Developer Utilities', icon: 'Code2', desc: 'JSON formatter, Base64, timestamps, colors, and UUIDs.' },
   { id: 'qr', label: 'QR & Barcodes', icon: 'QrCode', desc: 'Generate styled QR codes and inventory barcodes.' },
-  { id: 'ai', label: 'AI Workspace', icon: 'Sparkles', desc: 'AI document summarizer, rewriter, and grammar assistant.' },
+  { id: 'ai', label: 'AI Workspace', icon: 'Sparkles', desc: 'AI document summarizer, rewriter, and workflow builder.' },
 ];

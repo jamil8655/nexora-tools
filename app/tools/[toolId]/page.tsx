@@ -1,5 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { TOOLS_LIST } from '@/lib/tools-config';
 import { ToolPageClient } from '@/components/shared/ToolPageClient';
 
@@ -42,38 +43,35 @@ export async function generateMetadata({ params }: { params: { toolId: string } 
 
 export default function ToolPage({ params }: { params: { toolId: string } }) {
   const tool = TOOLS_LIST.find((t) => t.id === params.toolId || t.slug === params.toolId);
+  if (!tool) notFound();
 
-  const jsonLd = tool
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'WebApplication',
-        name: tool.name,
-        description: tool.fullDesc || tool.shortDesc,
-        applicationCategory: 'UtilitiesApplication',
-        operatingSystem: 'All',
-        browserRequirements: 'Requires JavaScript. Requires HTML5.',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-        },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.9',
-          reviewCount: '1250',
-        },
-      }
-    : null;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: tool.name,
+    description: tool.fullDesc || tool.shortDesc,
+    applicationCategory: 'UtilitiesApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript. Requires HTML5.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      reviewCount: '1250',
+    },
+  };
 
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
-      <ToolPageClient toolId={params.toolId} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ToolPageClient tool={tool} />
     </>
   );
 }

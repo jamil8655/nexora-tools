@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import { TOOLS_LIST } from '@/lib/tools-config';
+import { ToolDefinition } from '@/lib/types';
 import { ToolLayout } from '@/components/shared/ToolLayout';
 import {
   mergePdfs,
   splitPdf,
   compressPdf,
   rotatePdfPages,
-  reorderPdfPages,
   watermarkPdf,
   addPageNumbers,
   editPdfMetadata,
@@ -19,113 +18,135 @@ import {
 import { compressPdfAdvanced } from '@/lib/pdf/pdf-compressor';
 import {
   convertImage,
+  compressImage,
   resizeImage,
   rotateAndFlipImage,
-  compressImage,
   stripExifAndMetadata,
-  watermarkImage,
 } from '@/lib/image/image-manipulator';
-import { docxToPdf, pdfToDocx, spreadsheetToPdf } from '@/lib/documents/doc-converter';
-import { StorageUnitConverter } from '@/components/calculators/StorageUnitConverter';
-import { BandwidthCalculator } from '@/components/calculators/BandwidthCalculator';
-import { DpiCalculator } from '@/components/calculators/DpiCalculator';
-import { GeneralUnitConverter } from '@/components/calculators/GeneralUnitConverter';
-import { MathCalculators } from '@/components/calculators/MathCalculators';
+import { pdfToDocx } from '@/lib/documents/doc-converter';
+import {
+  deletePdfPages,
+  reversePdfPages,
+  extractOddEvenPages,
+  duplicatePdfPages,
+  insertBlankPdfPage,
+  changePdfPageOrientation,
+  resizePdfPageDimensions,
+  addPdfHeaderFooter,
+  redactPdfContent,
+  sanitizePdfMetadata,
+  excelToPdf,
+  xlsxToCsv,
+  csvToXlsx,
+  excelToJson,
+  jsonToExcel,
+  cleanAndDedupeCsv,
+  docxToPdf,
+  docxToTxt,
+  docxToHtml,
+  docxToMarkdown,
+  textToDocx,
+  pptxToPdfOrText,
+  applyImageFilter,
+  createImagesZip,
+  extractZipArchive,
+  extractEntitiesFromText,
+  transformTextCase,
+  cleanTextLines,
+  calculateFileHash,
+} from '@/lib/engines/comprehensive-engines';
+
+// Interactive Specialized Custom Workspaces
+import { VisualPdfEditor } from '@/components/pdf/VisualPdfEditor';
+import { PdfOrganizerStudio } from '@/components/pdf/PdfOrganizerStudio';
+import { PdfToImagesStudio } from '@/components/pdf/PdfToImagesStudio';
 import { QrGenerator } from '@/components/qr/QrGenerator';
 import { BarcodeStudio } from '@/components/qr/BarcodeStudio';
-import { VisualPdfEditor } from '@/components/pdf/VisualPdfEditor';
-import { OcrStudio } from '@/components/ocr/OcrStudio';
-import { TextStudio } from '@/components/text/TextStudio';
-import { TextDiffViewer } from '@/components/text/TextDiffViewer';
 import { JsonStudio } from '@/components/dev/JsonStudio';
-import { Base64Studio } from '@/components/dev/Base64Studio';
-import { TimestampStudio } from '@/components/dev/TimestampStudio';
 import { ColorStudio } from '@/components/dev/ColorStudio';
-import { HashStudio } from '@/components/security/HashStudio';
-import { PasswordStudio } from '@/components/security/PasswordStudio';
-import { AiStudio } from '@/components/ai/AiStudio';
-import { MediaDownloaderStudio } from '@/components/media/MediaDownloaderStudio';
-import { VideoToMp3Studio } from '@/components/media/VideoToMp3Studio';
-import { FaviconStudio } from '@/components/image/FaviconStudio';
+import { TimestampStudio } from '@/components/dev/TimestampStudio';
+import { MarkdownLiveStudio } from '@/components/dev/MarkdownLiveStudio';
 import { JwtStudio } from '@/components/dev/JwtStudio';
 import { UuidStudio } from '@/components/dev/UuidStudio';
+import { Base64Studio } from '@/components/dev/Base64Studio';
+import { LoremIpsumStudio } from '@/components/dev/LoremIpsumStudio';
+import { HashStudio } from '@/components/security/HashStudio';
+import { PasswordStudio } from '@/components/security/PasswordStudio';
+import { TextStudio } from '@/components/text/TextStudio';
+import { TextDiffViewer } from '@/components/text/TextDiffViewer';
+import { GeneralUnitConverter } from '@/components/calculators/GeneralUnitConverter';
+import { StorageUnitConverter } from '@/components/calculators/StorageUnitConverter';
+import { BandwidthCalculator } from '@/components/calculators/BandwidthCalculator';
+import { MathCalculators } from '@/components/calculators/MathCalculators';
+import { DpiCalculator } from '@/components/calculators/DpiCalculator';
 import { AudioCutterStudio } from '@/components/media/AudioCutterStudio';
 import { AudioBoosterStudio } from '@/components/media/AudioBoosterStudio';
 import { AudioSpeedStudio } from '@/components/media/AudioSpeedStudio';
+import { MediaDownloaderStudio } from '@/components/media/MediaDownloaderStudio';
+import { VideoToMp3Studio } from '@/components/media/VideoToMp3Studio';
 import { ColorPaletteStudio } from '@/components/image/ColorPaletteStudio';
-import { PdfOrganizerStudio } from '@/components/pdf/PdfOrganizerStudio';
-import { MarkdownLiveStudio } from '@/components/dev/MarkdownLiveStudio';
 import { ImageResizerStudio } from '@/components/image/ImageResizerStudio';
-import { BackgroundRemoverStudio } from '@/components/image/BackgroundRemoverStudio';
 import { PassportPhotoStudio } from '@/components/image/PassportPhotoStudio';
-import { PdfToImagesStudio } from '@/components/pdf/PdfToImagesStudio';
+import { BackgroundRemoverStudio } from '@/components/image/BackgroundRemoverStudio';
+import { FaviconStudio } from '@/components/image/FaviconStudio';
+import { OcrStudio } from '@/components/ocr/OcrStudio';
 
-export function ToolPageClient({ toolId }: { toolId: string }) {
-  const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
+interface ToolPageClientProps {
+  tool: ToolDefinition;
+}
 
-  if (!tool) {
-    return (
-      <div className="max-w-md mx-auto my-20 p-8 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-center space-y-4">
-        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Tool Not Found</h2>
-        <p className="text-xs text-slate-500">The tool you requested could not be located in our registry.</p>
-      </div>
-    );
-  }
-
-  // Handle custom workspaces for interactive utility tools
+export function ToolPageClient({ tool }: ToolPageClientProps) {
   let customWorkspace: React.ReactNode = null;
 
-  if (tool.id === 'file-size-converter') {
-    customWorkspace = <StorageUnitConverter />;
+  if (tool.id === 'pdf-editor' || tool.slug === 'edit-pdf' || tool.id === 'pdf-sign' || tool.id === 'pdf-add-text') {
+    customWorkspace = <VisualPdfEditor />;
+  } else if (tool.id === 'qr-generator' || tool.category === 'qr' || tool.slug === 'qr-code-generator') {
+    customWorkspace = <QrGenerator />;
+  } else if (tool.id === 'barcode-generator' || tool.slug === 'barcode-generator') {
+    customWorkspace = <BarcodeStudio />;
+  } else if (tool.id === 'json-formatter' || tool.id === 'json-validator') {
+    customWorkspace = <JsonStudio />;
+  } else if (tool.id === 'file-hash-generator' || tool.id === 'md5-generator' || tool.id === 'sha256-generator') {
+    customWorkspace = <HashStudio />;
+  } else if (tool.id === 'password-generator') {
+    customWorkspace = <PasswordStudio />;
   } else if (tool.id === 'general-unit-converter') {
     customWorkspace = <GeneralUnitConverter />;
+  } else if (tool.id === 'file-size-converter') {
+    customWorkspace = <StorageUnitConverter />;
   } else if (tool.id === 'bandwidth-calculator') {
     customWorkspace = <BandwidthCalculator />;
   } else if (tool.id === 'math-calculators') {
     customWorkspace = <MathCalculators />;
-  } else if (tool.id === 'dpi-calculator' || tool.id === 'aspect-ratio-calculator') {
+  } else if (tool.id === 'dpi-calculator') {
     customWorkspace = <DpiCalculator />;
-  } else if (tool.id === 'qr-generator') {
-    customWorkspace = <QrGenerator />;
-  } else if (tool.id === 'barcode-generator') {
-    customWorkspace = <BarcodeStudio />;
-  } else if (tool.id === 'ocr-image-to-text') {
-    customWorkspace = <OcrStudio />;
-  } else if (tool.id === 'word-counter' || tool.id === 'case-converter' || tool.id === 'duplicate-remover') {
+  } else if (tool.id === 'word-counter' || tool.id === 'char-counter' || tool.id === 'sentence-counter' || tool.id === 'reading-time-calc' || tool.id === 'case-converter' || tool.id === 'uppercase-converter' || tool.id === 'lowercase-converter' || tool.id === 'title-case-converter' || tool.id === 'duplicate-remover' || tool.id === 'sort-lines-az' || tool.id === 'sort-lines-za' || tool.id === 'remove-extra-spaces' || tool.id === 'remove-blank-lines' || tool.id === 'extract-emails' || tool.id === 'extract-urls' || tool.id === 'extract-phones' || tool.id === 'extract-numbers' || tool.id === 'extract-hashtags' || tool.id === 'extract-mentions' || tool.id === 'find-replace-text') {
     customWorkspace = <TextStudio />;
   } else if (tool.id === 'text-diff') {
     customWorkspace = <TextDiffViewer />;
-  } else if (tool.id === 'json-formatter') {
-    customWorkspace = <JsonStudio />;
-  } else if (tool.id === 'base64-converter') {
-    customWorkspace = <Base64Studio />;
   } else if (tool.id === 'timestamp-converter') {
     customWorkspace = <TimestampStudio />;
   } else if (tool.id === 'color-converter') {
     customWorkspace = <ColorStudio />;
-  } else if (tool.id === 'hash-generator') {
-    customWorkspace = <HashStudio />;
-  } else if (tool.id === 'password-generator') {
-    customWorkspace = <PasswordStudio />;
-  } else if (tool.id === 'ai-summarizer') {
-    customWorkspace = <AiStudio />;
-  } else if (tool.id === 'video-to-mp3') {
-    customWorkspace = <VideoToMp3Studio />;
-  } else if (tool.id === 'favicon-generator') {
-    customWorkspace = <FaviconStudio />;
   } else if (tool.id === 'jwt-decoder') {
     customWorkspace = <JwtStudio />;
   } else if (tool.id === 'uuid-generator') {
     customWorkspace = <UuidStudio />;
+  } else if (tool.id === 'base64-converter') {
+    customWorkspace = <Base64Studio />;
+  } else if (tool.id === 'lorem-ipsum-gen') {
+    customWorkspace = <LoremIpsumStudio />;
   } else if (tool.id === 'audio-cutter') {
     customWorkspace = <AudioCutterStudio />;
   } else if (tool.id === 'audio-booster') {
     customWorkspace = <AudioBoosterStudio />;
   } else if (tool.id === 'audio-speed') {
     customWorkspace = <AudioSpeedStudio />;
+  } else if (tool.id === 'video-to-mp3') {
+    customWorkspace = <VideoToMp3Studio />;
   } else if (tool.id === 'image-palette') {
     customWorkspace = <ColorPaletteStudio />;
-  } else if (tool.id === 'pdf-organizer') {
+  } else if (tool.id === 'pdf-organizer' || tool.slug === 'organize-pdf') {
     customWorkspace = <PdfOrganizerStudio />;
   } else if (tool.id === 'markdown-editor') {
     customWorkspace = <MarkdownLiveStudio />;
@@ -134,8 +155,12 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
   } else if (tool.id === 'passport-photo-maker' || tool.slug === 'passport-photo-maker') {
     customWorkspace = <PassportPhotoStudio />;
   } else if (tool.id === 'background-remover' || tool.slug === 'background-remover') {
-    customWorkspace = <PassportPhotoStudio />;
-  } else if (tool.id === 'pdf-to-image' || tool.id === 'pdf-to-jpg' || tool.slug === 'pdf-to-images') {
+    customWorkspace = <BackgroundRemoverStudio />;
+  } else if (tool.id === 'favicon-generator') {
+    customWorkspace = <FaviconStudio />;
+  } else if (tool.id === 'ocr-pdf' || tool.id === 'ocr-image' || tool.id === 'ocr-to-word' || tool.id === 'ocr-to-txt' || tool.id === 'ocr-to-excel' || tool.id === 'ocr-to-csv' || tool.id === 'image-searchable-pdf') {
+    customWorkspace = <OcrStudio />;
+  } else if (tool.id === 'pdf-to-image' || tool.id === 'pdf-to-jpg' || tool.id === 'pdf-to-png' || tool.id === 'pdf-to-webp' || tool.id === 'pdf-to-images' || tool.slug === 'pdf-to-images-zip') {
     customWorkspace = <PdfToImagesStudio />;
   } else if (tool.category === 'media' || tool.id.includes('downloader') || tool.id === 'whatsapp-status-saver') {
     customWorkspace = <MediaDownloaderStudio />;
@@ -167,8 +192,8 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       ];
     }
 
-    // 2. PDF SPLIT
-    if (tool.id === 'pdf-split') {
+    // 2. PDF SPLIT & EXTRACT
+    if (tool.id === 'pdf-split' || tool.id === 'pdf-extract-pages' || tool.id === 'pdf-extract-selected') {
       onProgress(30, 'Analyzing PDF page count...');
       const buffer = await files[0].arrayBuffer();
       onProgress(65, 'Extracting individual pages...');
@@ -185,8 +210,94 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       });
     }
 
-    // 3. PDF ROTATE
-    if (tool.id === 'pdf-rotate') {
+    // 3. PDF DELETE / REVERSE / ODD-EVEN / DUPLICATE / INSERT PAGES
+    if (tool.id === 'pdf-delete-pages' || tool.id === 'pdf-remove-blank') {
+      onProgress(40, 'Removing requested pages...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await deletePdfPages(buffer, options.pages || '2');
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `cleaned-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-reverse-pages') {
+      onProgress(40, 'Reversing PDF page order...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await reversePdfPages(buffer);
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `reversed-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-extract-odd' || tool.id === 'pdf-extract-even') {
+      const type = tool.id === 'pdf-extract-odd' ? 'odd' : 'even';
+      onProgress(40, `Extracting ${type} pages...`);
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await extractOddEvenPages(buffer, type);
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `${type}-pages-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-duplicate-pages') {
+      onProgress(40, 'Duplicating PDF pages...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await duplicatePdfPages(buffer, 2);
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `duplicated-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-insert-pages') {
+      onProgress(40, 'Inserting blank pages into PDF...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await insertBlankPdfPage(buffer, options.position || 'end');
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `inserted-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-orientation') {
+      onProgress(40, 'Converting page orientation...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await changePdfPageOrientation(buffer, options.target || 'landscape');
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `oriented-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-resize-pages' || tool.id === 'pdf-change-size' || tool.id === 'pdf-booklet') {
+      onProgress(40, 'Resizing PDF page dimensions...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await resizePdfPageDimensions(buffer, options.size || 'A4');
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `resized-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-add-header' || tool.id === 'pdf-add-footer') {
+      onProgress(40, 'Adding header/footer text...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await addPdfHeaderFooter(
+        buffer,
+        options.headerText || (tool.id === 'pdf-add-header' ? 'OFFICIAL DOCUMENT' : ''),
+        options.footerText || (tool.id === 'pdf-add-footer' ? 'Page {page} of {total}' : '')
+      );
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `header-footer-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-redact') {
+      onProgress(40, 'Applying redaction blocks...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await redactPdfContent(buffer);
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `redacted-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'pdf-sanitize' || tool.id === 'pdf-metadata-cleaner') {
+      onProgress(40, 'Stripping metadata and hidden tags...');
+      const buffer = await files[0].arrayBuffer();
+      const bytes = await sanitizePdfMetadata(buffer);
+      const blob = new Blob([bytes as any], { type: 'application/pdf' });
+      return [{ name: `sanitized-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    // 4. PDF ROTATE
+    if (tool.id === 'pdf-rotate' || tool.id === 'pdf-rotate-single') {
       onProgress(40, 'Rotating PDF pages...');
       const angle = parseInt(options.angle || '90');
       const results = [];
@@ -205,7 +316,7 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       return results;
     }
 
-    // 4. PDF WATERMARK
+    // 5. PDF WATERMARK
     if (tool.id === 'pdf-watermark') {
       onProgress(40, 'Applying watermark stamp to all pages...');
       const results = [];
@@ -228,7 +339,7 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       return results;
     }
 
-    // 5. PDF PAGE NUMBERS
+    // 6. PDF PAGE NUMBERS
     if (tool.id === 'pdf-page-numbers') {
       onProgress(40, 'Rendering page number headers/footers...');
       const results = [];
@@ -246,101 +357,18 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       return results;
     }
 
-    // 6. PDF METADATA
-    if (tool.id === 'pdf-metadata') {
-      onProgress(40, 'Writing document properties and tags...');
-      const buffer = await files[0].arrayBuffer();
-      const bytes = await editPdfMetadata(buffer, {
-        title: options.title,
-        author: options.author,
-        subject: options.subject,
-        keywords: options.keywords,
-      });
-      const blob = new Blob([bytes as any], { type: 'application/pdf' });
-      return [
-        {
-          name: `updated-${files[0].name}`,
-          originalSize: files[0].size,
-          processedSize: blob.size,
-          blob,
-        },
-      ];
-    }
-
-    // 7. IMAGE TO PDF
-    if (tool.id === 'image-to-pdf') {
-      onProgress(30, 'Encoding images into PDF canvas...');
-      const imageBuffers = await Promise.all(
-        files.map(async (f) => ({
-          buffer: await f.arrayBuffer(),
-          mimeType: f.type || 'image/jpeg',
-        }))
-      );
-      onProgress(70, 'Building paginated PDF document...');
-      const pdfBytes = await imagesToPdf(imageBuffers, {
-        orientation: options.orientation || 'auto',
-        margin: options.margin || 'small',
-      });
-      onProgress(100, 'PDF created successfully!');
-      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
-      return [
-        {
-          name: 'converted-images.pdf',
-          originalSize: files.reduce((a, f) => a + f.size, 0),
-          processedSize: blob.size,
-          blob,
-        },
-      ];
-    }
-
-    // 8. TEXT / TXT / MD TO PDF
-    if (tool.id === 'text-to-pdf' || tool.id === 'markdown-to-pdf') {
-      onProgress(40, 'Parsing text lines and typesetting...');
-      const text = await files[0].text();
-      const pdfBytes =
-        tool.id === 'markdown-to-pdf'
-          ? await markdownToPdf(text)
-          : await textToPdf(text, { fontSize: parseInt(options.fontSize || '12') });
-      onProgress(100, 'PDF compiled!');
-      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
-      return [
-        {
-          name: `${files[0].name.replace(/\.[^/.]+$/, '')}.pdf`,
-          originalSize: files[0].size,
-          processedSize: blob.size,
-          blob,
-        },
-      ];
-    }
-
-    // 9. IMAGE CONVERTER (JPG, PNG, WebP)
-    if (tool.id === 'image-converter' || tool.id === 'jpg-to-png' || tool.id === 'png-to-jpg') {
-      const targetMime =
-        tool.id === 'jpg-to-png'
-          ? 'image/png'
-          : tool.id === 'png-to-jpg'
-          ? 'image/jpeg'
-          : options.targetFormat || 'image/png';
-      const ext = targetMime === 'image/jpeg' ? 'jpg' : targetMime === 'image/webp' ? 'webp' : 'png';
-
+    // 7. PDF COMPRESSOR & OPTIMIZATION
+    if (
+      tool.id === 'pdf-compress' ||
+      tool.id === 'pdf-extreme-compress' ||
+      tool.id === 'pdf-balanced-compress' ||
+      tool.id === 'pdf-hq-compress' ||
+      tool.id === 'pdf-optimize' ||
+      tool.id === 'pdf-to-smaller' ||
+      tool.id === 'pdf-linearize'
+    ) {
       const results = [];
-      for (let i = 0; i < files.length; i++) {
-        onProgress(Math.round(((i + 1) / files.length) * 90), `Converting image ${i + 1} of ${files.length}...`);
-        const converted = await convertImage(files[i], targetMime, options.quality || 0.9);
-        results.push({
-          name: `${files[i].name.replace(/\.[^/.]+$/, '')}.${ext}`,
-          originalSize: files[i].size,
-          processedSize: converted.blob.size,
-          blob: converted.blob,
-          dataUrl: converted.dataUrl,
-        });
-      }
-      return results;
-    }
-
-    // 10. PDF COMPRESSOR
-    if (tool.id === 'pdf-compress') {
-      const results = [];
+      const targetLimit = tool.id === 'pdf-extreme-compress' ? '200kb' : options.targetSizeLimit || 'auto';
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const buffer = await file.arrayBuffer();
@@ -348,7 +376,7 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
           buffer,
           {
             level: options.level || 'medium',
-            targetSizeLimit: options.targetSizeLimit || 'auto',
+            targetSizeLimit: targetLimit,
           },
           (pct, status) => {
             const overallPct = Math.round(((i + pct / 100) / files.length) * 100);
@@ -367,87 +395,8 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       return results;
     }
 
-    // 11. IMAGE COMPRESSOR
-    if (tool.id === 'image-compressor') {
-      let qualityFactor = parseFloat(options.quality || '0.75');
-      const target = options.targetSizeLimit || 'auto';
-      if (target === '50kb') qualityFactor = 0.35;
-      else if (target === '100kb') qualityFactor = 0.50;
-      else if (target === '200kb') qualityFactor = 0.65;
-      else if (target === '500kb') qualityFactor = 0.75;
-      else if (target === '1mb') qualityFactor = 0.85;
-      else if (target === '2mb') qualityFactor = 0.90;
-
-      const results = [];
-      for (let i = 0; i < files.length; i++) {
-        onProgress(Math.round(((i + 1) / files.length) * 90), `Compressing ${files[i].name}...`);
-        const compressed = await compressImage(files[i], qualityFactor);
-        results.push({
-          name: `compressed-${files[i].name}`,
-          originalSize: files[i].size,
-          processedSize: compressed.blob.size,
-          blob: compressed.blob,
-          dataUrl: compressed.dataUrl,
-        });
-      }
-      return results;
-    }
-
-    // 11. IMAGE RESIZER
-    if (tool.id === 'image-resizer') {
-      onProgress(40, 'Resizing image dimensions...');
-      const targetW = parseInt(options.width || '1200');
-      const targetH = parseInt(options.height || '800');
-      const results = [];
-      for (const f of files) {
-        const resized = await resizeImage(f, targetW, targetH, options.maintainAspect);
-        results.push({
-          name: `resized-${f.name}`,
-          originalSize: f.size,
-          processedSize: resized.blob.size,
-          blob: resized.blob,
-          dataUrl: resized.dataUrl,
-        });
-      }
-      return results;
-    }
-
-    // 12. IMAGE ROTATE & FLIP
-    if (tool.id === 'image-rotate-flip') {
-      onProgress(40, 'Transforming image orientation...');
-      const results = [];
-      for (const f of files) {
-        const transformed = await rotateAndFlipImage(f, options.action || 'rotate-90');
-        results.push({
-          name: `transformed-${f.name}`,
-          originalSize: f.size,
-          processedSize: transformed.blob.size,
-          blob: transformed.blob,
-          dataUrl: transformed.dataUrl,
-        });
-      }
-      return results;
-    }
-
-    // 13. IMAGE EXIF STRIPPER
-    if (tool.id === 'image-exif') {
-      onProgress(40, 'Stripping GPS, camera model, and metadata tags...');
-      const results = [];
-      for (const f of files) {
-        const sanitized = await stripExifAndMetadata(f);
-        results.push({
-          name: `sanitized-${f.name}`,
-          originalSize: f.size,
-          processedSize: sanitized.blob.size,
-          blob: sanitized.blob,
-          dataUrl: sanitized.dataUrl,
-        });
-      }
-      return results;
-    }
-
-    // 14. PDF TO WORD (DOCX)
-    if (tool.id === 'pdf-to-docx' || tool.id === 'pdf-to-word') {
+    // 8. PDF TO WORD (DOCX)
+    if (tool.id === 'pdf-to-docx' || tool.id === 'pdf-to-doc' || tool.id === 'pdf-to-word') {
       const results = [];
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
@@ -464,59 +413,171 @@ export function ToolPageClient({ toolId }: { toolId: string }) {
       return results;
     }
 
-    // 15. WORD DOCX TO PDF
-    if (tool.id === 'docx-to-pdf') {
-      onProgress(40, 'Parsing Word XML document structure...');
+    // 9. EXCEL & SPREADSHEET TOOLS
+    if (tool.id === 'xlsx-to-pdf' || tool.id === 'xls-to-pdf' || tool.id === 'xlsx-direct-pdf' || tool.id === 'excel-to-pdf') {
+      onProgress(40, 'Converting spreadsheet to PDF...');
       const results = [];
       for (const f of files) {
-        const pdfBytes = await docxToPdf(f);
-        const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
+        const pdfBlob = await excelToPdf(f);
         results.push({
           name: `${f.name.replace(/\.[^/.]+$/, '')}.pdf`,
           originalSize: f.size,
-          processedSize: blob.size,
-          blob,
+          processedSize: pdfBlob.size,
+          blob: pdfBlob,
         });
       }
       return results;
     }
 
-    // 15. EXCEL XLSX / CSV TO PDF
-    if (tool.id === 'excel-to-pdf') {
-      onProgress(40, 'Parsing spreadsheet worksheets and tables...');
+    if (tool.id === 'xlsx-to-csv') {
+      onProgress(40, 'Converting XLSX to CSV...');
+      const blob = await xlsxToCsv(files[0]);
+      return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.csv`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'csv-to-xlsx') {
+      onProgress(40, 'Converting CSV to XLSX...');
+      const blob = await csvToXlsx(files[0]);
+      return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.xlsx`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'excel-to-json') {
+      onProgress(40, 'Converting Excel to JSON...');
+      const jsonStr = await excelToJson(files[0]);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.json`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'json-to-excel') {
+      onProgress(40, 'Converting JSON to Excel XLSX...');
+      const text = await files[0].text();
+      const blob = await jsonToExcel(text);
+      return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.xlsx`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'csv-cleaner' || tool.id === 'csv-deduplicator') {
+      onProgress(40, 'Cleaning CSV rows and duplicates...');
+      const cleaned = await cleanAndDedupeCsv(files[0]);
+      const blob = new Blob([cleaned], { type: 'text/csv' });
+      return [{ name: `cleaned-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    // 10. WORD & DOCUMENT TOOLS
+    if (tool.id === 'docx-to-pdf' || tool.id === 'doc-to-pdf' || tool.id === 'docx-direct-pdf') {
+      onProgress(40, 'Converting Word document to PDF...');
       const results = [];
       for (const f of files) {
-        const pdfBytes = await spreadsheetToPdf(f);
-        const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
+        const pdfBlob = await docxToPdf(f);
         results.push({
           name: `${f.name.replace(/\.[^/.]+$/, '')}.pdf`,
           originalSize: f.size,
-          processedSize: blob.size,
-          blob,
+          processedSize: pdfBlob.size,
+          blob: pdfBlob,
         });
       }
       return results;
     }
 
-    // 16. PDF TO IMAGE / PAGES
-    if (tool.id === 'pdf-to-image' || tool.id === 'pdf-to-jpg') {
-      onProgress(30, 'Reading PDF pages...');
-      const buffer = await files[0].arrayBuffer();
-      onProgress(70, 'Extracting individual pages...');
-      const splitResults = await splitPdf(buffer, 'all');
-      onProgress(100, 'Pages extracted!');
-      return splitResults.map((r) => {
-        const b = new Blob([r.bytes as any], { type: 'application/pdf' });
-        return {
-          name: r.name,
-          originalSize: files[0].size,
-          processedSize: b.size,
-          blob: b,
-        };
-      });
+    if (tool.id === 'word-to-txt') {
+      onProgress(40, 'Extracting plain text from Word...');
+      const text = await docxToTxt(files[0]);
+      const blob = new Blob([text], { type: 'text/plain' });
+      return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.txt`, originalSize: files[0].size, processedSize: blob.size, blob }];
     }
 
-    // Default fallback: return files as is
+    if (tool.id === 'word-to-html') {
+      onProgress(40, 'Converting Word to HTML...');
+      const html = await docxToHtml(files[0]);
+      const blob = new Blob([html], { type: 'text/html' });
+      return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.html`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'word-to-markdown') {
+      onProgress(40, 'Converting Word to Markdown...');
+      const md = await docxToMarkdown(files[0]);
+      const blob = new Blob([md], { type: 'text/markdown' });
+      return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.md`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    // 11. POWERPOINT PPTX
+    if (tool.id === 'pptx-to-pdf' || tool.id === 'ppt-to-pdf' || tool.id === 'pptx-direct-pdf' || tool.id === 'pptx-to-txt') {
+      onProgress(40, 'Parsing PowerPoint presentation slides...');
+      const { text, pdfBlob } = await pptxToPdfOrText(files[0]);
+      if (tool.id === 'pptx-to-txt') {
+        const blob = new Blob([text], { type: 'text/plain' });
+        return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.txt`, originalSize: files[0].size, processedSize: blob.size, blob }];
+      }
+      return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.pdf`, originalSize: files[0].size, processedSize: pdfBlob.size, blob: pdfBlob }];
+    }
+
+    // 12. IMAGE FILTERS & COMPRESSION
+    if (tool.id.includes('grayscale') || tool.id.includes('bw') || tool.id.includes('sharpen') || tool.id.includes('blur') || tool.id.includes('brightness') || tool.id.includes('contrast')) {
+      const filter = tool.id.includes('grayscale') ? 'grayscale' : tool.id.includes('bw') ? 'bw' : tool.id.includes('sharpen') ? 'sharpen' : tool.id.includes('blur') ? 'blur' : tool.id.includes('brightness') ? 'brightness' : 'contrast';
+      onProgress(40, `Applying ${filter} filter...`);
+      const results = [];
+      for (const f of files) {
+        const blob = await applyImageFilter(f, filter as any);
+        results.push({ name: `${filter}-${f.name}`, originalSize: f.size, processedSize: blob.size, blob });
+      }
+      return results;
+    }
+
+    if (tool.id.includes('compress') && tool.category === 'image') {
+      const results = [];
+      for (let i = 0; i < files.length; i++) {
+        onProgress(Math.round(((i + 1) / files.length) * 90), `Compressing ${files[i].name}...`);
+        const compressed = await compressImage(files[i], 0.75);
+        results.push({
+          name: `compressed-${files[i].name}`,
+          originalSize: files[i].size,
+          processedSize: compressed.blob.size,
+          blob: compressed.blob,
+          dataUrl: compressed.dataUrl,
+        });
+      }
+      return results;
+    }
+
+    // 13. ZIP & GENERAL FILE TOOLS
+    if (tool.id === 'zip-creator' || tool.id === 'image-zip-creator') {
+      onProgress(50, 'Creating ZIP archive...');
+      const blob = await createImagesZip(files);
+      return [{ name: 'archive.zip', originalSize: files.reduce((a, f) => a + f.size, 0), processedSize: blob.size, blob }];
+    }
+
+    if (tool.id === 'zip-extractor') {
+      onProgress(50, 'Unzipping archive contents...');
+      const extracted = await extractZipArchive(files[0]);
+      return extracted.map((e) => ({
+        name: e.name,
+        originalSize: files[0].size,
+        processedSize: e.blob.size,
+        blob: e.blob,
+      }));
+    }
+
+    if (tool.id === 'file-hash-generator' || tool.id === 'sha256-generator') {
+      onProgress(50, 'Calculating SHA-256 cryptographic hash...');
+      const hash = await calculateFileHash(files[0], 'SHA-256');
+      const blob = new Blob([`File: ${files[0].name}\nSize: ${files[0].size} bytes\nSHA-256: ${hash}\nGenerated by: NEXORA Tools Pro\n`], { type: 'text/plain' });
+      return [{ name: `${files[0].name}.sha256.txt`, originalSize: files[0].size, processedSize: blob.size, blob }];
+    }
+
+    // 14. IMAGE TO PDF
+    if (tool.id === 'image-to-pdf' || tool.id === 'images-to-pdf' || tool.id === 'multi-images-to-pdf' || tool.id.endsWith('-to-pdf')) {
+      onProgress(30, 'Encoding images into PDF...');
+      const imageBuffers = await Promise.all(
+        files.map(async (f) => ({
+          buffer: await f.arrayBuffer(),
+          mimeType: f.type || 'image/jpeg',
+        }))
+      );
+      const pdfBytes = await imagesToPdf(imageBuffers);
+      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
+      return [{ name: 'converted-document.pdf', originalSize: files.reduce((a, f) => a + f.size, 0), processedSize: blob.size, blob }];
+    }
+
+    // Default Fallback
     return files.map((f) => ({
       name: `processed-${f.name}`,
       originalSize: f.size,
