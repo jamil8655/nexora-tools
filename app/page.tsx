@@ -20,10 +20,14 @@ import {
   Video,
   Binary,
   Code2,
+  Heart,
+  Clock,
+  History,
 } from 'lucide-react';
 import { TOOLS_LIST, CATEGORIES_CONFIG } from '@/lib/tools-config';
 import { ToolCard } from '@/components/shared/ToolCard';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { useUserStore } from '@/lib/user/user-store';
 import { getLocalizedTool } from '@/lib/i18n/catalog-translations';
 
 const categoryIconMap: Record<string, React.ElementType> = {
@@ -43,6 +47,7 @@ const categoryIconMap: Record<string, React.ElementType> = {
 
 export default function HomePage() {
   const { t, language } = useI18n();
+  const { favorites, history, pinnedTools } = useUserStore();
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   const quickActions = [
@@ -56,18 +61,73 @@ export default function HomePage() {
     { name: 'QR Code Studio', href: '/tools/qr-code-generator', icon: QrCode, color: 'bg-cyan-500', desc: 'Custom QR/Barcode' },
   ];
 
+  // User's favorite tools
+  const favoriteTools = TOOLS_LIST.filter(
+    (tool) =>
+      favorites.some((fav) => fav.id === tool.id || fav.id === tool.slug) ||
+      pinnedTools.includes(tool.id)
+  );
+
+  // User's recent tools from history
+  const recentToolIds = Array.from(new Set(history.map((h) => h.url.replace('/tools/', ''))));
+  const recentTools = TOOLS_LIST.filter((tool) =>
+    recentToolIds.includes(tool.id) || recentToolIds.includes(tool.slug)
+  ).slice(0, 4);
+
   const filteredTools = TOOLS_LIST.filter((tool) => {
     return activeCategory === 'all' || tool.category === activeCategory;
   });
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-24 overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
-      {/* 1. QUICK ACTIONS SECTION */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 max-w-7xl mx-auto space-y-3">
+      {/* 1. FAVORITES SECTION (Conditional on user favoriting) */}
+      {favoriteTools.length > 0 && (
+        <section className="px-4 sm:px-6 lg:px-8 pt-4 max-w-7xl mx-auto space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-xs font-black text-rose-600 dark:text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Heart className="w-3.5 h-3.5 fill-current" />
+              <span>Your Favorite Tools ({favoriteTools.length})</span>
+            </h2>
+            <Link href="/favorites" className="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
+              Manage Favorites →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+            {favoriteTools.slice(0, 4).map((tool) => (
+              <ToolCard key={`fav-${tool.id}`} tool={tool} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 2. RECENT TOOLS (Conditional on user usage) */}
+      {recentTools.length > 0 && (
+        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-xs font-black text-purple-600 dark:text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Recently Used</span>
+            </h2>
+            <Link href="/history" className="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
+              View History →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+            {recentTools.map((tool) => (
+              <ToolCard key={`recent-${tool.id}`} tool={tool} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 3. FREQUENT TOOLS / QUICK ACTIONS */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4 max-w-7xl mx-auto space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-amber-500" />
-            <span>Frequent Tools</span>
+            <span>Frequent Utilities</span>
           </h2>
           <Link href="/tools" className="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
             All 220+ Tools →
@@ -100,17 +160,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. ORGANIZED CATEGORIES GRID & SELECTOR */}
+      {/* 4. ORGANIZED CATEGORIES GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-brand-600" />
-            <span>Explore Categories</span>
+            <span>Categories</span>
           </h2>
           <span className="text-[11px] text-slate-400 font-semibold">{filteredTools.length} tools</span>
         </div>
 
-        {/* Clean Categorized Chips / Grid */}
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
           <button
             type="button"
@@ -155,7 +214,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. TOOL CARDS GRID */}
+      {/* 5. TOOL CARDS GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">

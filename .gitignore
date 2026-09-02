@@ -14,6 +14,17 @@
 # Production
 /build
 
+# Android Gradle build & cache
+.gradle/
+android/.gradle/
+android/app/build/
+android/build/
+android/captures/
+*.apk
+*.aab
+*.keystore
+local.properties
+
 # Misc
 .DS_Store
 *.pem
