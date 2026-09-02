@@ -430,7 +430,7 @@ export function UnifiedSearchModal({
             <span>•</span>
             <span>100% In-Browser Privacy</span>
           </div>
-          <span className="font-semibold text-brand-600 dark:text-brand-400">75+ Utilities</span>
+          <span className="font-semibold text-brand-600 dark:text-brand-400">220+ Utilities</span>
         </div>
       </div>
     </div>

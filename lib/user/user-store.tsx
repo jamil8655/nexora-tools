@@ -50,6 +50,15 @@ export interface DownloadItem {
   downloadUrl?: string;
 }
 
+export interface RecentToolItem {
+  toolId: string;
+  toolName: string;
+  category: string;
+  icon: string;
+  lastUsed: number;
+  usageCount: number;
+}
+
 export interface AppNotification {
   id: string;
   title: string;
@@ -63,6 +72,10 @@ export interface AppNotification {
 interface UserStoreContextType {
   profilePhoto: string | null;
   updateProfilePhoto: (dataUrlOrFile: string | File | Blob | null) => Promise<boolean>;
+
+  recentTools: RecentToolItem[];
+  recordToolUsage: (toolId: string, toolName: string, category: string, icon: string) => void;
+  clearRecentTools: () => void;
 
   pinnedTools: string[];
   togglePinTool: (toolId: string) => void;
@@ -106,6 +119,7 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
   const { user, firebaseUser } = useAuth();
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [pinnedTools, setPinnedTools] = useState<string[]>([]);
+  const [recentTools, setRecentTools] = useState<RecentToolItem[]>([]);
   const [lastStudiedCourseId, setLastStudiedCourseIdState] = useState<string | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Record<string, EnrolledCourseState>>({});
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
@@ -121,6 +135,9 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
 
       const savedPinned = localStorage.getItem('nexora_pinned_tools');
       if (savedPinned) setPinnedTools(JSON.parse(savedPinned));
+
+      const savedRecents = localStorage.getItem('nexora_recent_tools');
+      if (savedRecents) setRecentTools(JSON.parse(savedRecents));
 
       const savedCourseId = localStorage.getItem('nexora_last_studied_course');
       if (savedCourseId) setLastStudiedCourseIdState(savedCourseId);
@@ -281,6 +298,31 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
 
   const getCourseProgress = (courseId: string) => enrolledCourses[courseId]?.progress || 0;
 
+  // Real Dynamic User-State: Record Recent Tool Usage
+  const recordToolUsage = (toolId: string, toolName: string, category: string, icon: string) => {
+    setRecentTools((prev) => {
+      const existing = prev.find((t) => t.toolId === toolId);
+      const usageCount = (existing?.usageCount || 0) + 1;
+      const updatedItem: RecentToolItem = {
+        toolId,
+        toolName,
+        category,
+        icon,
+        lastUsed: Date.now(),
+        usageCount,
+      };
+      const filtered = prev.filter((t) => t.toolId !== toolId);
+      const next = [updatedItem, ...filtered].slice(0, 10);
+      localStorage.setItem('nexora_recent_tools', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const clearRecentTools = () => {
+    setRecentTools([]);
+    localStorage.removeItem('nexora_recent_tools');
+  };
+
   // Favorites
   const toggleFavorite = (item: Omit<FavoriteItem, 'addedAt'>) => {
     setFavorites((prev) => {
@@ -398,6 +440,9 @@ export function UserStoreProvider({ children }: { children: React.ReactNode }) {
       value={{
         profilePhoto,
         updateProfilePhoto,
+        recentTools,
+        recordToolUsage,
+        clearRecentTools,
         pinnedTools,
         togglePinTool,
         isToolPinned,

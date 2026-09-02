@@ -661,7 +661,7 @@ export function AdminAnalytics() {
                     Tool Catalog & Maintenance Switches ({TOOLS_LIST.length})
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Live operational switches for all 75+ productivity utilities.
+                    Live operational switches for all 220+ productivity utilities.
                   </p>
                 </div>
 

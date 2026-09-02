@@ -26,7 +26,7 @@ export default function RefundPage() {
           <section className="space-y-2">
             <h3 className="text-base font-bold text-slate-900 dark:text-white">1. Free Core Platform Access</h3>
             <p>
-              All 75+ core digital utility tools and educational course materials on NEXORA PRO are provided 100% free of charge. No payment details or credit cards are required to access full-featured PDF editing, image processing, OCR, or course preview modules.
+              All 220+ core digital utility tools and educational course materials on NEXORA PRO are provided 100% free of charge. No payment details or credit cards are required to access full-featured PDF editing, image processing, OCR, or course preview modules.
             </p>
           </section>
 

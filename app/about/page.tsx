@@ -99,7 +99,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { title: '75+ Client-Side Tools', desc: 'PDF, Image Studio, OCR, QR/Barcode, Dev Toolkit, and Calculators.' },
+              { title: '220+ Client-Side Tools', desc: 'PDF, Image Studio, OCR, QR/Barcode, Dev Toolkit, and Calculators.' },
               { title: 'WebAssembly (WASM) Engine', desc: 'Native binary execution inside the browser sandbox.' },
               { title: 'Tesseract OCR Vision', desc: 'Multilingual text extraction directly on your GPU/CPU.' },
               { title: 'Offline-Ready PWA', desc: 'Install NEXORA as an app on Windows, macOS, Android, and iOS.' },
@@ -123,7 +123,7 @@ export default function AboutPage() {
             Ready to experience next-generation tools & learning?
           </h2>
           <p className="text-sm sm:text-base text-brand-100 max-w-xl mx-auto leading-relaxed">
-            All 75+ tools and course curriculums are 100% free and open for everyone. No credit card, no sign-up barrier.
+            All 220+ tools and course curriculums are 100% free and open for everyone. No credit card, no sign-up barrier.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link

@@ -47,7 +47,7 @@ const categoryIconMap: Record<string, React.ElementType> = {
 
 export default function HomePage() {
   const { t, language } = useI18n();
-  const { favorites, history, pinnedTools } = useUserStore();
+  const { favorites, history, pinnedTools, recentTools: trackedRecents } = useUserStore();
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   const quickActions = [
@@ -68,11 +68,15 @@ export default function HomePage() {
       pinnedTools.includes(tool.id)
   );
 
-  // User's recent tools from history
+  // User's recent tools (Real dynamic user activity)
   const recentToolIds = Array.from(new Set(history.map((h) => h.url.replace('/tools/', ''))));
-  const recentTools = TOOLS_LIST.filter((tool) =>
-    recentToolIds.includes(tool.id) || recentToolIds.includes(tool.slug)
-  ).slice(0, 4);
+  const recentTools = (
+    trackedRecents && trackedRecents.length > 0
+      ? trackedRecents.map((r) => TOOLS_LIST.find((t) => t.id === r.toolId || t.slug === r.toolId)).filter(Boolean)
+      : TOOLS_LIST.filter((tool) =>
+          recentToolIds.includes(tool.id) || recentToolIds.includes(tool.slug)
+        )
+  ).slice(0, 4) as typeof TOOLS_LIST;
 
   const filteredTools = TOOLS_LIST.filter((tool) => {
     return activeCategory === 'all' || tool.category === activeCategory;

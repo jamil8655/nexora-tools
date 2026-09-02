@@ -170,7 +170,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/tools" className="text-brand-600 dark:text-brand-400 font-bold hover:underline">
-                  {t.common.viewAll} 75+ Tools →
+                  {t.common.viewAll} 220+ Tools →
                 </Link>
               </li>
             </ul>

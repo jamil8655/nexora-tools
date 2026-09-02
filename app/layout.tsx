@@ -15,7 +15,7 @@ import { adConfig } from '@/config/ads';
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} - Free Online Tools & Digital Skills Learning Platform`,
-  description: 'NEXORA PRO provides 75+ free high-performance client-side digital utilities and modern developer & digital skill courses with zero server tracking.',
+  description: 'NEXORA PRO provides 220+ free high-performance client-side digital utilities and modern developer & digital skill courses with zero server tracking.',
   manifest: '/nexora-tools/manifest.json',
   keywords: [
     'nexora pro',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${siteConfig.name} - 75+ Free Online Tools & Digital Courses`,
+    title: `${siteConfig.name} - 220+ Free Online Tools & Digital Courses`,
     description: 'Learn modern digital skills and transform files with 100% private client-side processing.',
   },
 };
@@ -63,7 +63,7 @@ export default function RootLayout({
         '@type': 'WebApplication',
         name: 'NEXORA PRO',
         url: 'https://jamil8655.github.io/nexora-tools/',
-        description: '75+ free high-performance online utilities and developer master courses.',
+        description: '220+ free high-performance online utilities and developer master courses.',
         applicationCategory: 'ProductivityApplication',
         operatingSystem: 'All (Web, Android, iOS, Windows, macOS, Linux)',
         offers: {

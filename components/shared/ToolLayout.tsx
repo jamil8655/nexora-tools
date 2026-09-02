@@ -35,7 +35,7 @@ interface ToolLayoutProps {
 
 export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps) {
   const { t, language } = useI18n();
-  const { addHistory, addDownload } = useUserStore();
+  const { addHistory, addDownload, recordToolUsage } = useUserStore();
   const localized = getLocalizedTool(tool, language);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -81,6 +81,9 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
       });
 
       setResults(outputFiles);
+
+      // Record real tool usage for Recent Tools
+      recordToolUsage(tool.id, localized.name, tool.category, tool.icon);
 
       // Record in unified user-store
       outputFiles.forEach((out) => {

@@ -12,7 +12,7 @@ export default function FaqPage() {
 
   const faqs = [
     {
-      q: 'Are all 75+ tools really 100% free with no hidden charges?',
+      q: 'Are all 220+ tools really 100% free with no hidden charges?',
       a: 'Yes, absolutely. All core conversion, PDF manipulation, audio/video downloading, image compression, OCR, and developer utilities are 100% free and open for public use.',
       category: 'General',
     },

@@ -26,7 +26,7 @@ export default function TermsPage() {
           <section className="space-y-2">
             <h3 className="text-base font-bold text-slate-900 dark:text-white">1. Acceptance of Terms</h3>
             <p>
-              By accessing, browsing, or using NEXORA PRO (including all 75+ client-side digital utility tools, courses, workflows, and developer APIs), you agree to be bound by these Terms of Service. If you do not agree, please do not use the services.
+              By accessing, browsing, or using NEXORA PRO (including all 220+ client-side digital utility tools, courses, workflows, and developer APIs), you agree to be bound by these Terms of Service. If you do not agree, please do not use the services.
             </p>
           </section>
 
