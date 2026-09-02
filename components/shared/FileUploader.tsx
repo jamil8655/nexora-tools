@@ -1,9 +1,19 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { UploadCloud, File, X, AlertCircle, CheckCircle2, Image as ImageIcon, Sparkles } from 'lucide-react';
+import {
+  UploadCloud,
+  File,
+  X,
+  AlertCircle,
+  FileText,
+  FileSpreadsheet,
+  FolderArchive,
+  Image as ImageIcon,
+} from 'lucide-react';
 import { formatBytes } from '@/lib/utils/formatters';
 import { useI18n } from '@/lib/i18n/i18n-context';
+import { triggerHaptic } from '@/lib/motion/motion-system';
 
 interface FileUploaderProps {
   acceptedExtensions: string[];
@@ -48,8 +58,12 @@ export function FileUploader({
       }
 
       const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-      const hasValidExt = acceptedExtensions.length === 0 || acceptedExtensions.some((e) => e.toLowerCase() === ext);
-      const hasValidMime = acceptedMimeTypes.length === 0 || acceptedMimeTypes.some((m) => file.type.startsWith(m.replace('/*', '')));
+      const hasValidExt =
+        acceptedExtensions.length === 0 ||
+        acceptedExtensions.some((e) => e.toLowerCase() === ext);
+      const hasValidMime =
+        acceptedMimeTypes.length === 0 ||
+        acceptedMimeTypes.some((m) => file.type.startsWith(m.replace('/*', '')));
 
       if (acceptedExtensions.length > 0 && !hasValidExt && !hasValidMime) {
         setErrorMessage(`Unsupported file format "${ext}". Allowed: ${acceptedExtensions.join(', ')}`);
@@ -60,6 +74,7 @@ export function FileUploader({
     }
 
     if (validFiles.length > 0) {
+      triggerHaptic('light');
       if (maxFiles === 1) {
         onFilesSelected([validFiles[0]]);
       } else {
@@ -96,6 +111,49 @@ export function FileUploader({
     return () => window.removeEventListener('paste', handlePaste);
   }, [selectedFiles, maxFiles]);
 
+  // Helper to render genuine, recognizable file icons
+  const renderFileIcon = (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+
+    if (file.type.startsWith('image/')) {
+      return (
+        <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0 overflow-hidden">
+          <ImageIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+        </div>
+      );
+    }
+
+    if (ext === 'pdf' || file.type === 'application/pdf') {
+      return (
+        <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 flex items-center justify-center shrink-0">
+          <FileText className="w-4 h-4 text-red-600 dark:text-red-400" />
+        </div>
+      );
+    }
+
+    if (['xlsx', 'xls', 'csv'].includes(ext)) {
+      return (
+        <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center shrink-0">
+          <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+        </div>
+      );
+    }
+
+    if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
+      return (
+        <div className="w-9 h-9 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 flex items-center justify-center shrink-0">
+          <FolderArchive className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
+        <File className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+      </div>
+    );
+  };
+
   return (
     <div className="w-full space-y-4">
       {/* Upload Drop Area */}
@@ -104,7 +162,7 @@ export function FileUploader({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !disabled && fileInputRef.current?.click()}
-        className={`relative rounded-3xl p-8 sm:p-12 text-center transition-all duration-200 cursor-pointer select-none border-2 border-dashed ${
+        className={`relative rounded-3xl p-6 sm:p-10 text-center transition-all duration-200 cursor-pointer select-none border-2 border-dashed ${
           isDragging
             ? 'border-brand-500 bg-brand-500/10 scale-[1.01] shadow-xl shadow-brand-500/10'
             : 'border-slate-300 dark:border-slate-700/80 hover:border-brand-400 dark:hover:border-brand-500/60 bg-slate-50/80 dark:bg-slate-900/60'
@@ -125,26 +183,26 @@ export function FileUploader({
           }}
         />
 
-        <div className="flex flex-col items-center justify-center space-y-3.5">
-          <div className="w-14 h-14 rounded-2xl bg-brand-600/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 flex items-center justify-center shadow-sm">
-            <UploadCloud className="w-7 h-7" />
+        <div className="flex flex-col items-center justify-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-brand-600/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 flex items-center justify-center shadow-xs">
+            <UploadCloud className="w-6 h-6" />
           </div>
 
-          <div className="space-y-1 max-w-sm">
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
-              {isDragging ? 'Drop file to upload' : 'Drop your files here'}
+          <div className="space-y-0.5 max-w-sm">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+              {isDragging ? 'Drop file to select' : 'Select or drop files'}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              or browse from your device
+              Browse from your device
             </p>
           </div>
 
           <button
             type="button"
             disabled={disabled}
-            className="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-95 text-white font-bold text-xs shadow-md shadow-brand-600/25 transition-all inline-flex items-center gap-2"
+            className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-95 text-white font-bold text-xs shadow-md shadow-brand-600/20 transition-all inline-flex items-center gap-2 select-none"
           >
-            <UploadCloud className="w-4 h-4" />
+            <UploadCloud className="w-3.5 h-3.5" />
             <span>Choose Files</span>
           </button>
 
@@ -153,11 +211,11 @@ export function FileUploader({
               <span>Formats: {acceptedExtensions.join(', ').toUpperCase()}</span>
             )}
             <span>•</span>
-            <span>Max size: {maxFileSizeMB} MB</span>
+            <span>Max: {maxFileSizeMB} MB</span>
             {maxFiles > 1 && (
               <>
                 <span>•</span>
-                <span>Max files: {maxFiles}</span>
+                <span>Limit: {maxFiles} files</span>
               </>
             )}
           </div>
@@ -177,7 +235,7 @@ export function FileUploader({
         <div className="space-y-2 pt-2">
           <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
             <span>
-              Selected Files ({selectedFiles.length}{maxFiles > 1 ? ` / ${maxFiles}` : ''})
+              Selected ({selectedFiles.length}{maxFiles > 1 ? ` / ${maxFiles}` : ''})
             </span>
             {onRemoveFile && selectedFiles.length > 1 && (
               <button
@@ -194,18 +252,12 @@ export function FileUploader({
             {selectedFiles.map((file, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm"
+                className="flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs transition-all"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 text-slate-600 dark:text-slate-300">
-                    {file.type.startsWith('image/') ? (
-                      <ImageIcon className="w-4 h-4 text-brand-500" />
-                    ) : (
-                      <File className="w-4 h-4 text-slate-400" />
-                    )}
-                  </div>
+                <div className="flex items-center gap-3 min-w-0">
+                  {renderFileIcon(file)}
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate max-w-[180px] sm:max-w-[220px]">
                       {file.name}
                     </p>
                     <p className="text-[10px] text-slate-400 font-mono">
@@ -221,7 +273,7 @@ export function FileUploader({
                       e.stopPropagation();
                       onRemoveFile(idx);
                     }}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                     title="Remove file"
                   >
                     <X className="w-4 h-4" />

@@ -15,6 +15,7 @@ import {
   Search,
   CheckCircle2,
   Lock,
+  Unlock,
   ChevronRight,
   PenTool,
   Layers,
@@ -50,16 +51,35 @@ import {
   Sliders,
   Scissors,
   FileStack,
-   LucideIcon
+  FolderArchive,
+  FileSpreadsheet,
+  FileArchive,
+  Crop,
+  FileCheck,
+  Eye,
+  EyeOff,
+  FilePlus,
+  FileMinus,
+  Wrench,
+  Calculator,
+  Workflow,
+  Download,
+  Upload,
+  RefreshCw,
+  Folder,
+  SlidersHorizontal,
+  LucideIcon,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, LucideIcon> = {
+  // Document & PDF Operations
   Combine: Combine,
   Split: Split,
   Minimize2: Minimize2,
   Minimize: Minimize2,
   FileImage: FileImage,
   Image: ImageIcon,
+  ImageIcon: ImageIcon,
   RotateCw: RotateCw,
   Stamp: Stamp,
   Hash: Hash,
@@ -92,6 +112,29 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Scissors: Scissors,
   FileStack: FileStack,
   Brain: Brain,
+  HardDrive: HardDrive,
+  Cpu: Cpu,
+  Sliders: Sliders,
+  SlidersHorizontal: SlidersHorizontal,
+  Crop: Crop,
+  Lock: Lock,
+  Unlock: Unlock,
+  FolderArchive: FolderArchive,
+  FileSpreadsheet: FileSpreadsheet,
+  FileArchive: FileArchive,
+  FileCheck: FileCheck,
+  Eye: Eye,
+  EyeOff: EyeOff,
+  FilePlus: FilePlus,
+  FileMinus: FileMinus,
+  Wrench: Wrench,
+  Calculator: Calculator,
+  Workflow: Workflow,
+  Download: Download,
+  Upload: Upload,
+  RefreshCw: RefreshCw,
+  Folder: Folder,
+  PenTool: PenTool,
 };
 
 interface ToolIconProps {
@@ -100,6 +143,19 @@ interface ToolIconProps {
 }
 
 export function ToolIcon({ name, className = 'w-5 h-5' }: ToolIconProps) {
-  const IconComponent = ICON_MAP[name] || FileText;
-  return <IconComponent className={className} />;
+  // Check exact name match or case-insensitive match
+  let IconComponent = ICON_MAP[name];
+
+  if (!IconComponent && name) {
+    const matchedKey = Object.keys(ICON_MAP).find(
+      (k) => k.toLowerCase() === name.toLowerCase().replace(/[-_]/g, '')
+    );
+    if (matchedKey) {
+      IconComponent = ICON_MAP[matchedKey];
+    }
+  }
+
+  // Graceful standard fallback
+  const FinalIcon = IconComponent || FileText;
+  return <FinalIcon className={className} />;
 }
