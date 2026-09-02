@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Heart, Star } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import { useUserStore } from '@/lib/user/user-store';
 import { TOOLS_LIST } from '@/lib/tools-config';
 import { triggerHaptic } from '@/lib/motion/motion-system';
@@ -9,14 +9,12 @@ import { triggerHaptic } from '@/lib/motion/motion-system';
 interface FavoriteButtonProps {
   toolId: string;
   className?: string;
-  variant?: 'heart' | 'star';
   size?: 'sm' | 'md' | 'lg';
 }
 
 export function FavoriteButton({
   toolId,
   className = '',
-  variant = 'star',
   size = 'md',
 }: FavoriteButtonProps) {
   const { isFavorite, toggleFavorite: toggleStoreFav } = useUserStore();
@@ -37,22 +35,21 @@ export function FavoriteButton({
     });
   };
 
-  const Icon = variant === 'heart' ? Heart : Star;
   const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : size === 'lg' ? 'w-5 h-5' : 'w-4 h-4';
 
   return (
     <button
       type="button"
       onClick={handleToggle}
-      aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-      title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-      className={`p-1.5 rounded-xl transition-all duration-150 active:scale-75 select-none ${
+      aria-label={isFavorited ? 'Remove bookmark' : 'Bookmark tool'}
+      title={isFavorited ? 'Remove bookmark' : 'Bookmark tool'}
+      className={`p-2 rounded-xl transition-all duration-150 active:scale-75 select-none ${
         isFavorited
-          ? 'text-amber-500 hover:text-amber-600 bg-amber-500/10 shadow-xs'
-          : 'text-slate-400 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+          ? 'text-brand-600 dark:text-brand-400 bg-brand-500/15 dark:bg-brand-500/25 shadow-xs'
+          : 'text-slate-400 hover:text-brand-500 hover:bg-slate-100 dark:hover:bg-slate-800'
       } ${className}`}
     >
-      <Icon
+      <Bookmark
         className={`${iconSize} transition-transform duration-200 ${
           isFavorited ? 'fill-current scale-110' : 'scale-100'
         }`}
