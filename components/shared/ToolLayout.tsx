@@ -12,6 +12,7 @@ import { downloadSingleFile, downloadAsZip } from '@/lib/utils/download';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useUserStore } from '@/lib/user/user-store';
 import { getLocalizedTool, getLocalizedCategory } from '@/lib/i18n/catalog-translations';
+import { triggerHaptic } from '@/lib/motion/motion-system';
 import { AdSlot } from '@/components/ads/AdSlot';
 
 interface ToolLayoutProps {
@@ -69,6 +70,7 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
 
   const handleStartProcess = async () => {
     if (selectedFiles.length === 0 && tool.maxFiles > 0) return;
+    triggerHaptic('medium');
     setIsProcessing(true);
     setProgress(10);
     setProgressStatus('Initializing engine...');
@@ -332,8 +334,9 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
               <div className="pt-2">
                 <button
                   type="button"
+                  disabled={isProcessing}
                   onClick={handleStartProcess}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 active:scale-[0.99] text-white font-bold text-base shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2.5"
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-base shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 transition-all duration-150 flex items-center justify-center gap-2.5 select-none"
                 >
                   <Play className="w-5 h-5 fill-current" />
                   <span>Start {tool.name}</span>

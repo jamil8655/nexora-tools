@@ -7,6 +7,7 @@ import { formatBytes, calculatePercentageSaved } from '@/lib/utils/formatters';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { shareFileNative, saveFileToDeviceStorage, isNativeAndroid } from '@/lib/native/android-bridge';
+import { triggerHaptic } from '@/lib/motion/motion-system';
 
 interface ResultPreviewProps {
   files: {
@@ -35,6 +36,7 @@ export function ResultPreview({
   const [savedNative, setSavedNative] = useState<number | null>(null);
 
   useEffect(() => {
+    triggerHaptic('success');
     try {
       confetti({
         particleCount: 45,
@@ -47,6 +49,7 @@ export function ResultPreview({
   }, []);
 
   const handleCopyText = (text: string, index: number) => {
+    triggerHaptic('light');
     navigator.clipboard.writeText(text);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);

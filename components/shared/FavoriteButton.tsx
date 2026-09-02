@@ -4,6 +4,7 @@ import React from 'react';
 import { Heart, Star } from 'lucide-react';
 import { useUserStore } from '@/lib/user/user-store';
 import { TOOLS_LIST } from '@/lib/tools-config';
+import { triggerHaptic } from '@/lib/motion/motion-system';
 
 interface FavoriteButtonProps {
   toolId: string;
@@ -24,6 +25,7 @@ export function FavoriteButton({
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    triggerHaptic(isFavorited ? 'light' : 'selection');
     const tool = TOOLS_LIST.find((t) => t.id === toolId || t.slug === toolId);
     toggleStoreFav({
       id: toolId,
@@ -44,13 +46,17 @@ export function FavoriteButton({
       onClick={handleToggle}
       aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
       title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-      className={`p-1.5 rounded-xl transition-transform active:scale-90 ${
+      className={`p-1.5 rounded-xl transition-all duration-150 active:scale-75 select-none ${
         isFavorited
-          ? 'text-amber-500 hover:text-amber-600 bg-amber-500/10'
+          ? 'text-amber-500 hover:text-amber-600 bg-amber-500/10 shadow-xs'
           : 'text-slate-400 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800'
       } ${className}`}
     >
-      <Icon className={`${iconSize} ${isFavorited ? 'fill-current' : ''}`} />
+      <Icon
+        className={`${iconSize} transition-transform duration-200 ${
+          isFavorited ? 'fill-current scale-110' : 'scale-100'
+        }`}
+      />
     </button>
   );
 }
