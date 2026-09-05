@@ -26,6 +26,73 @@ interface FileUploaderProps {
   disabled?: boolean;
 }
 
+const UPLOADER_LOCALES = {
+  en: {
+    maxFilesError: (max: number) => `You can upload a maximum of ${max} files at once.`,
+    fileSizeError: (name: string, max: number) => `File "${name}" exceeds the limit of ${max} MB.`,
+    formatError: (ext: string, allowed: string) => `Unsupported file format "${ext}". Allowed: ${allowed}`,
+    dropActive: 'Drop file to select',
+    dropIdle: 'Select or drop files',
+    browsePrompt: 'Browse from your device',
+    chooseBtn: 'Choose Files',
+    formatsLabel: 'Formats:',
+    maxSizeLabel: 'Max:',
+    limitLabel: 'Limit:',
+    filesCount: 'files',
+    selectedHeader: (count: number, max: number) => `Selected (${count}${max > 1 ? ` / ${max}` : ''})`,
+    clearAll: 'Clear all',
+    removeFile: 'Remove file',
+  },
+  ur: {
+    maxFilesError: (max: number) => `آپ ایک وقت میں زیادہ سے زیادہ ${max} فائلیں اپلوڈ کر سکتے ہیں۔`,
+    fileSizeError: (name: string, max: number) => `فائل "${name}" کی حد ${max} ایم بی سے زیادہ ہے۔`,
+    formatError: (ext: string, allowed: string) => `غیر تعاون یافتہ فائل فارمیٹ "${ext}"۔ اجازت یافتہ: ${allowed}`,
+    dropActive: 'فائل چھوڑ کر منتخب کریں',
+    dropIdle: 'فائلیں منتخب کریں یا یہاں ڈراپ کریں',
+    browsePrompt: 'اپنے ڈیوائس سے فائل منتخب کریں',
+    chooseBtn: 'فائلیں منتخب کریں',
+    formatsLabel: 'فارمیٹس:',
+    maxSizeLabel: 'زیادہ سے زیادہ سائز:',
+    limitLabel: 'حد:',
+    filesCount: 'فائلیں',
+    selectedHeader: (count: number, max: number) => `منتخب کردہ (${count}${max > 1 ? ` / ${max}` : ''})`,
+    clearAll: 'تمام ختم کریں',
+    removeFile: 'فائل ہٹائیں',
+  },
+  ar: {
+    maxFilesError: (max: number) => `يمكنك تحميل ما يصل إلى ${max} ملفات في المرة الواحدة.`,
+    fileSizeError: (name: string, max: number) => `الملف "${name}" يتجاوز الحد الأقصى المسموح به (${max} ميجابايت).`,
+    formatError: (ext: string, allowed: string) => `صيغة الملف "${ext}" غير مدعومة. المسموح به: ${allowed}`,
+    dropActive: 'أفلت الملف للاختيار',
+    dropIdle: 'حدد الملفات أو اسحبها هنا',
+    browsePrompt: 'تصفح الملفات من جهازك',
+    chooseBtn: 'اختيار الملفات',
+    formatsLabel: 'الصيغ:',
+    maxSizeLabel: 'الحد الأقصى:',
+    limitLabel: 'العدد:',
+    filesCount: 'ملفات',
+    selectedHeader: (count: number, max: number) => `المحدد (${count}${max > 1 ? ` / ${max}` : ''})`,
+    clearAll: 'مسح الكل',
+    removeFile: 'إزالة الملف',
+  },
+  hi: {
+    maxFilesError: (max: number) => `आप एक बार में अधिकतम ${max} फ़ाइलें अपलोड कर सकते हैं।`,
+    fileSizeError: (name: string, max: number) => `फ़ाइल "${name}" की सीमा ${max} MB से अधिक है।`,
+    formatError: (ext: string, allowed: string) => `असमर्थित फ़ाइल प्रारूप "${ext}"। अनुमत: ${allowed}`,
+    dropActive: 'फ़ाइल चुनने के लिए छोड़ें',
+    dropIdle: 'फ़ाइलें चुनें या यहां छोड़ें',
+    browsePrompt: 'अपने डिवाइस से फ़ाइल चुनें',
+    chooseBtn: 'फ़ाइलें चुनें',
+    formatsLabel: 'फॉर्मेट्स:',
+    maxSizeLabel: 'अधिकतम:',
+    limitLabel: 'सीमा:',
+    filesCount: 'फ़ाइलें',
+    selectedHeader: (count: number, max: number) => `चयनित (${count}${max > 1 ? ` / ${max}` : ''})`,
+    clearAll: 'सभी हटाएं',
+    removeFile: 'फ़ाइल हटाएं',
+  },
+};
+
 export function FileUploader({
   acceptedExtensions,
   acceptedMimeTypes,
@@ -36,7 +103,8 @@ export function FileUploader({
   onRemoveFile,
   disabled = false,
 }: FileUploaderProps) {
-  const { t } = useI18n();
+  const { language, isRTL } = useI18n();
+  const loc = UPLOADER_LOCALES[language] || UPLOADER_LOCALES.en;
   const [isDragging, setIsDragging] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,13 +115,13 @@ export function FileUploader({
     const filesArray = Array.from(fileList);
 
     if (selectedFiles.length + filesArray.length > maxFiles && maxFiles > 1) {
-      setErrorMessage(`You can upload a maximum of ${maxFiles} files at once.`);
+      setErrorMessage(loc.maxFilesError(maxFiles));
       return;
     }
 
     for (const file of filesArray) {
       if (file.size > maxFileSizeMB * 1024 * 1024) {
-        setErrorMessage(`File "${file.name}" exceeds the limit of ${maxFileSizeMB} MB.`);
+        setErrorMessage(loc.fileSizeError(file.name, maxFileSizeMB));
         continue;
       }
 
@@ -66,7 +134,7 @@ export function FileUploader({
         acceptedMimeTypes.some((m) => file.type.startsWith(m.replace('/*', '')));
 
       if (acceptedExtensions.length > 0 && !hasValidExt && !hasValidMime) {
-        setErrorMessage(`Unsupported file format "${ext}". Allowed: ${acceptedExtensions.join(', ')}`);
+        setErrorMessage(loc.formatError(ext, acceptedExtensions.join(', ')));
         continue;
       }
 
@@ -155,7 +223,10 @@ export function FileUploader({
   };
 
   return (
-    <div className="w-full space-y-4">
+    <div
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className="w-full space-y-4"
+    >
       {/* Upload Drop Area */}
       <div
         onDragOver={handleDragOver}
@@ -190,10 +261,10 @@ export function FileUploader({
 
           <div className="space-y-0.5 max-w-sm">
             <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
-              {isDragging ? 'Drop file to select' : 'Select or drop files'}
+              {isDragging ? loc.dropActive : loc.dropIdle}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Browse from your device
+              {loc.browsePrompt}
             </p>
           </div>
 
@@ -203,19 +274,19 @@ export function FileUploader({
             className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-95 text-white font-bold text-xs shadow-md shadow-brand-600/20 transition-all inline-flex items-center gap-2 select-none"
           >
             <UploadCloud className="w-3.5 h-3.5" />
-            <span>Choose Files</span>
+            <span>{loc.chooseBtn}</span>
           </button>
 
           <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400 pt-1 font-medium">
             {acceptedExtensions.length > 0 && (
-              <span>Formats: {acceptedExtensions.join(', ').toUpperCase()}</span>
+              <span>{loc.formatsLabel} {acceptedExtensions.join(', ').toUpperCase()}</span>
             )}
             <span>•</span>
-            <span>Max: {maxFileSizeMB} MB</span>
+            <span>{loc.maxSizeLabel} {maxFileSizeMB} MB</span>
             {maxFiles > 1 && (
               <>
                 <span>•</span>
-                <span>Limit: {maxFiles} files</span>
+                <span>{loc.limitLabel} {maxFiles} {loc.filesCount}</span>
               </>
             )}
           </div>
@@ -235,7 +306,7 @@ export function FileUploader({
         <div className="space-y-2 pt-2">
           <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
             <span>
-              Selected ({selectedFiles.length}{maxFiles > 1 ? ` / ${maxFiles}` : ''})
+              {loc.selectedHeader(selectedFiles.length, maxFiles)}
             </span>
             {onRemoveFile && selectedFiles.length > 1 && (
               <button
@@ -243,7 +314,7 @@ export function FileUploader({
                 onClick={() => onFilesSelected([])}
                 className="text-rose-500 hover:text-rose-600 text-xs font-semibold"
               >
-                Clear all
+                {loc.clearAll}
               </button>
             )}
           </div>
@@ -274,7 +345,7 @@ export function FileUploader({
                       onRemoveFile(idx);
                     }}
                     className="p-1.5 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    title="Remove file"
+                    title={loc.removeFile}
                   >
                     <X className="w-4 h-4" />
                   </button>

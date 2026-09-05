@@ -18,21 +18,84 @@ import {
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/i18n-context';
 
+const FOOTER_LOCALES = {
+  en: {
+    engineTitle: '500 MB Client-Side Engine',
+    engineDesc: 'Transform massive documents & media smoothly in-browser.',
+    privacyTitle: '100% In-Browser Privacy',
+    privacyDesc: 'Files never touch external servers or get stored remotely.',
+    learningTitle: 'Free & Open Learning Paths',
+    learningDesc: 'Browse curriculums & lessons with zero forced locks.',
+    webDev: 'Web Development Mastery',
+    pythonAi: 'Python & AI Prompt Mastery',
+    docEngineering: 'Document Engineering Mastery',
+    cyberSec: 'Cyber Security & Encryption',
+    viewAllCourses: 'Explore All Courses →',
+    viewAllTools: 'Explore All 220+ Tools →',
+  },
+  ur: {
+    engineTitle: '500 ایم بی کلائنٹ سائیڈ انجن',
+    engineDesc: 'بڑی دستاویزات اور میڈیا کو براؤزر کے اندر آسانی سے پروسیس کریں۔',
+    privacyTitle: '100% مکمل رازداری کی ضمانت',
+    privacyDesc: 'آپ کی فائلیں کبھی بھی بیرونی سرور پر اپلوڈ نہیں ہوتیں۔',
+    learningTitle: 'مفت اور کھلا تعلیمی نصاب',
+    learningDesc: 'مکمل کورسز اور اسباق بغیر کسی رکاوٹ کے حاصل کریں۔',
+    webDev: 'جدید ویب ڈویلپمنٹ ماسٹری',
+    pythonAi: 'پائتھن اور اے آئی ایجنٹس',
+    docEngineering: 'دستاویز اور پی ڈی ایف انجینئرنگ',
+    cyberSec: 'سائبر سیکیورٹی اور انکرپشن',
+    viewAllCourses: 'تمام کورسز دیکھیں ←',
+    viewAllTools: 'تمام 220+ ٹولز دیکھیں ←',
+  },
+  ar: {
+    engineTitle: 'محرك محلي فائق بسعة 500 ميجابايت',
+    engineDesc: 'معالجة المستندات والوسائط الضخمة مباشرة وبسلاسة في المتصفح.',
+    privacyTitle: 'خصوصية وأمان محلي بنسبة 100%',
+    privacyDesc: 'ملفاتك لا تغادر جهازك ولا يتم تخزينها على أي خادم خارجي.',
+    learningTitle: 'مسارات تعليمية مجانية ومفتوحة',
+    learningDesc: 'استكشف المناهج والدروس التقنية الكاملة بحرية تامة.',
+    webDev: 'احتراف تطوير الويب المتكامل',
+    pythonAi: 'بايثون وهندسة الأوامر الذكية',
+    docEngineering: 'هندسة وأتمتة مستندات PDF',
+    cyberSec: 'الأمن السيبراني والتشفير',
+    viewAllCourses: 'استكشف جميع الكورسات ←',
+    viewAllTools: 'استكشف جميع الأدوات 220+ ←',
+  },
+  hi: {
+    engineTitle: '500 MB क्लाइंट-साइड इंजन',
+    engineDesc: 'ब्राउज़र में सीधे भारी दस्तावेज़ और मीडिया फ़ाइलें प्रोसेस करें।',
+    privacyTitle: '100% इन-ब्राउज़र गोपनीयता',
+    privacyDesc: 'आपकी फ़ाइलें कभी किसी बाहरी सर्वर पर अपलोड नहीं होती हैं।',
+    learningTitle: 'निःशुल्क व खुला शिक्षण पाठ्यक्रम',
+    learningDesc: 'बिना किसी रुकावट के सम्पूर्ण कोर्सेज और पाठ पढ़ें।',
+    webDev: 'वेब डेवलपमेंट मास्टरी',
+    pythonAi: 'पायथन व एआई प्रॉम्प्ट मास्टरी',
+    docEngineering: 'दस्तावेज़ व PDF इंजीनियरिंग',
+    cyberSec: 'साइबर सुरक्षा व एन्क्रिप्शन',
+    viewAllCourses: 'सभी कोर्सेज देखें →',
+    viewAllTools: 'सभी 220+ टूल्स देखें →',
+  },
+};
+
 export function Footer() {
-  const { t, language, setLanguage, isRtl } = useI18n();
+  const { t, language, setLanguage, isRTL } = useI18n();
+  const loc = FOOTER_LOCALES[language] || FOOTER_LOCALES.en;
 
   return (
-    <footer className="hidden lg:block w-full border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 mt-20 transition-colors">
+    <footer
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className="hidden lg:block w-full border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 mt-20 transition-colors"
+    >
       {/* Top Banner Guarantees */}
       <div className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left rtl:sm:text-right">
           <div className="flex items-center justify-center sm:justify-start gap-3">
             <div className="p-2.5 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 border border-brand-100 dark:border-brand-800 shrink-0">
               <Zap className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">500 MB Client-Side Engine</p>
-              <p className="text-[11px] text-slate-500">Transform massive documents & media smoothly.</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">{loc.engineTitle}</p>
+              <p className="text-[11px] text-slate-500">{loc.engineDesc}</p>
             </div>
           </div>
 
@@ -41,8 +104,8 @@ export function Footer() {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">100% In-Browser Privacy</p>
-              <p className="text-[11px] text-slate-500">Files never touch external servers or get stored.</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">{loc.privacyTitle}</p>
+              <p className="text-[11px] text-slate-500">{loc.privacyDesc}</p>
             </div>
           </div>
 
@@ -51,8 +114,8 @@ export function Footer() {
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">Free & Open Learning Paths</p>
-              <p className="text-[11px] text-slate-500">Browse curriculums & lessons with zero forced locks.</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">{loc.learningTitle}</p>
+              <p className="text-[11px] text-slate-500">{loc.learningDesc}</p>
             </div>
           </div>
         </div>
@@ -110,22 +173,22 @@ export function Footer() {
             <ul className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
               <li>
                 <Link href="/courses/modern-fullstack-web-mastery" className="hover:text-brand-600 transition-colors">
-                  Web Development
+                  {loc.webDev}
                 </Link>
               </li>
               <li>
                 <Link href="/courses/python-ai-prompt-engineering-mastery" className="hover:text-brand-600 transition-colors">
-                  Python & AI Agents
+                  {loc.pythonAi}
                 </Link>
               </li>
               <li>
                 <Link href="/courses/document-pdf-automation-mastery" className="hover:text-brand-600 transition-colors">
-                  Document Engineering
+                  {loc.docEngineering}
                 </Link>
               </li>
               <li>
                 <Link href="/courses/cybersecurity-privacy-engineering" className="hover:text-brand-600 transition-colors">
-                  Cyber Security
+                  {loc.cyberSec}
                 </Link>
               </li>
               <li>
@@ -135,7 +198,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/courses" className="text-brand-600 dark:text-brand-400 font-bold hover:underline">
-                  {t.common.viewAll} Courses →
+                  {loc.viewAllCourses}
                 </Link>
               </li>
             </ul>
@@ -170,7 +233,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/tools" className="text-brand-600 dark:text-brand-400 font-bold hover:underline">
-                  {t.common.viewAll} 220+ Tools →
+                  {loc.viewAllTools}
                 </Link>
               </li>
             </ul>

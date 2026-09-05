@@ -35,13 +35,89 @@ interface ResultPreviewProps {
   onReset: () => void;
 }
 
+const RESULT_LOCALES = {
+  en: {
+    readyTitle: 'Your File is Ready!',
+    reducedBadge: (pct: number, orig: string, proc: string) => `Reduced by ${pct}% (${orig} → ${proc})`,
+    optimalBadge: (orig: string, proc: string) => `Optimal Fidelity (${orig} → ${proc})`,
+    original: 'Original:',
+    final: 'Final:',
+    copied: 'Copied!',
+    copyText: 'Copy Text',
+    view: 'View',
+    saving: 'Saving...',
+    saved: 'Saved ✓',
+    download: 'Download',
+    shareFile: 'Share File',
+    processAnother: 'Process Another',
+    shareApp: 'Share App',
+    linkCopied: 'Link Copied!',
+    downloadAllZip: 'Download All as ZIP',
+  },
+  ur: {
+    readyTitle: 'آپ کی فائل تیار ہے!',
+    reducedBadge: (pct: number, orig: string, proc: string) => `${pct}% سائز کم ہو گیا (${orig} → ${proc})`,
+    optimalBadge: (orig: string, proc: string) => `بہترین کوالٹی (${orig} → ${proc})`,
+    original: 'اصل سائز:',
+    final: 'حتمی سائز:',
+    copied: 'کاپی ہو گیا!',
+    copyText: 'ٹیکسٹ کاپی کریں',
+    view: 'دیکھیں',
+    saving: 'محفوظ ہو رہا ہے...',
+    saved: 'محفوظ ہو گیا ✓',
+    download: 'ڈاؤن لوڈ کریں',
+    shareFile: 'فائل شیئر کریں',
+    processAnother: 'مزید فائل پروسیس کریں',
+    shareApp: 'ایپ شیئر کریں',
+    linkCopied: 'لنک کاپی ہو گیا!',
+    downloadAllZip: 'تمام بطور ZIP ڈاؤن لوڈ کریں',
+  },
+  ar: {
+    readyTitle: 'ملفك جاهز الآن!',
+    reducedBadge: (pct: number, orig: string, proc: string) => `تم تقليل الحجم بنسبة ${pct}% (${orig} ← ${proc})`,
+    optimalBadge: (orig: string, proc: string) => `دقة مثالية (${orig} ← ${proc})`,
+    original: 'الحجم الأصلي:',
+    final: 'الحجم النهائي:',
+    copied: 'تم النسخ!',
+    copyText: 'نسخ النص',
+    view: 'معاينة',
+    saving: 'جاري الحفظ...',
+    saved: 'تم الحفظ ✓',
+    download: 'تنزيل',
+    shareFile: 'مشاركة الملف',
+    processAnother: 'معالجة ملف آخر',
+    shareApp: 'مشاركة التطبيق',
+    linkCopied: 'تم نسخ الرابط!',
+    downloadAllZip: 'تنزيل الكل كملف ZIP',
+  },
+  hi: {
+    readyTitle: 'आपकी फ़ाइल तैयार है!',
+    reducedBadge: (pct: number, orig: string, proc: string) => `${pct}% साइज़ कम हुआ (${orig} → ${proc})`,
+    optimalBadge: (orig: string, proc: string) => `उत्कृष्ट क्वालिटी (${orig} → ${proc})`,
+    original: 'मूल साइज़:',
+    final: 'अंतिम साइज़:',
+    copied: 'कॉपी हो गया!',
+    copyText: 'टेक्स्ट कॉपी करें',
+    view: 'देखें',
+    saving: 'सहेजा जा रहा है...',
+    saved: 'सहेज लिया गया ✓',
+    download: 'डाउनलोड करें',
+    shareFile: 'फ़ाइल शेयर करें',
+    processAnother: 'अन्य फ़ाइल प्रोसेस करें',
+    shareApp: 'ऐप शेयर करें',
+    linkCopied: 'लिंक कॉपी हो गया!',
+    downloadAllZip: 'सभी ZIP के रूप में डाउनलोड करें',
+  },
+};
+
 export function ResultPreview({
   files,
   onDownloadSingle,
   onDownloadAllZip,
   onReset,
 }: ResultPreviewProps) {
-  const { t } = useI18n();
+  const { language, isRTL } = useI18n();
+  const loc = RESULT_LOCALES[language] || RESULT_LOCALES.en;
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [shared, setShared] = useState(false);
   const [downloadingIndex, setDownloadingIndex] = useState<number | null>(null);
@@ -122,26 +198,29 @@ export function ResultPreview({
   const totalSavedPercent = calculatePercentageSaved(totalOriginal, totalProcessed);
 
   return (
-    <div className="w-full space-y-5 sm:space-y-6 animate-in fade-in zoom-in-95 duration-200">
+    <div
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className="w-full space-y-5 sm:space-y-6 animate-in fade-in zoom-in-95 duration-200"
+    >
       {/* Success Banner */}
       <div className="p-5 sm:p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl text-center space-y-2.5">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mb-1">
           <CheckCircle2 className="w-6 h-6" />
         </div>
         <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
-          Your File is Ready!
+          {loc.readyTitle}
         </h3>
         {totalSavedPercent > 0 ? (
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold font-mono">
             <Sparkles className="w-3.5 h-3.5" />
             <span>
-              Reduced by {totalSavedPercent}% ({formatBytes(totalOriginal)} → {formatBytes(totalProcessed)})
+              {loc.reducedBadge(totalSavedPercent, formatBytes(totalOriginal), formatBytes(totalProcessed))}
             </span>
           </div>
         ) : totalOriginal > 0 && totalProcessed > 0 ? (
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-medium font-mono">
             <span>
-              Optimal Fidelity ({formatBytes(totalOriginal)} → {formatBytes(totalProcessed)})
+              {loc.optimalBadge(formatBytes(totalOriginal), formatBytes(totalProcessed))}
             </span>
           </div>
         ) : null}
@@ -166,12 +245,14 @@ export function ResultPreview({
                     {file.name}
                   </h4>
                   <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
-                    {file.originalSize > 0 && <span>Original: {formatBytes(file.originalSize)}</span>}
+                    {file.originalSize > 0 && (
+                      <span>{loc.original} {formatBytes(file.originalSize)}</span>
+                    )}
                     {processedBytes !== undefined && (
                       <>
                         <span>•</span>
                         <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                          Final: {formatBytes(processedBytes)}
+                          {loc.final} {formatBytes(processedBytes)}
                         </span>
                       </>
                     )}
@@ -188,12 +269,12 @@ export function ResultPreview({
                       {copiedIndex === idx ? (
                         <>
                           <Check className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>Copied!</span>
+                          <span>{loc.copied}</span>
                         </>
                       ) : (
                         <>
                           <Copy className="w-3.5 h-3.5" />
-                          <span>Copy Text</span>
+                          <span>{loc.copyText}</span>
                         </>
                       )}
                     </button>
@@ -205,10 +286,10 @@ export function ResultPreview({
                       type="button"
                       onClick={() => handlePreviewOpen(file)}
                       className="px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold inline-flex items-center gap-1.5 transition-all border border-slate-200 dark:border-slate-700 active:scale-95"
-                      title="Preview in app"
+                      title={loc.view}
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      <span>View</span>
+                      <span>{loc.view}</span>
                     </button>
                   )}
 
@@ -224,16 +305,16 @@ export function ResultPreview({
                     }`}
                   >
                     {isCurrentDownloading ? (
-                      <span className="inline-flex items-center gap-1">Saving...</span>
+                      <span className="inline-flex items-center gap-1">{loc.saving}</span>
                     ) : isDownloaded ? (
                       <>
                         <FileCheck2 className="w-3.5 h-3.5" />
-                        <span>Saved ✓</span>
+                        <span>{loc.saved}</span>
                       </>
                     ) : (
                       <>
                         <Download className="w-3.5 h-3.5" />
-                        <span>Download</span>
+                        <span>{loc.download}</span>
                       </>
                     )}
                   </button>
@@ -242,7 +323,7 @@ export function ResultPreview({
                     type="button"
                     onClick={() => handleShare(file)}
                     className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 active:scale-95"
-                    title="Share File"
+                    title={loc.shareFile}
                   >
                     <Share2 className="w-3.5 h-3.5" />
                   </button>
@@ -283,7 +364,7 @@ export function ResultPreview({
             className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors active:scale-95"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Process Another</span>
+            <span>{loc.processAnother}</span>
           </button>
 
           <button
@@ -294,12 +375,12 @@ export function ResultPreview({
             {shared ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Link Copied!</span>
+                <span>{loc.linkCopied}</span>
               </>
             ) : (
               <>
                 <Share2 className="w-3.5 h-3.5" />
-                <span>Share App</span>
+                <span>{loc.shareApp}</span>
               </>
             )}
           </button>
@@ -312,7 +393,7 @@ export function ResultPreview({
             className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-emerald-600/25 inline-flex items-center justify-center gap-1.5 transition-all"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Download All as ZIP</span>
+            <span>{loc.downloadAllZip}</span>
           </button>
         )}
       </div>

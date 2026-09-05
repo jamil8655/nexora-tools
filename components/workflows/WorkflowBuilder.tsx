@@ -33,8 +33,103 @@ import {
 } from '@/lib/storage/indexeddb-store';
 import { TOOLS_LIST } from '@/lib/tools-config';
 import { downloadSingleFile } from '@/lib/utils/download';
+import { useI18n } from '@/lib/i18n/i18n-context';
+
+const WORKFLOW_LOCALES = {
+  en: {
+    badge: 'Smart Multi-Tool Pipeline Engine • 1-Click Sequential Processing',
+    title: 'NEXORA Smart Workflow Pipelines',
+    subtitle: 'Combine multiple editing and conversion tools into automated pipelines. Run background removal, passport crop, compression, and watermarking in a single seamless flow.',
+    selectActiveWf: 'Select Active Workflow:',
+    available: 'Available',
+    templateBadge: 'TEMPLATE',
+    stepsCount: (count: number) => `${count} Steps`,
+    sequentialSteps: 'Sequential Pipeline Steps:',
+    toolIdLabel: (id: string) => `Tool ID: ${id}`,
+    processingStatus: 'Processing...',
+    executionHub: 'Pipeline Execution Hub',
+    uploadPrompt: 'Upload Input File for this Workflow',
+    uploadSub: 'Supports Photos, PDFs, and Documents depending on workflow',
+    changeFile: 'Change',
+    runningSteps: 'Running Sequential Steps...',
+    runFullWorkflow: (count: number) => `Run Full Workflow (${count} Steps)`,
+    completedTitle: 'Workflow Pipeline Completed Successfully!',
+    completedSub: (count: number) => `All ${count} tools executed in sequence. Saved automatically to your My Files library.`,
+    downloadFinal: 'Download Final Output File',
+    runAgain: 'Run Again',
+  },
+  ur: {
+    badge: 'اسمارٹ ملٹی ٹول پائپ لائن انجن • ایک کلک میں مسلسل پروسیسنگ',
+    title: 'نکسورا اسمارٹ ورک فلو پائپ لائنز',
+    subtitle: 'متعدد ایڈیٹنگ اور کنورژن ٹولز کو خودکار پائپ لائنوں میں یکجا کریں۔ بیک گراؤنڈ ہٹانا، پاسپورٹ کراپ، کمپریشن اور واٹر مارکنگ ایک ہی رواں عمل میں چلائیں۔',
+    selectActiveWf: 'فعال ورک فلو منتخب کریں:',
+    available: 'دستیاب',
+    templateBadge: 'ٹیمپلیٹ',
+    stepsCount: (count: number) => `${count} مراحل`,
+    sequentialSteps: 'ترتیبی پائپ لائن کے مراحل:',
+    toolIdLabel: (id: string) => `ٹول ID: ${id}`,
+    processingStatus: 'پروسیسنگ جاری ہے...',
+    executionHub: 'پائپ لائن پروسیسنگ ہب',
+    uploadPrompt: 'اس ورک فلو کے لیے ان پٹ فائل اپ لوڈ کریں',
+    uploadSub: 'ورک فلو کے مطابق تصاویر، پی ڈی ایف اور دستاویزات کی معاونت کرتا ہے',
+    changeFile: 'تبدیل کریں',
+    runningSteps: 'ترتیبی مراحل چلائے جا رہے ہیں...',
+    runFullWorkflow: (count: number) => `مکمل ورک فلو چلائیں (${count} مراحل)`,
+    completedTitle: 'ورک فلو پائپ لائن کامیابی سے مکمل ہو گئی!',
+    completedSub: (count: number) => `تمام ${count} ٹولز ترتیب سے مکمل ہو گئے۔ آپ کی 'مائی فائلز' میں خودکار محفوظ ہو گئے۔`,
+    downloadFinal: 'حتمی تیار شدہ فائل ڈاؤن لوڈ کریں',
+    runAgain: 'دوبارہ چلائیں',
+  },
+  ar: {
+    badge: 'محرك سير العمل الذكي متعدد الأدوات • معالجة متتالية بنقرة واحدة',
+    title: 'خطوط سير العمل الذكية من نكسورا',
+    subtitle: 'ادمج أدوات تحرير وتحويل متعددة في خطوط معالجة آلية. قم بإزالة الخلفية، واقتصاص صور الجواز، والضغط والعلامة المائية في تدفق واحد سلس.',
+    selectActiveWf: 'حدد سير العمل النشط:',
+    available: 'متاح',
+    templateBadge: 'قالب',
+    stepsCount: (count: number) => `${count} خطوات`,
+    sequentialSteps: 'خطوات سير العمل المتسلسلة:',
+    toolIdLabel: (id: string) => `معرف الأداة: ${id}`,
+    processingStatus: 'جاري المعالجة...',
+    executionHub: 'مركز تنفيذ سير العمل',
+    uploadPrompt: 'قم بتحميل ملف الإدخال لسير العمل هذا',
+    uploadSub: 'يدعم الصور وملفات PDF والمستندات حسب سير العمل المحدد',
+    changeFile: 'تغيير',
+    runningSteps: 'جاري تنفيذ الخطوات المتسلسلة...',
+    runFullWorkflow: (count: number) => `تشغيل سير العمل بالكامل (${count} خطوات)`,
+    completedTitle: 'اكتمل سير العمل بنجاح تام!',
+    completedSub: (count: number) => `تم تنفيذ جميع الأدوات الـ ${count} بنجاح. تم الحفظ تلقائيًا في مكتبة ملفاتي.`,
+    downloadFinal: 'تنزيل ملف الإخراج النهائي',
+    runAgain: 'إعادة التشغيل',
+  },
+  hi: {
+    badge: 'स्मार्ट मल्टी-टूल पाइपलाइन इंजन • 1-क्लिक क्रमिक प्रसंस्करण',
+    title: 'नेक्सोरा स्मार्ट वर्कफ़्लो पाइपलाइन',
+    subtitle: 'एकाधिक संपादन और रूपांतरण उपकरणों को स्वचालित पाइपलाइनों में संयोजित करें। बैकग्राउंड हटाना, पासपोर्ट क्रॉप, संपीड़न और वॉटरमार्किंग एक ही सहज प्रवाह में चलाएं।',
+    selectActiveWf: 'सक्रिय वर्कफ़्लो चुनें:',
+    available: 'उपलब्ध',
+    templateBadge: 'टेम्पलेट',
+    stepsCount: (count: number) => `${count} चरण`,
+    sequentialSteps: 'क्रमिक पाइपलाइन चरण:',
+    toolIdLabel: (id: string) => `टूल आईडी: ${id}`,
+    processingStatus: 'प्रसंस्करण जारी है...',
+    executionHub: 'पाइपलाइन निष्पादन केंद्र',
+    uploadPrompt: 'इस वर्कफ़्लो के लिए इनपुट फ़ाइल अपलोड करें',
+    uploadSub: 'वर्कफ़्लो के अनुसार फ़ोटो, पीडीएफ और दस्तावेज़ों का समर्थन करता है',
+    changeFile: 'बदलें',
+    runningSteps: 'क्रमिक चरण चल रहे हैं...',
+    runFullWorkflow: (count: number) => `पूर्ण वर्कफ़्लो चलाएं (${count} चरण)`,
+    completedTitle: 'वर्कफ़्लो पाइपलाइन सफलतापूर्वक पूरी हुई!',
+    completedSub: (count: number) => `सभी ${count} उपकरण क्रम में निष्पादित हुए। आपकी 'माई फाइल्स' में स्वतः सहेजा गया।`,
+    downloadFinal: 'अंतिम आउटपुट फ़ाइल डाउनलोड करें',
+    runAgain: 'पुनः चलाएं',
+  },
+};
 
 export function WorkflowBuilder() {
+  const { language, isRTL } = useI18n();
+  const loc = WORKFLOW_LOCALES[language] || WORKFLOW_LOCALES.en;
+
   const [workflows, setWorkflows] = useState<SavedWorkflow[]>([]);
   const [activeWorkflow, setActiveWorkflow] = useState<SavedWorkflow | null>(null);
   const [inputFile, setInputFile] = useState<File | null>(null);
@@ -234,18 +329,18 @@ export function WorkflowBuilder() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300 pb-16">
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300 pb-16">
       {/* Header */}
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-500/10 via-brand-500/10 to-indigo-500/10 text-brand-700 dark:text-brand-300 border border-brand-500/20 shadow-xs">
           <Workflow className="w-3.5 h-3.5 text-brand-600 animate-pulse" />
-          <span>Smart Multi-Tool Pipeline Engine • 1-Click Sequential Processing</span>
+          <span>{loc.badge}</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          NEXORA Smart Workflow Pipelines
+          {loc.title}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          Combine multiple editing and conversion tools into automated pipelines. Run background removal, passport crop, compression, and watermarking in a single seamless flow.
+          {loc.subtitle}
         </p>
       </div>
 
@@ -255,8 +350,8 @@ export function WorkflowBuilder() {
           {/* Workflow Template Selector */}
           <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
             <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center justify-between">
-              <span>Select Active Workflow:</span>
-              <span className="text-[11px] text-brand-600 font-bold">{workflows.length} Available</span>
+              <span>{loc.selectActiveWf}</span>
+              <span className="text-[11px] text-brand-600 font-bold">{workflows.length} {loc.available}</span>
             </h3>
 
             <div className="space-y-2">
@@ -277,14 +372,14 @@ export function WorkflowBuilder() {
                         <span>{wf.name}</span>
                         {wf.isTemplate && (
                           <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300">
-                            TEMPLATE
+                            {loc.templateBadge}
                           </span>
                         )}
                       </div>
                       <p className="text-[11px] text-slate-500 line-clamp-1">{wf.description}</p>
                     </div>
                     <span className="text-xs font-mono font-bold text-slate-400">
-                      {wf.steps.length} Steps
+                      {loc.stepsCount(wf.steps.length)}
                     </span>
                   </div>
                 );
@@ -297,7 +392,7 @@ export function WorkflowBuilder() {
             <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
               <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                 <Layers className="w-4 h-4 text-brand-600" />
-                <span>Sequential Pipeline Steps:</span>
+                <span>{loc.sequentialSteps}</span>
               </h3>
 
               <div className="space-y-3">
@@ -330,8 +425,8 @@ export function WorkflowBuilder() {
                           <div className="font-bold text-xs text-slate-900 dark:text-white">
                             {step.toolName}
                           </div>
-                          <div className="text-[10px] text-slate-400">
-                            Tool ID: {step.toolId}
+                          <div className="text-[10px] text-slate-400 font-mono">
+                            {loc.toolIdLabel(step.toolId)}
                           </div>
                         </div>
                       </div>
@@ -346,7 +441,7 @@ export function WorkflowBuilder() {
                               : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                           }`}
                         >
-                          {isCurrent ? 'Processing...' : step.status}
+                          {isCurrent ? loc.processingStatus : step.status}
                         </span>
                       </div>
                     </div>
@@ -361,7 +456,7 @@ export function WorkflowBuilder() {
         <div className="lg:col-span-7 space-y-6">
           <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
             <h3 className="font-extrabold text-base text-slate-900 dark:text-white flex items-center justify-between">
-              <span>Pipeline Execution Hub</span>
+              <span>{loc.executionHub}</span>
               <span className="text-xs text-slate-400 font-medium">{activeWorkflow?.name}</span>
             </h3>
 
@@ -382,10 +477,10 @@ export function WorkflowBuilder() {
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-200">
-                    Upload Input File for this Workflow
+                    {loc.uploadPrompt}
                   </h4>
                   <p className="text-xs text-slate-500">
-                    Supports Photos, PDFs, and Documents depending on workflow
+                    {loc.uploadSub}
                   </p>
                 </div>
               </div>
@@ -415,7 +510,7 @@ export function WorkflowBuilder() {
                     }}
                     className="text-xs font-bold text-rose-600 hover:underline"
                   >
-                    Change
+                    {loc.changeFile}
                   </button>
                 </div>
 
@@ -430,12 +525,12 @@ export function WorkflowBuilder() {
                     {isRunning ? (
                       <>
                         <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Running Sequential Steps...</span>
+                        <span>{loc.runningSteps}</span>
                       </>
                     ) : (
                       <>
                         <Play className="w-4 h-4 fill-current" />
-                        <span>Run Full Workflow ({activeWorkflow?.steps.length} Steps)</span>
+                        <span>{loc.runFullWorkflow(activeWorkflow?.steps.length || 0)}</span>
                       </>
                     )}
                   </button>
@@ -446,11 +541,11 @@ export function WorkflowBuilder() {
                   <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800 space-y-4 animate-in fade-in">
                     <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-extrabold text-sm">
                       <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                      <span>Workflow Pipeline Completed Successfully!</span>
+                      <span>{loc.completedTitle}</span>
                     </div>
 
                     <p className="text-xs text-slate-600 dark:text-slate-400">
-                      All {activeWorkflow?.steps.length} tools executed in sequence. Saved automatically to your My Files library.
+                      {loc.completedSub(activeWorkflow?.steps.length || 0)}
                     </p>
 
                     <div className="flex items-center gap-3 pt-2">
@@ -460,7 +555,7 @@ export function WorkflowBuilder() {
                         className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2"
                       >
                         <Download className="w-4 h-4" />
-                        <span>Download Final Output File</span>
+                        <span>{loc.downloadFinal}</span>
                       </button>
 
                       <button
@@ -468,7 +563,7 @@ export function WorkflowBuilder() {
                         onClick={runWorkflowPipeline}
                         className="px-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl"
                       >
-                        Run Again
+                        {loc.runAgain}
                       </button>
                     </div>
                   </div>

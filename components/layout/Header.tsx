@@ -32,9 +32,100 @@ import { UnifiedSearchModal } from '@/components/search/UnifiedSearchModal';
 import { UserMenuDropdown } from './UserMenuDropdown';
 import { AuthModal } from '@/components/auth/AuthModal';
 
+const HEADER_LOCALES = {
+  en: {
+    tagline: '220+ Client-Side Document & Productivity Tools',
+    installApp: 'Install App',
+    search: 'Search',
+    searchTooltip: 'Quick Search (⌘K)',
+    navigationSection: 'Navigation',
+    supportSection: 'Support & Legal',
+    allTools: 'All 220+ Tools',
+    workflows: 'Workflows Studio',
+    downloads: 'Downloads Storage',
+    history: 'Conversion History',
+    settings: 'App Settings',
+    account: 'My Account & Profile',
+    signInCreate: 'Sign In / Create Account',
+    faq: 'FAQ & User Guide',
+    contact: 'Contact Developer',
+    privacy: 'Privacy Policy',
+    terms: 'Terms & Conditions',
+    language: 'Language',
+    logout: 'Log Out',
+    versionLabel: 'v2.4.0 Native Edition',
+  },
+  ur: {
+    tagline: '220+ کلائنٹ سائیڈ دستاویز اور پیداواری ٹولز',
+    installApp: 'ایپ انسٹال کریں',
+    search: 'تلاش کریں',
+    searchTooltip: 'فوری تلاش (⌘K)',
+    navigationSection: 'نیویگیشن',
+    supportSection: 'معاونت اور قانونی',
+    allTools: 'تمام 220+ ٹولز',
+    workflows: 'ورک فلوز اسٹوڈیو',
+    downloads: 'ڈاؤن لوڈز اسٹوریج',
+    history: 'تبدیلی کی ہسٹری',
+    settings: 'ایپ سیٹنگز',
+    account: 'میرا اکاؤنٹ و پروفائل',
+    signInCreate: 'سائن ان / نیا اکاؤنٹ بنائیں',
+    faq: 'عمومی سوالات و رہنمائی',
+    contact: 'ڈویلپر سے رابطہ',
+    privacy: 'پرائیویسی پالیسی',
+    terms: 'شرائط و ضوابط',
+    language: 'زبان منتخب کریں',
+    logout: 'لاگ آؤٹ',
+    versionLabel: 'v2.4.0 نیٹو ایڈیشن',
+  },
+  ar: {
+    tagline: '220+ أداة محلية متطورة للمستندات والإنتاجية',
+    installApp: 'تثبيت التطبيق',
+    search: 'بحث',
+    searchTooltip: 'بحث سريع (⌘K)',
+    navigationSection: 'التنقل',
+    supportSection: 'الدعم والمعلومات القانونية',
+    allTools: 'جميع الأدوات 220+',
+    workflows: 'استوديو سير العمل',
+    downloads: 'مساحة التنزيلات',
+    history: 'سجل العمليات',
+    settings: 'إعدادات التطبيق',
+    account: 'حسابي والملف الشخصي',
+    signInCreate: 'تسجيل الدخول / إنشاء حساب',
+    faq: 'الأسئلة الشائعة والدليل',
+    contact: 'الاتصال بالمطور',
+    privacy: 'سياسة الخصوصية',
+    terms: 'الشروط والأحكام',
+    language: 'اللغة',
+    logout: 'تسجيل الخروج',
+    versionLabel: 'v2.4.0 الإصدار الأصلي',
+  },
+  hi: {
+    tagline: '220+ क्लाइंट-साइड दस्तावेज़ व उत्पादकता टूल्स',
+    installApp: 'ऐप इंस्टॉल करें',
+    search: 'खोजें',
+    searchTooltip: 'त्वरित खोज (⌘K)',
+    navigationSection: 'नेविगेशन',
+    supportSection: 'सहायता व कानूनी',
+    allTools: 'सभी 220+ टूल्स',
+    workflows: 'वर्कफ़्लो स्टूडियो',
+    downloads: 'डाउनलोड स्टोरेज',
+    history: 'कन्वर्शन इतिहास',
+    settings: 'ऐप सेटिंग्स',
+    account: 'मेरा खाता व प्रोफ़ाइल',
+    signInCreate: 'साइन इन / खाता बनाएं',
+    faq: 'अक्सर पूछे जाने वाले प्रश्न',
+    contact: 'डेवलपर से संपर्क करें',
+    privacy: 'गोपनीयता नीति',
+    terms: 'नियम व शर्तें',
+    language: 'भाषा चुनें',
+    logout: 'लॉग आउट',
+    versionLabel: 'v2.4.0 नेटिव संस्करण',
+  },
+};
+
 export function Header() {
   const pathname = usePathname();
-  const { t, language, setLanguage } = useI18n();
+  const { t, language, setLanguage, isRTL } = useI18n();
   const { isAuthenticated, user, logout } = useAuth();
   const { unreadCount } = useUserStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -43,6 +134,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [canInstall, setCanInstall] = useState(false);
+  const loc = HEADER_LOCALES[language] || HEADER_LOCALES.en;
 
   useEffect(() => {
     const handleBeforeInstall = (e: Event) => {
@@ -89,16 +181,17 @@ export function Header() {
   }, []);
 
   const navLinks = [
-    { label: t.nav.allTools || 'All Tools', href: '/tools', icon: Sparkles },
+    { label: t.nav.allTools || loc.allTools, href: '/tools', icon: Sparkles },
     { label: t.nav.courses || 'Courses', href: '/courses', icon: GraduationCap },
     { label: t.quiz?.title || 'Quizzes', href: '/quiz', icon: HelpCircle },
-    { label: t.nav.workflows || 'Workflows', href: '/workflows', icon: Workflow },
+    { label: t.nav.workflows || loc.workflows, href: '/workflows', icon: Workflow },
     { label: t.footer.aboutPlatform || 'About', href: '/about', icon: Info },
   ];
 
   return (
     <>
       <header
+        dir={isRTL ? 'rtl' : 'ltr'}
         className={`sticky top-0 z-40 w-full max-w-full transition-all duration-200 ${
           isScrolled
             ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-md'
@@ -126,13 +219,13 @@ export function Header() {
                   </span>
                 </div>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold hidden md:inline leading-none truncate">
-                  220+ Client-Side Document & Productivity Tools
+                  {loc.tagline}
                 </span>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 ml-2">
+            <nav className="hidden lg:flex items-center gap-1 ml-2 rtl:mr-2 rtl:ml-0">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname === link.href;
@@ -161,10 +254,10 @@ export function Header() {
               type="button"
               onClick={handleInstallClick}
               className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold transition-all shadow-xs shrink-0"
-              title="Install App"
+              title={loc.installApp}
             >
               <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>Install App</span>
+              <span>{loc.installApp}</span>
             </button>
 
             {/* Global Search Button */}
@@ -172,11 +265,11 @@ export function Header() {
               type="button"
               onClick={() => setIsSearchOpen(true)}
               className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 text-xs font-medium shrink-0 shadow-xs active:scale-95"
-              title="Quick Search"
-              aria-label="Search"
+              title={loc.searchTooltip}
+              aria-label={loc.search}
             >
               <Search className="w-4 h-4 text-brand-600 dark:text-brand-400" />
-              <span className="hidden md:inline font-bold">Search</span>
+              <span className="hidden md:inline font-bold">{loc.search}</span>
             </button>
 
             {/* Notification Bell */}
@@ -225,6 +318,7 @@ export function Header() {
       {isMenuDrawerOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end">
           <div
+            dir={isRTL ? 'rtl' : 'ltr'}
             className="w-full max-w-xs sm:max-w-sm bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col justify-between p-5 overflow-y-auto animate-in slide-in-from-right duration-200"
           >
             <div className="space-y-6">
@@ -236,7 +330,7 @@ export function Header() {
                   </div>
                   <div>
                     <h3 className="text-sm font-black text-slate-900 dark:text-white">NIZURA PRO</h3>
-                    <p className="text-[10px] text-slate-400 font-semibold">v2.4.0 Native Edition</p>
+                    <p className="text-[10px] text-slate-400 font-semibold">{loc.versionLabel}</p>
                   </div>
                 </div>
 
@@ -262,11 +356,11 @@ export function Header() {
                       {user?.name?.charAt(0) || 'U'}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user?.name || 'Account'}</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user?.name || loc.account}</p>
                       <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                  <ChevronRight className={`w-4 h-4 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} />
                 </Link>
               ) : (
                 <button
@@ -278,20 +372,20 @@ export function Header() {
                   className="w-full p-3.5 rounded-2xl bg-brand-600 text-white text-xs font-bold shadow-md shadow-brand-500/20 flex items-center justify-center gap-2 active:scale-95"
                 >
                   <LogIn className="w-4 h-4" />
-                  <span>Sign In / Create Account</span>
+                  <span>{loc.signInCreate}</span>
                 </button>
               )}
 
               {/* Navigation Links Group */}
               <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-2">Navigation</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-2">{loc.navigationSection}</p>
                 {[
-                  { label: 'All 220+ Tools', href: '/tools', icon: Sparkles },
-                  { label: 'Workflows Studio', href: '/workflows', icon: Workflow },
-                  { label: 'Downloads Storage', href: '/downloads', icon: Download },
-                  { label: 'Conversion History', href: '/history', icon: History },
-                  { label: 'App Settings', href: '/settings', icon: SettingsIcon },
-                  { label: 'My Account & Profile', href: '/account', icon: User },
+                  { label: loc.allTools, href: '/tools', icon: Sparkles },
+                  { label: loc.workflows, href: '/workflows', icon: Workflow },
+                  { label: loc.downloads, href: '/downloads', icon: Download },
+                  { label: loc.history, href: '/history', icon: History },
+                  { label: loc.settings, href: '/settings', icon: SettingsIcon },
+                  { label: loc.account, href: '/account', icon: User },
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
@@ -305,7 +399,7 @@ export function Header() {
                         <Icon className="w-4 h-4 text-brand-600 dark:text-brand-400" />
                         <span>{item.label}</span>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                      <ChevronRight className={`w-3.5 h-3.5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} />
                     </Link>
                   );
                 })}
@@ -313,12 +407,12 @@ export function Header() {
 
               {/* Help & Support Group */}
               <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-2">Support & Legal</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-2">{loc.supportSection}</p>
                 {[
-                  { label: 'FAQ & User Guide', href: '/faq', icon: HelpCircle },
-                  { label: 'Contact Developer', href: '/contact', icon: Info },
-                  { label: 'Privacy Policy', href: '/privacy', icon: ShieldCheck },
-                  { label: 'Terms & Conditions', href: '/terms', icon: FileText },
+                  { label: loc.faq, href: '/faq', icon: HelpCircle },
+                  { label: loc.contact, href: '/contact', icon: Info },
+                  { label: loc.privacy, href: '/privacy', icon: ShieldCheck },
+                  { label: loc.terms, href: '/terms', icon: FileText },
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
@@ -332,7 +426,7 @@ export function Header() {
                         <Icon className="w-4 h-4 text-slate-400" />
                         <span>{item.label}</span>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                      <ChevronRight className={`w-3.5 h-3.5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} />
                     </Link>
                   );
                 })}
@@ -343,7 +437,7 @@ export function Header() {
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400 font-bold flex items-center gap-1.5">
-                  <Globe2 className="w-3.5 h-3.5" /> Language
+                  <Globe2 className="w-3.5 h-3.5" /> {loc.language}
                 </span>
                 <div className="flex items-center gap-1">
                   {[
@@ -376,7 +470,7 @@ export function Header() {
                   }}
                   className="w-full py-2 text-rose-500 text-xs font-bold text-center hover:underline"
                 >
-                  Log Out
+                  {loc.logout}
                 </button>
               )}
             </div>

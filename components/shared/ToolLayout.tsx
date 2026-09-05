@@ -36,10 +36,38 @@ interface ToolLayoutProps {
   customWorkspace?: React.ReactNode;
 }
 
+const TOOL_LAYOUT_LOCALES = {
+  en: {
+    startAction: (name: string) => `Start ${name}`,
+    initStatus: 'Initializing engine...',
+    genericError: 'Your file could not be processed. Please try another file.',
+    faqTitle: 'Frequently Asked Questions',
+  },
+  ur: {
+    startAction: (name: string) => `${name} شروع کریں`,
+    initStatus: 'انجن تیار کیا جا رہا ہے...',
+    genericError: 'آپ کی فائل پروسیس نہیں ہو سکی۔ براہ کرم دوسری فائل آزمائیں۔',
+    faqTitle: 'عمومی سوالات اور جوابات',
+  },
+  ar: {
+    startAction: (name: string) => `بدء ${name}`,
+    initStatus: 'جاري تهيئة المحرك...',
+    genericError: 'تعذرت معالجة الملف. يرجى تجربة ملف آخر.',
+    faqTitle: 'الأسئلة الأكثر شيوعاً',
+  },
+  hi: {
+    startAction: (name: string) => `${name} शुरू करें`,
+    initStatus: 'इंजन तैयार हो रहा है...',
+    genericError: 'आपकी फ़ाइल प्रोसेस नहीं हो सकी। कृपया कोई अन्य फ़ाइल आज़माएं।',
+    faqTitle: 'अक्सर पूछे जाने वाले प्रश्न',
+  },
+};
+
 export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps) {
-  const { t, language } = useI18n();
+  const { t, language, isRTL } = useI18n();
   const { addHistory, addDownload, recordToolUsage } = useUserStore();
   const localized = getLocalizedTool(tool, language);
+  const loc = TOOL_LAYOUT_LOCALES[language] || TOOL_LAYOUT_LOCALES.en;
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [options, setOptions] = useState<Record<string, any>>(() => {
@@ -94,7 +122,7 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
     triggerHaptic('medium');
     setIsProcessing(true);
     setProgress(10);
-    setProgressStatus('Initializing engine...');
+    setProgressStatus(loc.initStatus);
     setErrorMessage(null);
 
     try {
@@ -119,7 +147,7 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
       });
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err.message || 'Your file could not be processed. Please try another file.');
+      setErrorMessage(err.message || loc.genericError);
     } finally {
       setIsProcessing(false);
     }
@@ -190,7 +218,10 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-300">
+    <div
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-300"
+    >
       {/* Breadcrumbs */}
       <Breadcrumbs
         items={[
@@ -276,7 +307,7 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
                   className="w-full py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed text-white font-black text-sm sm:text-base shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 transition-all duration-150 flex items-center justify-center gap-2.5 select-none"
                 >
                   <Play className="w-5 h-5 fill-current" />
-                  <span>Start {tool.name}</span>
+                  <span>{loc.startAction(localized.name)}</span>
                 </button>
               </div>
             )}
@@ -298,7 +329,7 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
         <div className="p-6 sm:p-8 rounded-3xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-4">
           <div className="flex items-center gap-2 text-base font-bold text-slate-800 dark:text-slate-100">
             <HelpCircle className="w-5 h-5 text-brand-500" />
-            <span>Frequently Asked Questions</span>
+            <span>{loc.faqTitle}</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

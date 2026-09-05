@@ -7,8 +7,71 @@ import { ProgressBar } from '@/components/shared/ProgressBar';
 import { ScanText, Copy, Check, Download, Languages, Sparkles } from 'lucide-react';
 import { downloadSingleFile } from '@/lib/utils/download';
 import { addHistoryItem } from '@/lib/storage/file-store';
+import { useI18n } from '@/lib/i18n/i18n-context';
+
+const OCR_LOCALES = {
+  en: {
+    initWorker: 'Initializing OCR Web Worker engine...',
+    ocrFailed: 'OCR Recognition failed. Please try a clearer image.',
+    docLangTitle: 'Document Text Language',
+    docLangSubtitle: 'Select the primary language of the text in your image',
+    extractButton: 'Extract Text with OCR',
+    extractingTitle: 'Extracting Text with OCR...',
+    ocrCompleted: 'OCR Recognition Completed',
+    confidenceScore: (conf: number, chars: number) => `Confidence score: ${conf}% • ${chars} characters extracted`,
+    copied: 'Copied!',
+    copyText: 'Copy Text',
+    exportTxt: 'Export .TXT',
+    scanAnother: 'Scan Another Document',
+  },
+  ur: {
+    initWorker: 'OCR انجن شروع کیا جا رہا ہے...',
+    ocrFailed: 'OCR کی شناخت ناکام ہو گئی۔ براہ کرم واضح تصویر آزمائیں۔',
+    docLangTitle: 'دستاویزی متن کی زبان',
+    docLangSubtitle: 'اپنی تصویر میں موجود متن کی بنیادی زبان منتخب کریں',
+    extractButton: 'OCR سے متن نکالیں',
+    extractingTitle: 'OCR سے متن نکالا جا رہا ہے...',
+    ocrCompleted: 'OCR کی شناخت مکمل ہو گئی',
+    confidenceScore: (conf: number, chars: number) => `درستگی: ${conf}% • ${chars} حروف نکالے گئے`,
+    copied: 'کاپی ہو گیا!',
+    copyText: 'متن کاپی کریں',
+    exportTxt: 'TXT برآمد کریں',
+    scanAnother: 'دوسری دستاویز اسکین کریں',
+  },
+  ar: {
+    initWorker: 'جاري تشغيل محرك OCR...',
+    ocrFailed: 'فشل التعرف على النص. يرجى تجربة صورة أوضح.',
+    docLangTitle: 'لغة نص المستند',
+    docLangSubtitle: 'حدد اللغة الأساسية للنص الموجود في صورتك',
+    extractButton: 'استخراج النص بواسطة OCR',
+    extractingTitle: 'جاري استخراج النص بواسطة OCR...',
+    ocrCompleted: 'اكتمل التعرف على النص بنجاح',
+    confidenceScore: (conf: number, chars: number) => `نسبة الدقة: ${conf}% • تم استخراج ${chars} حرفًا`,
+    copied: 'تم النسخ!',
+    copyText: 'نسخ النص',
+    exportTxt: 'تصدير TXT',
+    scanAnother: 'مسح مستند آخر',
+  },
+  hi: {
+    initWorker: 'OCR इंजन शुरू हो रहा है...',
+    ocrFailed: 'OCR पहचान विफल रही। कृपया अधिक स्पष्ट छवि आज़माएं।',
+    docLangTitle: 'दस्तावेज़ पाठ की भाषा',
+    docLangSubtitle: 'अपनी छवि में मौजूद पाठ की प्राथमिक भाषा चुनें',
+    extractButton: 'OCR से पाठ निकालें',
+    extractingTitle: 'OCR से पाठ निकाला जा रहा है...',
+    ocrCompleted: 'OCR पहचान पूरी हुई',
+    confidenceScore: (conf: number, chars: number) => `सटीकता स्कोर: ${conf}% • ${chars} अक्षर निकाले गए`,
+    copied: 'कॉपी हो गया!',
+    copyText: 'टेक्स्ट कॉपी करें',
+    exportTxt: 'TXT निर्यात करें',
+    scanAnother: 'दूसरा दस्तावेज़ स्कैन करें',
+  },
+};
 
 export function OcrStudio() {
+  const { language: appLang, isRTL } = useI18n();
+  const loc = OCR_LOCALES[appLang] || OCR_LOCALES.en;
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [language, setLanguage] = useState<string>('eng');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -22,7 +85,7 @@ export function OcrStudio() {
     if (selectedFiles.length === 0) return;
     setIsProcessing(true);
     setProgress(10);
-    setStatusText('Initializing OCR Web Worker engine...');
+    setStatusText(loc.initWorker);
     setErrorMsg(null);
     setOcrResult(null);
 
@@ -44,7 +107,7 @@ export function OcrStudio() {
       });
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || 'OCR Recognition failed. Please try a clearer image.');
+      setErrorMsg(err.message || loc.ocrFailed);
     } finally {
       setIsProcessing(false);
     }
@@ -64,7 +127,7 @@ export function OcrStudio() {
   };
 
   return (
-    <div className="space-y-6">
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="space-y-6">
       {/* Upload & Config Area */}
       {!ocrResult && !isProcessing && (
         <div className="space-y-6">
@@ -84,10 +147,10 @@ export function OcrStudio() {
                 <Languages className="w-5 h-5 text-brand-500" />
                 <div>
                   <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    Document Text Language
+                    {loc.docLangTitle}
                   </label>
                   <p className="text-[11px] text-slate-500">
-                    Select the primary language of the text in your image
+                    {loc.docLangSubtitle}
                   </p>
                 </div>
               </div>
@@ -115,7 +178,7 @@ export function OcrStudio() {
               className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 text-white font-bold text-base shadow-xl shadow-brand-500/25 flex items-center justify-center gap-2"
             >
               <ScanText className="w-5 h-5" />
-              <span>Extract Text with OCR</span>
+              <span>{loc.extractButton}</span>
             </button>
           )}
         </div>
@@ -127,7 +190,7 @@ export function OcrStudio() {
           <div className="w-16 h-16 mx-auto rounded-full bg-brand-50 dark:bg-brand-950/40 border-2 border-brand-500 border-t-transparent animate-spin flex items-center justify-center" />
           <div className="space-y-2 max-w-md mx-auto">
             <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
-              Extracting Text with OCR...
+              {loc.extractingTitle}
             </h3>
             <ProgressBar progress={progress} statusText={statusText} />
           </div>
@@ -144,10 +207,10 @@ export function OcrStudio() {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">
-                  OCR Recognition Completed
+                  {loc.ocrCompleted}
                 </h4>
                 <p className="text-xs text-slate-500">
-                  Confidence score: {ocrResult.confidence}% • {ocrResult.text.length} characters extracted
+                  {loc.confidenceScore(ocrResult.confidence, ocrResult.text.length)}
                 </p>
               </div>
             </div>
@@ -159,7 +222,7 @@ export function OcrStudio() {
                 className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shadow-sm"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                <span>{copied ? 'Copied!' : 'Copy Text'}</span>
+                <span>{copied ? loc.copied : loc.copyText}</span>
               </button>
 
               <button
@@ -168,7 +231,7 @@ export function OcrStudio() {
                 className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-brand-500/20"
               >
                 <Download className="w-4 h-4" />
-                <span>Export .TXT</span>
+                <span>{loc.exportTxt}</span>
               </button>
             </div>
           </div>
@@ -191,7 +254,7 @@ export function OcrStudio() {
               }}
               className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200"
             >
-              Scan Another Document
+              {loc.scanAnother}
             </button>
           </div>
         </div>

@@ -20,6 +20,54 @@ import { SavedFileInfo, openDownloadedFile } from '@/lib/utils/download';
 import { formatBytes } from '@/lib/utils/formatters';
 import { shareFileNative, isNativeAndroid } from '@/lib/native/android-bridge';
 import { triggerHaptic } from '@/lib/motion/motion-system';
+import { useI18n } from '@/lib/i18n/i18n-context';
+
+const DOWNLOAD_MODAL_LOCALES = {
+  en: {
+    downloadComplete: 'DOWNLOAD COMPLETE',
+    savedTo: 'Saved to:',
+    openViewFile: 'Open & View File',
+    openingFile: 'Opening File...',
+    shareFile: 'Share File',
+    nameCopied: 'Name Copied!',
+    done: 'Done',
+    fileType: 'FILE',
+    processedFile: 'Processed file:',
+  },
+  ur: {
+    downloadComplete: 'ڈاؤن لوڈ مکمل ہو گیا',
+    savedTo: 'محفوظ کردہ مقام:',
+    openViewFile: 'فائل کھولیں اور دیکھیں',
+    openingFile: 'فائل کھولی جا رہی ہے...',
+    shareFile: 'فائل شیئر کریں',
+    nameCopied: 'نام کاپی ہو گیا!',
+    done: 'مکمل',
+    fileType: 'فائل',
+    processedFile: 'تیار شدہ فائل:',
+  },
+  ar: {
+    downloadComplete: 'اكتمل التنزيل بنجاح',
+    savedTo: 'تم الحفظ في:',
+    openViewFile: 'فتح وعرض الملف',
+    openingFile: 'جاري فتح الملف...',
+    shareFile: 'مشاركة الملف',
+    nameCopied: 'تم نسخ الاسم!',
+    done: 'تم',
+    fileType: 'ملف',
+    processedFile: 'الملف المعالج:',
+  },
+  hi: {
+    downloadComplete: 'डाउनलोड पूरा हुआ',
+    savedTo: 'सहेजा गया स्थान:',
+    openViewFile: 'फ़ाइल खोलें और देखें',
+    openingFile: 'फ़ाइल खोली जा रही है...',
+    shareFile: 'फ़ाइल साझा करें',
+    nameCopied: 'नाम कॉपी हो गया!',
+    done: 'संपन्न',
+    fileType: 'फ़ाइल',
+    processedFile: 'संसाधित फ़ाइल:',
+  },
+};
 
 interface DownloadSuccessModalProps {
   fileInfo: SavedFileInfo | null;
@@ -27,6 +75,8 @@ interface DownloadSuccessModalProps {
 }
 
 export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModalProps) {
+  const { language, isRTL } = useI18n();
+  const loc = DOWNLOAD_MODAL_LOCALES[language] || DOWNLOAD_MODAL_LOCALES.en;
   const [copied, setCopied] = useState(false);
   const [opening, setOpening] = useState(false);
 
@@ -73,7 +123,7 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
     if (isNativeAndroid() && fileInfo.name) {
       await shareFileNative(
         fileInfo.name,
-        `Processed file: ${fileInfo.name}`,
+        `${loc.processedFile} ${fileInfo.name}`,
         typeof window !== 'undefined' ? window.location.href : undefined
       );
     } else if (navigator.share) {
@@ -90,7 +140,7 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
         }
         await navigator.share({
           title: fileInfo.name,
-          text: `Processed file with NEXORA Tools Pro: ${fileInfo.name}`,
+          text: `${loc.processedFile} ${fileInfo.name}`,
           url: window.location.href,
         });
       } catch (e) {
@@ -104,7 +154,10 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+    >
       <div
         className="w-full sm:max-w-md bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 space-y-5 animate-in slide-in-from-bottom duration-300"
         onClick={(e) => e.stopPropagation()}
@@ -113,7 +166,7 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
         <div className="flex items-center justify-between">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-xs font-bold font-mono">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            <span>DOWNLOAD COMPLETE</span>
+            <span>{loc.downloadComplete}</span>
           </div>
           <button
             type="button"
@@ -138,7 +191,7 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
                 {formatBytes(fileInfo.size)}
               </span>
               <span>•</span>
-              <span className="truncate">{fileInfo.mimeType.split('/')[1]?.toUpperCase() || 'FILE'}</span>
+              <span className="truncate">{fileInfo.mimeType.split('/')[1]?.toUpperCase() || loc.fileType}</span>
             </div>
           </div>
         </div>
@@ -147,7 +200,7 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
         <div className="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/40 flex items-center gap-2.5 text-xs text-blue-900 dark:text-blue-200 font-medium">
           <FolderCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
           <span className="truncate">
-            Saved to: <strong className="font-bold font-mono">{fileInfo.savedPath}</strong>
+            {loc.savedTo} <strong className="font-bold font-mono">{fileInfo.savedPath}</strong>
           </span>
         </div>
 
@@ -160,7 +213,7 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 active:scale-[0.98] text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all"
           >
             <Eye className="w-4 h-4" />
-            <span>{opening ? 'Opening File...' : 'Open & View File'}</span>
+            <span>{opening ? loc.openingFile : loc.openViewFile}</span>
           </button>
 
           <div className="grid grid-cols-2 gap-2">
@@ -170,7 +223,7 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
               className="py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors active:scale-95"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span>{copied ? 'Name Copied!' : 'Share File'}</span>
+              <span>{copied ? loc.nameCopied : loc.shareFile}</span>
             </button>
 
             <button
@@ -178,7 +231,7 @@ export function DownloadSuccessModal({ fileInfo, onClose }: DownloadSuccessModal
               onClick={onClose}
               className="py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center transition-colors active:scale-95"
             >
-              Done
+              {loc.done}
             </button>
           </div>
         </div>

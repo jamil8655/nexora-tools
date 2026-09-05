@@ -25,6 +25,86 @@ import {
 } from 'lucide-react';
 import { downloadSingleFile } from '@/lib/utils/download';
 import { PDFDocument, rgb } from 'pdf-lib';
+import { useI18n } from '@/lib/i18n/i18n-context';
+
+const PDF_EDITOR_LOCALES = {
+  en: {
+    badge: 'PDF Editor Pro • Vector Annotations & Undo/Redo',
+    defaultTitle: 'Visual PDF Document Editor',
+    changePdf: 'Change PDF',
+    openPdf: 'Open PDF',
+    savingPdf: 'Saving PDF...',
+    exportPdf: 'Export Edited PDF',
+    tools: {
+      text: 'Text',
+      draw: 'Pen',
+      highlight: 'Highlight',
+      rectangle: 'Box',
+      signature: 'Sign',
+    },
+    textPlaceholder: 'Enter text...',
+    defaultText: 'Your Text Here',
+    defaultSig: 'Verified Signature',
+    pageOf: (curr: number, total: number) => `Page ${curr} of ${total}`,
+  },
+  ur: {
+    badge: 'پی ڈی ایف ایڈیٹر پرو • ویکٹر نوٹیشنز اور ان ڈو/ری ڈو',
+    defaultTitle: 'بصری پی ڈی ایف ایڈیٹر',
+    changePdf: 'پی ڈی ایف تبدیل کریں',
+    openPdf: 'پی ڈی ایف کھولیں',
+    savingPdf: 'پی ڈی ایف محفوظ کی جا رہی ہے...',
+    exportPdf: 'ترمیم شدہ پی ڈی ایف برآمد کریں',
+    tools: {
+      text: 'متن',
+      draw: 'قلم',
+      highlight: 'نمایاں کریں',
+      rectangle: 'باکس',
+      signature: 'دستخط',
+    },
+    textPlaceholder: 'متن درج کریں...',
+    defaultText: 'یہاں اپنا متن لکھیں',
+    defaultSig: 'تصدیق شدہ دستخط',
+    pageOf: (curr: number, total: number) => `صفحہ ${curr} از ${total}`,
+  },
+  ar: {
+    badge: 'محرر PDF الاحترافي • التعليقات التوضيحية والتراجع/الإعادة',
+    defaultTitle: 'محرر مستندات PDF المرئي',
+    changePdf: 'تغيير PDF',
+    openPdf: 'فتح PDF',
+    savingPdf: 'جاري حفظ PDF...',
+    exportPdf: 'تصدير PDF المعدل',
+    tools: {
+      text: 'نص',
+      draw: 'قلم',
+      highlight: 'تمييز',
+      rectangle: 'مربع',
+      signature: 'توقيع',
+    },
+    textPlaceholder: 'أدخل النص...',
+    defaultText: 'اكتب نصك هنا',
+    defaultSig: 'توقيع معتمد',
+    pageOf: (curr: number, total: number) => `صفحة ${curr} من ${total}`,
+  },
+  hi: {
+    badge: 'पीडीएफ संपादक प्रो • वेक्टर एनोटेशन और पूर्ववत/फिर से करें',
+    defaultTitle: 'विज़ुअल पीडीएफ दस्तावेज़ संपादक',
+    changePdf: 'पीडीएफ बदलें',
+    openPdf: 'पीडीएफ खोलें',
+    savingPdf: 'पीडीएफ सहेजा जा रहा है...',
+    exportPdf: 'संपादित पीडीएफ निर्यात करें',
+    tools: {
+      text: 'पाठ',
+      draw: 'कलम',
+      highlight: 'हाइलाइट',
+      rectangle: 'बॉक्स',
+      signature: 'हस्ताक्षर',
+    },
+    textPlaceholder: 'पाठ दर्ज करें...',
+    defaultText: 'अपना पाठ यहाँ लिखें',
+    defaultSig: 'सत्यापित हस्ताक्षर',
+    pageOf: (curr: number, total: number) => `पृष्ठ ${curr} / ${total}`,
+  },
+};
 
 type EditorTool = 'select' | 'text' | 'draw' | 'highlight' | 'rectangle' | 'circle' | 'signature';
 
@@ -43,6 +123,9 @@ interface AnnotationItem {
 }
 
 export function VisualPdfEditor() {
+  const { language, isRTL } = useI18n();
+  const loc = PDF_EDITOR_LOCALES[language] || PDF_EDITOR_LOCALES.en;
+
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [pdfBytes, setPdfBytes] = useState<ArrayBuffer | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -171,7 +254,7 @@ export function VisualPdfEditor() {
       } else if (item.type === 'signature') {
         ctx.fillStyle = item.color || '#000000';
         ctx.font = 'italic bold 22px cursive, sans-serif';
-        ctx.fillText(item.text || 'Signature', item.x, item.y);
+        ctx.fillText(item.text || loc.defaultSig, item.x, item.y);
       }
       ctx.restore();
     });
@@ -191,7 +274,7 @@ export function VisualPdfEditor() {
       ctx.stroke();
       ctx.restore();
     }
-  }, [currentPage, annotations, isDrawing, currentPath, selectedColor, activeTool, brushSize]);
+  }, [currentPage, annotations, isDrawing, currentPath, selectedColor, activeTool, brushSize, loc.defaultSig]);
 
   useEffect(() => {
     redrawCanvas();
@@ -216,7 +299,7 @@ export function VisualPdfEditor() {
         page: currentPage,
         x,
         y,
-        text: textInput,
+        text: textInput || loc.defaultText,
         color: selectedColor,
       };
       setAnnotations((prev) => [...prev, newAnn]);
@@ -240,7 +323,7 @@ export function VisualPdfEditor() {
         page: currentPage,
         x,
         y,
-        text: textInput || 'Verified Signature',
+        text: textInput || loc.defaultSig,
         color: selectedColor,
       };
       setAnnotations((prev) => [...prev, newAnn]);
@@ -339,16 +422,16 @@ export function VisualPdfEditor() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300 pb-16">
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300 pb-16">
       {/* Top Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
         <div className="space-y-0.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200">
             <Sparkles className="w-3 h-3 text-brand-600" />
-            <span>PDF Editor Pro • Vector Annotations & Undo/Redo</span>
+            <span>{loc.badge}</span>
           </div>
           <h2 className="text-xl font-black text-slate-900 dark:text-white">
-            {pdfFile ? pdfFile.name : 'Visual PDF Document Editor'}
+            {pdfFile ? pdfFile.name : loc.defaultTitle}
           </h2>
         </div>
 
@@ -367,7 +450,7 @@ export function VisualPdfEditor() {
             className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl flex items-center gap-1.5"
           >
             <FileUp className="w-4 h-4" />
-            <span>{pdfFile ? 'Change PDF' : 'Open PDF'}</span>
+            <span>{pdfFile ? loc.changePdf : loc.openPdf}</span>
           </button>
 
           <button
@@ -377,7 +460,7 @@ export function VisualPdfEditor() {
             className="px-5 py-2.5 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 text-white text-xs font-extrabold rounded-xl shadow-md shadow-brand-500/25 flex items-center gap-2 active:scale-95 disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
-            <span>{isExporting ? 'Saving PDF...' : 'Export Edited PDF'}</span>
+            <span>{isExporting ? loc.savingPdf : loc.exportPdf}</span>
           </button>
         </div>
       </div>
@@ -387,11 +470,11 @@ export function VisualPdfEditor() {
         {/* Tool Selectors */}
         <div className="flex items-center gap-1">
           {[
-            { id: 'text', label: 'Text', icon: Type },
-            { id: 'draw', label: 'Pen', icon: PenTool },
-            { id: 'highlight', label: 'Highlight', icon: Highlighter },
-            { id: 'rectangle', label: 'Box', icon: Square },
-            { id: 'signature', label: 'Sign', icon: PenLine },
+            { id: 'text', label: loc.tools.text, icon: Type },
+            { id: 'draw', label: loc.tools.draw, icon: PenTool },
+            { id: 'highlight', label: loc.tools.highlight, icon: Highlighter },
+            { id: 'rectangle', label: loc.tools.rectangle, icon: Square },
+            { id: 'signature', label: loc.tools.signature, icon: PenLine },
           ].map((t) => {
             const Icon = t.icon;
             const isSelected = activeTool === t.id;
@@ -420,7 +503,7 @@ export function VisualPdfEditor() {
               type="text"
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
-              placeholder="Enter text..."
+              placeholder={loc.textPlaceholder}
               className="px-3 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 w-36"
             />
           )}
@@ -440,7 +523,7 @@ export function VisualPdfEditor() {
           </div>
 
           {/* Undo & Redo Buttons */}
-          <div className="flex items-center gap-1 border-l border-slate-200 dark:border-slate-800 pl-2">
+          <div className="flex items-center gap-1 border-l rtl:border-l-0 rtl:border-r border-slate-200 dark:border-slate-800 pl-2 rtl:pl-0 rtl:pr-2">
             <button
               type="button"
               onClick={handleUndo}
@@ -486,10 +569,10 @@ export function VisualPdfEditor() {
               disabled={currentPage === 1}
               className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 text-xs font-bold disabled:opacity-40"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
             </button>
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              Page {currentPage} of {totalPages}
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 font-mono">
+              {loc.pageOf(currentPage, totalPages)}
             </span>
             <button
               type="button"
@@ -497,7 +580,7 @@ export function VisualPdfEditor() {
               disabled={currentPage === totalPages}
               className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 text-xs font-bold disabled:opacity-40"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4 rtl:rotate-180" />
             </button>
           </div>
         )}
