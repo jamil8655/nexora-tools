@@ -416,6 +416,18 @@ export const TOOL_TRANSLATIONS: Record<string, Record<Language, { name: string; 
     ar: { name: 'حاسبة هامش الربح والزيادة', shortDesc: 'حساب إجمالي الربح، هامش الربح المئوي ونسبة زيادة الأسعار.' },
     hi: { name: 'लाभ मार्जिन और मार्कअप कैलकुलेटर', shortDesc: 'उत्पाद या व्यवसाय के लिए सकल लाभ, लाभ मार्जिन और मार्कअप प्रतिशत की गणना करें।' },
   },
+  'standard-calculator': {
+    en: { name: 'Standard Daily Calculator', shortDesc: 'Fast everyday calculator with history, memory registers (M+, MR), and percentages.' },
+    ur: { name: 'روزمرہ عام کیلکولیٹر', shortDesc: 'روزانہ کے حساب کتاب کے لیے تیز رفتار کیلکولیٹر، ہسٹری اور میموری کیز کے ساتھ۔' },
+    ar: { name: 'الحاسبة اليومية القياسية', shortDesc: 'حاسبة يومية سريعة ودقيقة مع سجل العمليات وأزرار الذاكرة.' },
+    hi: { name: 'दैनिक मानक कैलकुलेटर', shortDesc: 'दैनिक उपयोग के लिए तेज़ और सरल कैलकुलेटर, गणना इतिहास और मेमोरी के साथ।' },
+  },
+  'scientific-calculator': {
+    en: { name: 'Scientific Calculator', shortDesc: 'Advanced scientific calculator with trigonometry, roots, powers, logs, and factorials.' },
+    ur: { name: 'سائنسی کیلکولیٹر (Scientific)', shortDesc: 'ٹرگنومیٹری، جزر (Roots)، پاور اور لاگ کے لیے مکمل سائنسی کیلکولیٹر۔' },
+    ar: { name: 'الحاسبة العلمية المتقدمة', shortDesc: 'حاسبة علمية متقدمة للدوال المثلثية، الجذور، الأسس واللوغاريتمات.' },
+    hi: { name: 'वैज्ञानिक कैलकुलेटर (Scientific)', shortDesc: 'त्रिकोणमिति, वर्गमूल, घात, लघुगणक (Log) और फ़ैक्टोरियल के लिए वैज्ञानिक कैलकुलेटर।' },
+  },
 };
 
 export const COURSE_TRANSLATIONS: Record<string, Record<Language, { title: string; subtitle: string; category: string }>> = {

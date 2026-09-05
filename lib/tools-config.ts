@@ -6315,6 +6315,57 @@ export const TOOLS_LIST: ToolDefinition[] = [
       "selling price",
       "business calculator"
     ]
+  },
+  {
+    "id": "standard-calculator",
+    "slug": "calculator",
+    "name": "Standard Calculator",
+    "shortDesc": "Fast daily calculator with history tracking, memory keys (M+, MR), percentages, and clean interface.",
+    "fullDesc": "Fast daily calculator with history tracking, memory keys (M+, MR), percentages, and clean interface.",
+    "category": "calculator",
+    "icon": "Calculator",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [],
+    "acceptedExtensions": [],
+    "maxFiles": 0,
+    "maxFileSizeMB": 0,
+    "outputExtension": "",
+    "outputMimeType": "",
+    "tags": [
+      "calculator",
+      "daily calculator",
+      "standard calculator",
+      "basic calculator",
+      "math calculator",
+      "simple calculator"
+    ]
+  },
+  {
+    "id": "scientific-calculator",
+    "slug": "scientific-calculator",
+    "name": "Scientific Calculator",
+    "shortDesc": "Advanced scientific calculator with trigonometry, roots, powers, logs, and factorials.",
+    "fullDesc": "Advanced scientific calculator with trigonometry, roots, powers, logs, and factorials.",
+    "category": "calculator",
+    "icon": "Sparkles",
+    "popular": true,
+    "featured": false,
+    "isClientSide": true,
+    "acceptedMimeTypes": [],
+    "acceptedExtensions": [],
+    "maxFiles": 0,
+    "maxFileSizeMB": 0,
+    "outputExtension": "",
+    "outputMimeType": "",
+    "tags": [
+      "scientific calculator",
+      "trigonometry",
+      "sin cos tan",
+      "log",
+      "math solver"
+    ]
   }
 ];
 

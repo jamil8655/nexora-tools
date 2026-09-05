@@ -7,15 +7,17 @@ import { BandwidthCalculator } from '@/components/calculators/BandwidthCalculato
 import { DpiCalculator } from '@/components/calculators/DpiCalculator';
 import { MathCalculators } from '@/components/calculators/MathCalculators';
 import { FinancialLoanCalculators } from '@/components/calculators/FinancialLoanCalculators';
+import { StandardCalculatorStudio } from '@/components/calculators/StandardCalculatorStudio';
 import { GeneralUnitConverter } from '@/components/calculators/GeneralUnitConverter';
-import { Binary, Activity, Printer, Calculator, Scale, Coins } from 'lucide-react';
+import { Binary, Activity, Printer, Calculator, Scale, Coins, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/i18n-context';
 
 const CALC_PAGE_LOCALES = {
   en: {
     title: 'Digital Calculators & Unit Converter Suite',
-    desc: 'High-precision utilities: Loan & EMI, GST/Tax, Profit Margins, Aspect ratio scaler, storage units, download ETA, unit conversion, DPI, and percentage metrics.',
+    desc: 'High-precision utilities: Daily Standard Calculator, Loan & EMI, GST/Tax, Profit Margins, Aspect ratio scaler, storage units, download ETA, and unit conversions.',
     tabs: {
+      standard: 'Daily Calculator',
       finance: 'Financial & Loan / GST',
       math: 'Aspect Ratio & Math',
       storage: 'Storage Units (MB/GB)',
@@ -26,8 +28,9 @@ const CALC_PAGE_LOCALES = {
   },
   ur: {
     title: 'ڈیجیٹل کیلکولیٹرز اور یونٹ کنورٹر سوٹ',
-    desc: 'انتہائی درست ٹولز: قرض اور قسط (EMI)، جی ایس ٹی، منافع کا مارجن، اسپیکٹ ریشو، اسٹوریج یونٹس، ڈاؤن لوڈ ٹائم، عام یونٹس کی تبدیلی، اور ڈی پی آئی۔',
+    desc: 'انتہائی درست ٹولز: روزمرہ عام کیلکولیٹر، قرض اور قسط (EMI)، جی ایس ٹی، منافع کا مارجن، اسپیکٹ ریشو، اسٹوریج یونٹس، اور عام یونٹس کنورٹر۔',
     tabs: {
+      standard: 'روزمرہ کیلکولیٹر',
       finance: 'مالیات، قرض اور جی ایس ٹی',
       math: 'اسپیکٹ ریشو اور حساب',
       storage: 'اسٹوریج یونٹس (MB/GB)',
@@ -38,8 +41,9 @@ const CALC_PAGE_LOCALES = {
   },
   ar: {
     title: 'حاسبات ومحولات الوحدات الرقمية',
-    desc: 'أدوات رقمية دقيقة: القروض والأقساط، ضريبة القيمة المضافة، نسبة الأرباح، نسبة الأبعاد، وحدات التخزين، وقت التحميل، وتحويل المقاييس.',
+    desc: 'أدوات رقمية دقيقة: الحاسبة اليومية القياسية، القروض والأقساط، ضريبة القيمة المضافة، نسبة الأبعاد، وحدات التخزين، وتحويل المقاييس.',
     tabs: {
+      standard: 'الحاسبة اليومية',
       finance: 'المالية والقروض والضرائب',
       math: 'نسب الأبعاد والرياضيات',
       storage: 'وحدات التخزين (ميجابايت/جيجابايت)',
@@ -50,8 +54,9 @@ const CALC_PAGE_LOCALES = {
   },
   hi: {
     title: 'डिजिटल कैलकुलेटर और यूनिट कनवर्टर सुइट',
-    desc: 'उच्च-सटीक टूल्स: लोन व ईएमआई, जीएसटी व टैक्स, लाभ मार्जिन, आस्पेक्ट रेश्यो स्केलर, स्टोरेज यूनिट्स, डाउनलोड समय, यूनिट रूपांतरण और डीपीआई।',
+    desc: 'उच्च-सटीक टूल्स: रोजमर्रा मानक कैलकुलेटर, लोन व ईएमआई, जीएसटी व टैक्स, लाभ मार्जिन, आस्पेक्ट रेश्यो स्केलर, स्टोरेज यूनिट्स, और यूनिट रूपांतरण।',
     tabs: {
+      standard: 'रोजमर्रा कैलकुलेटर',
       finance: 'वित्तीय, लोन और जीएसटी',
       math: 'आस्पेक्ट रेश्यो और गणित',
       storage: 'स्टोरेज यूनिट्स (MB/GB)',
@@ -66,7 +71,7 @@ export default function CalculatorsPage() {
   const { language } = useI18n();
   const loc = CALC_PAGE_LOCALES[language as keyof typeof CALC_PAGE_LOCALES] || CALC_PAGE_LOCALES.en;
 
-  const [activeTab, setActiveTab] = useState<'finance' | 'math' | 'storage' | 'units' | 'bandwidth' | 'dpi'>('finance');
+  const [activeTab, setActiveTab] = useState<'standard' | 'finance' | 'math' | 'storage' | 'units' | 'bandwidth' | 'dpi'>('standard');
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -86,8 +91,9 @@ export default function CalculatorsPage() {
       <div className="flex items-center justify-center">
         <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
           {[
+            { id: 'standard', label: loc.tabs.standard, icon: Calculator },
             { id: 'finance', label: loc.tabs.finance, icon: Coins },
-            { id: 'math', label: loc.tabs.math, icon: Calculator },
+            { id: 'math', label: loc.tabs.math, icon: Sparkles },
             { id: 'storage', label: loc.tabs.storage, icon: Binary },
             { id: 'units', label: loc.tabs.units, icon: Scale },
             { id: 'bandwidth', label: loc.tabs.bandwidth, icon: Activity },
@@ -116,6 +122,7 @@ export default function CalculatorsPage() {
 
       {/* Main Studio Container */}
       <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl">
+        {activeTab === 'standard' && <StandardCalculatorStudio />}
         {activeTab === 'finance' && <FinancialLoanCalculators />}
         {activeTab === 'math' && <MathCalculators />}
         {activeTab === 'storage' && <StorageUnitConverter />}

@@ -82,6 +82,7 @@ import { StorageUnitConverter } from '@/components/calculators/StorageUnitConver
 import { BandwidthCalculator } from '@/components/calculators/BandwidthCalculator';
 import { MathCalculators } from '@/components/calculators/MathCalculators';
 import { FinancialLoanCalculators } from '@/components/calculators/FinancialLoanCalculators';
+import { StandardCalculatorStudio } from '@/components/calculators/StandardCalculatorStudio';
 import { DpiCalculator } from '@/components/calculators/DpiCalculator';
 import { AudioCutterStudio } from '@/components/media/AudioCutterStudio';
 import { AudioBoosterStudio } from '@/components/media/AudioBoosterStudio';
@@ -142,6 +143,15 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
     customWorkspace = <BandwidthCalculator />;
   } else if (tool.id === 'math-calculators') {
     customWorkspace = <MathCalculators />;
+  } else if (
+    tool.id === 'standard-calculator' ||
+    tool.id === 'calculator' ||
+    tool.id === 'scientific-calculator' ||
+    tool.slug === 'calculator' ||
+    tool.slug === 'standard-calculator' ||
+    tool.slug === 'scientific-calculator'
+  ) {
+    customWorkspace = <StandardCalculatorStudio />;
   } else if (
     tool.id === 'financial-calculators' ||
     tool.id === 'emi-calculator' ||
