@@ -2,11 +2,11 @@
 
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { isNativeAndroid, saveFileToDeviceStorage } from '@/lib/native/android-bridge';
-import { Share } from '@capacitor/share';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 
 /**
- * Convert a Blob to Base64 string for native Capacitor Filesystem storage
+ * Convert a Blob to Base64 string for native file saving
  */
 export async function blobToBase64(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -26,8 +26,8 @@ export async function blobToBase64(blob: Blob): Promise<string> {
 }
 
 /**
- * Unified, 100% Reliable File Download & Storage Engine
- * Saves directly to Android Scoped Storage and triggers the native system Save/Open sheet.
+ * Direct File Downloader for Android & Web
+ * Directly saves to device Public Downloads folder without showing any share sheet.
  */
 export async function downloadSingleFile(blob: Blob, filename: string) {
   if (!blob || blob.size === 0) {
@@ -35,31 +35,44 @@ export async function downloadSingleFile(blob: Blob, filename: string) {
     return;
   }
 
-  // 1. Android Native Platform: Write to Storage & Open Native Save/Share Sheet
-  if (isNativeAndroid()) {
+  // 1. Android Native: Direct MediaStore Download to Public "Downloads" folder
+  if (typeof window !== 'undefined' && (window as any).AndroidDownloader) {
     try {
       const base64 = await blobToBase64(blob);
-      const saveResult = await saveFileToDeviceStorage(filename, base64);
-      if (saveResult.success && saveResult.uri) {
-        try {
-          await Share.share({
-            title: filename,
-            text: `Download / Save ${filename}`,
-            url: saveResult.uri,
-            dialogTitle: `Save / Open ${filename}`,
-          });
-          return;
-        } catch (shareErr) {
-          console.log('Share dismissed or completed:', shareErr);
-          return;
-        }
-      }
-    } catch (nativeErr) {
-      console.warn('Native storage save notice, falling back to blob anchor:', nativeErr);
+      const saved = (window as any).AndroidDownloader.saveBase64File(base64, filename, blob.type);
+      if (saved) return;
+    } catch (e) {
+      console.warn('AndroidDownloader interface warning:', e);
     }
   }
 
-  // 2. Standard Browser / WebView Download Fallback
+  // 2. Capacitor Filesystem Direct Write to Documents / External Storage
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const base64 = await blobToBase64(blob);
+      await Filesystem.writeFile({
+        path: `Download/${filename}`,
+        data: base64,
+        directory: Directory.ExternalStorage,
+        recursive: true,
+      });
+      return;
+    } catch (fsErr) {
+      try {
+        await Filesystem.writeFile({
+          path: filename,
+          data: await blobToBase64(blob),
+          directory: Directory.Documents,
+          recursive: true,
+        });
+        return;
+      } catch (docErr) {
+        console.warn('Capacitor direct write warning:', docErr);
+      }
+    }
+  }
+
+  // 3. Web & WebView Blob Anchor Fallback
   try {
     saveAs(blob, filename);
   } catch (e) {
