@@ -92,6 +92,7 @@ import { ImageResizerStudio } from '@/components/image/ImageResizerStudio';
 import { PassportPhotoStudio } from '@/components/image/PassportPhotoStudio';
 import { BackgroundRemoverStudio } from '@/components/image/BackgroundRemoverStudio';
 import { FaviconStudio } from '@/components/image/FaviconStudio';
+import { AutoCropImagesToPdfStudio } from '@/components/image/AutoCropImagesToPdfStudio';
 import { OcrStudio } from '@/components/ocr/OcrStudio';
 
 interface ToolPageClientProps {
@@ -201,6 +202,13 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
     customWorkspace = <BackgroundRemoverStudio />;
   } else if (tool.id === 'favicon-generator') {
     customWorkspace = <FaviconStudio />;
+  } else if (
+    tool.id === 'auto-crop-images-to-pdf' ||
+    tool.slug === 'auto-crop-images-to-pdf' ||
+    tool.id === 'crop-images-to-pdf' ||
+    tool.slug === 'crop-images-to-pdf'
+  ) {
+    customWorkspace = <AutoCropImagesToPdfStudio />;
   } else if (
     tool.id === 'ocr-pdf' ||
     tool.id === 'ocr-image' ||

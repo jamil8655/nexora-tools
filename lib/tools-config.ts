@@ -6179,6 +6179,42 @@ export const TOOLS_LIST: ToolDefinition[] = [
       "media",
       "audio speed"
     ]
+  },
+  {
+    "id": "auto-crop-images-to-pdf",
+    "slug": "auto-crop-images-to-pdf",
+    "name": "Auto Cut Images to PDF",
+    "shortDesc": "Smart crop, split halves, custom trim, and assemble multiple images into a numbered PDF.",
+    "fullDesc": "Smart crop, split halves (top/bottom, left/right), custom trim margins, and assemble multiple images into a sequentially numbered PDF document.",
+    "category": "image",
+    "icon": "Scissors",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/bmp"
+    ],
+    "acceptedExtensions": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".webp",
+      ".bmp"
+    ],
+    "maxFiles": 50,
+    "maxFileSizeMB": 500,
+    "outputExtension": "pdf",
+    "outputMimeType": "application/pdf",
+    "tags": [
+      "auto crop images to pdf",
+      "split image to pdf",
+      "image half cut to pdf",
+      "smart crop pdf",
+      "crop image to pdf"
+    ]
   }
 ];
 

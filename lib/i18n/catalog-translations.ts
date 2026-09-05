@@ -134,6 +134,12 @@ export const TOOL_TRANSLATIONS: Record<string, Record<Language, { name: string; 
     ar: { name: 'تحويل الصور إلى PDF', shortDesc: 'تحويل الصور (JPG, PNG, WebP) إلى مستند PDF عالي الجودة.' },
     hi: { name: 'इमेज से PDF बनाएं', shortDesc: 'JPG, PNG तस्वीरों को साफ़ PDF दस्तावेज़ में बदलें।' },
   },
+  'auto-crop-images-to-pdf': {
+    en: { name: 'Auto Cut Images to PDF', shortDesc: 'Smart crop, split halves (top/bottom, left/right), and compile images to a numbered PDF.' },
+    ur: { name: 'امیج آٹو کٹ اور پی ڈی ایف', shortDesc: 'تصاویر کو آدھے یا مطلوبہ سائز پر کاٹیں اور نمبرنگ کے ساتھ پی ڈی ایف بنائیں۔' },
+    ar: { name: 'قص الصور تلقائياً إلى PDF', shortDesc: 'قص وتقسيم الصور (نصفين، علوي/سفلي) وترتيبها في ملف PDF مرقم.' },
+    hi: { name: 'ऑटो कट इमेज टू PDF', shortDesc: 'तस्वीरों को आधा या इच्छानुसार काटें और नंबरिंग के साथ PDF बनाएं।' },
+  },
   'pdf-to-image': {
     en: { name: 'PDF to Image', shortDesc: 'Extract high-resolution JPG or PNG images from PDF pages.' },
     ur: { name: 'پی ڈی ایف سے تصویر', shortDesc: 'پی ڈی ایف کے ہر صفحے کو ایچ ڈی تصویر (JPG/PNG) میں تبدیل کریں۔' },
