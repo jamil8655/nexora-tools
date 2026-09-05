@@ -23,6 +23,10 @@ import {
   Bookmark,
   Clock,
   History,
+  Brain,
+  Calculator,
+  Terminal,
+  ShieldCheck,
 } from 'lucide-react';
 import { TOOLS_LIST, CATEGORIES_CONFIG } from '@/lib/tools-config';
 import { ToolCard } from '@/components/shared/ToolCard';
@@ -39,12 +43,12 @@ const categoryIconMap: Record<string, React.ElementType> = {
   ocr: ScanText,
   text: Type,
   compress: Minimize2,
-  security: Lock,
+  security: ShieldCheck,
   media: Video,
-  calculator: Binary,
-  dev: Code2,
+  calculator: Calculator,
+  dev: Terminal,
   qr: QrCode,
-  ai: Sparkles,
+  ai: Brain,
 };
 
 const categoryColorMap: Record<string, { bg: string; text: string }> = {

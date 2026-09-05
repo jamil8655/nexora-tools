@@ -19,7 +19,6 @@ import {
   Trash2,
   ListFilter,
   ArrowUpDown,
-  Sparkles,
   Clock,
   Mic,
   FileText,

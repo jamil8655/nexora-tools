@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Search, Sparkles, Filter } from 'lucide-react';
+import { Search, Wrench, Filter } from 'lucide-react';
 import { TOOLS_LIST, CATEGORIES_CONFIG } from '@/lib/tools-config';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ToolCard } from '@/components/shared/ToolCard';
@@ -40,7 +40,7 @@ function ToolsDirectory() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 pb-3 sm:pb-4">
         <div>
           <h1 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+            <Wrench className="w-5 h-5 text-brand-600 dark:text-brand-400" />
             <span>{t.allTools || 'All Document & Productivity Utilities'}</span>
             <span className="text-xs sm:text-sm font-bold text-slate-400 font-mono">({TOOLS_LIST.length})</span>
           </h1>
