@@ -17,7 +17,8 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { protectPdfWithPassword, unlockPdf } from '@/lib/pdf/pdf-encryptor';
-import { saveFileToDeviceStorage } from '@/lib/native/android-bridge';
+import { downloadSingleFile } from '@/lib/utils/download';
+import { shareFileNative } from '@/lib/native/android-bridge';
 import { triggerHaptic } from '@/lib/motion/motion-system';
 import { formatBytes } from '@/lib/utils/formatters';
 
@@ -108,7 +109,7 @@ export function PdfProtectStudio({ mode = 'protect' }: PdfProtectStudioProps) {
     } catch (err: any) {
       console.error('PDF protection error:', err);
       setErrorMsg(err?.message || 'Failed to process PDF. Please check the file and try again.');
-      triggerHaptic('error');
+      triggerHaptic('medium');
     } finally {
       setIsProcessing(false);
     }
@@ -117,7 +118,13 @@ export function PdfProtectStudio({ mode = 'protect' }: PdfProtectStudioProps) {
   const handleDownload = async () => {
     if (!processedResult) return;
     triggerHaptic('selection');
-    await saveFileToDeviceStorage(processedResult.blob, processedResult.name);
+    await downloadSingleFile(processedResult.blob, processedResult.name);
+  };
+
+  const handleShare = async () => {
+    if (!processedResult) return;
+    triggerHaptic('selection');
+    await shareFileNative(processedResult.name, 'Protected PDF Document');
   };
 
   return (
@@ -307,10 +314,18 @@ export function PdfProtectStudio({ mode = 'protect' }: PdfProtectStudioProps) {
               <button
                 type="button"
                 onClick={handleDownload}
-                className="flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs active:scale-95 transition-all"
+                className="flex-1 py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs active:scale-95 transition-all"
               >
                 <Download className="w-4 h-4" />
-                <span>Save to Device</span>
+                <span>Save to Device / Download</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleShare}
+                className="py-3.5 px-4 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Share</span>
               </button>
             </div>
           </div>

@@ -36,7 +36,6 @@ export const initNativeAndroidBridge = (routerBack?: () => void) => {
       if (canGoBack && routerBack) {
         routerBack();
       } else {
-        // If at root, exit app or minimize
         CapApp.exitApp();
       }
     });
@@ -64,13 +63,17 @@ export const syncAndroidStatusBarTheme = (theme: 'light' | 'dark' | 'system') =>
 };
 
 /**
- * Native Android System Share Sheet
+ * Native Android System Share Sheet & File Opener
  */
-export const shareFileNative = async (title: string, text: string, url?: string, filePath?: string): Promise<boolean> => {
+export const shareFileNative = async (
+  title: string,
+  text: string,
+  urlOrFilePath?: string
+): Promise<boolean> => {
   if (!Capacitor.isNativePlatform()) {
-    if (navigator.share) {
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title, text, url });
+        await navigator.share({ title, text, url: urlOrFilePath });
         return true;
       } catch (e) {
         return false;
@@ -83,9 +86,8 @@ export const shareFileNative = async (title: string, text: string, url?: string,
     await Share.share({
       title,
       text,
-      url,
-      files: filePath ? [filePath] : undefined,
-      dialogTitle: 'Share with NEXORA',
+      url: urlOrFilePath,
+      dialogTitle: `Share / Open ${title}`,
     });
     return true;
   } catch (e) {
@@ -95,7 +97,7 @@ export const shareFileNative = async (title: string, text: string, url?: string,
 };
 
 /**
- * Save Processed File to Android Device Storage
+ * Save Processed File to Android Device Cache / Storage with 100% FileProvider accessibility
  */
 export const saveFileToDeviceStorage = async (
   fileOrName: string | Blob,
@@ -120,17 +122,18 @@ export const saveFileToDeviceStorage = async (
   }
 
   try {
-    const saved = await Filesystem.writeFile({
-      path: `Download/${fileName}`,
+    // 1. Write to Cache Directory (Always permitted on all Android 10-16 versions)
+    const savedCache = await Filesystem.writeFile({
+      path: fileName,
       data: base64Data,
-      directory: Directory.ExternalStorage,
+      directory: Directory.Cache,
       recursive: true,
     });
 
-    return { success: true, uri: saved.uri };
+    return { success: true, uri: savedCache.uri };
   } catch (e: any) {
     try {
-      // Fallback to Documents directory
+      // 2. Fallback to Documents directory
       const savedDoc = await Filesystem.writeFile({
         path: fileName,
         data: base64Data,
@@ -171,7 +174,7 @@ export const captureCameraPhotoNative = async (): Promise<{ success: boolean; da
  */
 export const checkNetworkStatusNative = async (): Promise<boolean> => {
   if (!Capacitor.isNativePlatform()) {
-    return navigator.onLine;
+    return typeof navigator !== 'undefined' ? navigator.onLine : true;
   }
 
   try {
