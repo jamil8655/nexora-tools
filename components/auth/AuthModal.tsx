@@ -18,6 +18,7 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase/firebase-client';
+import { Language } from '@/lib/i18n/translations';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -25,13 +26,72 @@ interface AuthModalProps {
   defaultTab?: 'signin' | 'signup' | 'forgot';
 }
 
+const AUTH_LOCALES: Record<Language, {
+  subtitle: string;
+  enterEmailPassword: string;
+  enterAllFields: string;
+  registrationFailed: string;
+  enterEmailForReset: string;
+  fullNamePlaceholder: string;
+  passwordPlaceholder: string;
+  resetLinkSentSuccess: string;
+  sendResetFailed: string;
+}> = {
+  en: {
+    subtitle: '100% Client-Side Secure Authentication',
+    enterEmailPassword: 'Please enter both email and password.',
+    enterAllFields: 'Please enter your full name, email, and password.',
+    registrationFailed: 'Registration failed. Please try again.',
+    enterEmailForReset: 'Please enter your email address to receive the password reset link.',
+    fullNamePlaceholder: 'Full Name',
+    passwordPlaceholder: 'At least 6 characters',
+    resetLinkSentSuccess: 'Password reset link sent! Check your inbox.',
+    sendResetFailed: 'Failed to send password reset link.',
+  },
+  ur: {
+    subtitle: '100% کلائنٹ سائیڈ محفوظ اکاؤنٹ تصدیق',
+    enterEmailPassword: 'براہ کرم ای میل اور پاس ورڈ دونوں درج کریں۔',
+    enterAllFields: 'براہ کرم اپنا پورا نام، ای میل اور پاس ورڈ درج کریں۔',
+    registrationFailed: 'رجسٹریشن ناکام ہو گئی۔ دوبارہ کوشش کریں۔',
+    enterEmailForReset: 'ری سیٹ لنک حاصل کرنے کے لیے اپنا ای میل درج کریں۔',
+    fullNamePlaceholder: 'پورا نام',
+    passwordPlaceholder: 'کم از کم 6 حروف',
+    resetLinkSentSuccess: 'پاس ورڈ ری سیٹ لنک ای میل کر دیا گیا ہے!',
+    sendResetFailed: 'پاس ورڈ ری سیٹ لنک بھیجنے میں خرابی۔',
+  },
+  ar: {
+    subtitle: 'تسجيل دخول آمن محلياً بنسبة 100%',
+    enterEmailPassword: 'يرجى إدخال البريد الإلكتروني وكلمة المرور معاً.',
+    enterAllFields: 'يرجى إدخال الاسم الكامل والبريد الإلكتروني وكلمة المرور.',
+    registrationFailed: 'فشل إنشاء الحساب. يرجى المحاولة مرة أخرى.',
+    enterEmailForReset: 'يرجى إدخال بريدك الإلكتروني لتلقي رابط إعادة التعيين.',
+    fullNamePlaceholder: 'الاسم الكامل',
+    passwordPlaceholder: '6 أحرف على الأقل',
+    resetLinkSentSuccess: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك!',
+    sendResetFailed: 'تعذر إرسال رابط إعادة التعيين.',
+  },
+  hi: {
+    subtitle: '100% सुरक्षित क्लाइंट-साइड प्रमाणीकरण',
+    enterEmailPassword: 'कृपया ईमेल और पासवर्ड दोनों दर्ज करें।',
+    enterAllFields: 'कृपया अपना पूरा नाम, ईमेल और पासवर्ड दर्ज करें।',
+    registrationFailed: 'पंजीकरण विफल। कृपया पुनः प्रयास करें।',
+    enterEmailForReset: 'पासवर्ड रीसेट लिंक प्राप्त करने के लिए ईमेल दर्ज करें।',
+    fullNamePlaceholder: 'पूरा नाम',
+    passwordPlaceholder: 'कम से कम 6 अक्षर',
+    resetLinkSentSuccess: 'पासवर्ड रीसेट लिंक भेज दिया गया है!',
+    sendResetFailed: 'रीसेट लिंक भेजने में विफल।',
+  },
+};
+
 export function AuthModal({
   isOpen,
   onClose,
   defaultTab = 'signin',
 }: AuthModalProps) {
   const { loginWithGoogle, loginWithEmail, signupWithEmail } = useAuth();
-  const { t, isRtl } = useI18n();
+  const { t, language, isRtl, isRTL } = useI18n();
+  const loc = AUTH_LOCALES[language] || AUTH_LOCALES.en;
+  const isRightToLeft = isRTL || isRtl;
   const [tab, setTab] = useState<'signin' | 'signup' | 'forgot'>(defaultTab);
 
   // Form State
@@ -71,7 +131,7 @@ export function AuthModal({
     e.preventDefault();
     resetState();
     if (!email.trim() || !password) {
-      setErrorMsg('Please enter both email and password.');
+      setErrorMsg(loc.enterEmailPassword);
       return;
     }
     setIsLoading(true);
@@ -89,7 +149,7 @@ export function AuthModal({
     e.preventDefault();
     resetState();
     if (!email.trim() || !password || !name.trim()) {
-      setErrorMsg('Please enter your full name, email, and password.');
+      setErrorMsg(loc.enterAllFields);
       return;
     }
     if (password.length < 6) {
@@ -103,7 +163,7 @@ export function AuthModal({
       setSuccessMsg(t.auth.accountCreatedSuccess);
       setTimeout(() => onClose(), 800);
     } else {
-      setErrorMsg(res.error || 'Registration failed.');
+      setErrorMsg(res.error || loc.registrationFailed);
     }
   };
 
@@ -111,17 +171,17 @@ export function AuthModal({
     e.preventDefault();
     resetState();
     if (!email.trim()) {
-      setErrorMsg('Please enter your email address to receive the password reset link.');
+      setErrorMsg(loc.enterEmailForReset);
       return;
     }
     setIsLoading(true);
     try {
       if (auth) {
         await sendPasswordResetEmail(auth, email.trim());
-        setSuccessMsg(t.auth.resetLinkSent);
+        setSuccessMsg(loc.resetLinkSentSuccess);
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to send password reset link.');
+      setErrorMsg(err.message || loc.sendResetFailed);
     } finally {
       setIsLoading(false);
     }

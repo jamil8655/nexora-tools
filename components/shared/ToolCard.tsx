@@ -198,13 +198,22 @@ interface ToolCardProps {
   tool: ToolDefinition;
 }
 
+const CARD_LOCALES = {
+  en: { open: 'Open', fastEngine: 'Fast Engine' },
+  ur: { open: 'کھولیں', fastEngine: 'تیز انجن' },
+  ar: { open: 'فتح', fastEngine: 'محرك فائق' },
+  hi: { open: 'खोलें', fastEngine: 'फास्ट इंजन' },
+};
+
 export function ToolCard({ tool }: ToolCardProps) {
-  const { language } = useI18n();
+  const { language, isRTL } = useI18n();
   const localized = getLocalizedTool(tool, language);
   const theme = CATEGORY_THEMES[tool.category] || DEFAULT_THEME;
+  const loc = CARD_LOCALES[language] || CARD_LOCALES.en;
 
   return (
     <div
+      dir={isRTL ? 'rtl' : 'ltr'}
       className={`group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-transparent p-4 sm:p-5 shadow-xs hover:-translate-y-1 transition-all duration-200 active:scale-[0.98] ${theme.hoverBorder} ${theme.hoverShadow} ${theme.bgSubtle} overflow-hidden min-h-[140px] sm:min-h-[160px]`}
     >
       {/* Top Accent Line on Hover */}
@@ -248,12 +257,12 @@ export function ToolCard({ tool }: ToolCardProps) {
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           {tool.acceptedExtensions && tool.acceptedExtensions.length > 0
             ? tool.acceptedExtensions.slice(0, 3).join(' ')
-            : 'Fast Engine'}
+            : loc.fastEngine}
         </span>
 
-        <div className="flex items-center gap-1 text-xs font-extrabold text-brand-600 dark:text-brand-400 group-hover:translate-x-1 transition-all">
-          <span>Open</span>
-          <ArrowUpRight className="w-4 h-4" />
+        <div className={`flex items-center gap-1 text-xs font-extrabold text-brand-600 dark:text-brand-400 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'} transition-all`}>
+          <span>{loc.open}</span>
+          <ArrowUpRight className={`w-4 h-4 ${isRTL ? '-scale-x-100' : ''}`} />
         </div>
       </div>
     </div>
