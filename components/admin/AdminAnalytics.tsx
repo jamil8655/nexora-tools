@@ -73,6 +73,9 @@ import {
 } from '@/lib/firebase/firestore-service';
 import { getFirebaseConnectionStatus, FirebaseConnectionStatus } from '@/lib/firebase/firebase-service';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useI18n } from '@/lib/i18n/i18n-context';
+import { getLocalizedTool, getLocalizedCategory } from '@/lib/i18n/catalog-translations';
+import { Language } from '@/lib/i18n/translations';
 
 export interface AuditLogItem {
   id: string;
@@ -82,6 +85,300 @@ export interface AuditLogItem {
   timestamp: string;
   status: 'SUCCESS' | 'WARNING' | 'CRITICAL';
 }
+
+const ADMIN_LOCALES: Record<Language, {
+  controlCenter: string;
+  version: string;
+  deviceStorage: string;
+  clientSidePrivacy: string;
+  back: string;
+  engineActive: string;
+  registeredUsers: string;
+  realAccounts: string;
+  activeTools: string;
+  clientEngine: string;
+  opsLogged: string;
+  deviceTelemetry: string;
+  jobQueue: string;
+  activeAndQueued: string;
+  idleReady: string;
+  tabs: Record<string, string>;
+  overviewTitle: string;
+  overviewSubtitle: string;
+  usersTitle: string;
+  usersSubtitle: string;
+  toolsTitle: string;
+  toolsSubtitle: string;
+  searchTools: string;
+  searchUsers: string;
+  filterAll: string;
+  allStatus: string;
+  statusActive: string;
+  statusMaintenance: string;
+  statusDisabled: string;
+  enable: string;
+  disable: string;
+  maintenance: string;
+  refresh: string;
+  tool: string;
+  file: string;
+  size: string;
+  status: string;
+  time: string;
+  noOps: string;
+  connected: string;
+  superAdmin: string;
+  fullControl: string;
+  dangerTitle: string;
+  dangerDesc: string;
+  purgeButton: string;
+  purgeSuccess: string;
+}> = {
+  en: {
+    controlCenter: 'Control Center',
+    version: 'v2.5.0 • Master',
+    deviceStorage: 'Device Storage',
+    clientSidePrivacy: '100% Client-Side Privacy',
+    back: 'Back',
+    engineActive: 'Engine Active',
+    registeredUsers: 'Registered Users',
+    realAccounts: 'Real Firestore Accounts',
+    activeTools: 'Active Tools',
+    clientEngine: '100% Client-Side Engine',
+    opsLogged: 'Operations Logged',
+    deviceTelemetry: 'Real Device Telemetry',
+    jobQueue: 'Job Queue',
+    activeAndQueued: 'Active & Queued',
+    idleReady: 'Idle & Ready',
+    tabs: {
+      overview: 'Dashboard Overview',
+      users: 'Users & RBAC',
+      tools: 'Tool Catalog',
+      jobs: 'Processing Jobs',
+      ai: 'AI & OCR Engines',
+      plans: 'Plans & Monetization',
+      api: 'Developer REST API',
+      flags: 'Feature Flags',
+      translations: 'Translation Manager',
+      health: 'System Health',
+      audit: 'Audit Trail',
+      danger: 'Danger Zone',
+    },
+    overviewTitle: 'NEXORA Live Telemetry Overview',
+    overviewSubtitle: 'Real-time client telemetry, Firestore active listeners, and device storage footprint.',
+    usersTitle: 'Real Firestore Users',
+    usersSubtitle: 'Live authenticated user accounts from Firebase Firestore.',
+    toolsTitle: '220+ Client-Side Tools Engine',
+    toolsSubtitle: 'Configure maintenance windows, toggle features, or audit privacy execution parameters.',
+    searchTools: 'Search tools by name or description...',
+    searchUsers: 'Search users by name/email/UID...',
+    filterAll: 'All Categories',
+    allStatus: 'All Status',
+    statusActive: 'Active',
+    statusMaintenance: 'Maintenance',
+    statusDisabled: 'Disabled',
+    enable: 'Enable',
+    disable: 'Disable',
+    maintenance: 'Maintenance',
+    refresh: 'Refresh',
+    tool: 'Tool',
+    file: 'File',
+    size: 'Size',
+    status: 'Status',
+    time: 'Time',
+    noOps: 'No recent operations logged yet. Run any tool to record live telemetry.',
+    connected: 'CONNECTED',
+    superAdmin: 'Super Administrator',
+    fullControl: 'Full Platform Control',
+    dangerTitle: 'Danger Zone & Cache Management',
+    dangerDesc: 'Purge local IndexedDB storage, cached Blobs, and telemetry records.',
+    purgeButton: 'Purge All Local Data',
+    purgeSuccess: 'All local IndexedDB files and telemetry purged successfully.',
+  },
+  ur: {
+    controlCenter: 'ایڈمن کنٹرول سینٹر',
+    version: 'v2.5.0 • ماسٹر ایڈمن',
+    deviceStorage: 'ڈیوائس اسٹوریج',
+    clientSidePrivacy: '100% کلائنٹ سائیڈ رازداری',
+    back: 'واپس',
+    engineActive: 'انجن فعال ہے',
+    registeredUsers: 'رجسٹرڈ صارفین',
+    realAccounts: 'حقیقی فائر بیس اکاؤنٹس',
+    activeTools: 'فعال ٹولز',
+    clientEngine: '100% آن ڈیوائس انجن',
+    opsLogged: 'کل ٹول سرگرمیاں',
+    deviceTelemetry: 'ڈیوائس ٹیلی میٹری لاگز',
+    jobQueue: 'جاب کیو (Queue)',
+    activeAndQueued: 'جاری و قطار میں',
+    idleReady: 'تیار و فارغ',
+    tabs: {
+      overview: 'ڈیش بورڈ کا جائزہ',
+      users: 'صارفین اور رسائی',
+      tools: 'ٹول کیٹلاگ',
+      jobs: 'پروسیسنگ جابس',
+      ai: 'اے آئی و او سی آر',
+      plans: 'پلانز اور سبسکرپشن',
+      api: 'ڈیولپر REST API',
+      flags: 'فیچر فلیگز',
+      translations: 'کثیر لسانی مینیجر',
+      health: 'سسٹم کی صورتحال',
+      audit: 'آڈٹ لاگز',
+      danger: 'ڈینجر زون',
+    },
+    overviewTitle: 'نیکزورا لائیو ٹیلی میٹری جائزہ',
+    overviewSubtitle: 'حقیقی وقت کا ڈیٹا، فائر بیس کنکشن اور ڈیوائس اسٹوریج کی مکمل معلومات۔',
+    usersTitle: 'صارفین کی فہرست اور اجازتیں',
+    usersSubtitle: 'فائر بیس ڈیٹا بیس سے لائیو تصدیق شدہ صارفین کے اکاؤنٹس۔',
+    toolsTitle: '220+ کلائنٹ سائیڈ ٹولز انجن',
+    toolsSubtitle: 'مینٹیننس موڈ آن کریں، ٹولز کو فعال یا غیر فعال کریں اور پرائیویسی دیکھیں۔',
+    searchTools: 'ٹول کا نام یا تفصیل تلاش کریں...',
+    searchUsers: 'نام، ای میل یا UID سے تلاش کریں...',
+    filterAll: 'تمام کیٹیگریز',
+    allStatus: 'تمام حالتیں',
+    statusActive: 'فعال',
+    statusMaintenance: 'مرمت (مینٹیننس)',
+    statusDisabled: 'غیر فعال',
+    enable: 'فعال کریں',
+    disable: 'غیر فعال کریں',
+    maintenance: 'مینٹیننس',
+    refresh: 'ریفریش کریں',
+    tool: 'ٹول',
+    file: 'فائل',
+    size: 'سائز',
+    status: 'حالت',
+    time: 'وقت',
+    noOps: 'ابھی تک کوئی آپریشن ریکارڈ نہیں ہوا۔ لائیو ریکارڈنگ کے لیے کوئی ٹول چلائیں۔',
+    connected: 'منسلک ہے',
+    superAdmin: 'سپر ایڈمنسٹریٹر',
+    fullControl: 'پلیٹ فارم پر مکمل اختیار',
+    dangerTitle: 'ڈینجر زون اور کیشے کنٹرول',
+    dangerDesc: 'مقامی IndexedDB اسٹوریج، محفوظ شدہ فائلز اور لاگز کو حذف کریں۔',
+    purgeButton: 'تمام لوکل ڈیٹا صاف کریں',
+    purgeSuccess: 'تمام لوکل ڈیٹا کامیابی سے حذف کر دیا گیا ہے۔',
+  },
+  ar: {
+    controlCenter: 'مركز التحكم والإدارة',
+    version: 'v2.5.0 • النظام الأساسي',
+    deviceStorage: 'مساحة تخزين الجهاز',
+    clientSidePrivacy: 'خصوصية تامة 100% داخل جهازك',
+    back: 'رجوع',
+    engineActive: 'المحرك نشط',
+    registeredUsers: 'المستخدمون المسجلون',
+    realAccounts: 'حسابات Firebase نشطة',
+    activeTools: 'الأدوات المتاحة',
+    clientEngine: '100% محرك محلي آمن',
+    opsLogged: 'العمليات المنفذة',
+    deviceTelemetry: 'سجلات العمليات بالجهاز',
+    jobQueue: 'طابور المهام',
+    activeAndQueued: 'قيد التنفيذ وبانتظار الدور',
+    idleReady: 'جاهز للاستخدام',
+    tabs: {
+      overview: 'نظرة عامة على لوحة التحكم',
+      users: 'المستخدمون والصلاحيات',
+      tools: 'دليل الأدوات',
+      jobs: 'مهام المعالجة',
+      ai: 'محركات AI و OCR',
+      plans: 'الخطط والاشتراكات',
+      api: 'واجهة المطورين REST API',
+      flags: 'مفاتيح الميزات',
+      translations: 'إدارة اللغات والترجمات',
+      health: 'حالة النظام والخوادم',
+      audit: 'سجل العمليات والتدقيق',
+      danger: 'منطقة الحظر والخطر',
+    },
+    overviewTitle: 'نظرة عامة على تشغيل NEXORA المباشر',
+    overviewSubtitle: 'بيانات الأداء المباشرة، اتصالات Firebase، وسعة التخزين المستهلكة محلياً.',
+    usersTitle: 'دليل المستخدمين والصلاحيات',
+    usersSubtitle: 'حسابات المستخدمين المعتمدة مباشرة من Firebase Firestore.',
+    toolsTitle: 'محرك أكثر من 220 أداة داخل المتصفح',
+    toolsSubtitle: 'إدارة الصيانة وتفعيل وتعطيل الأدوات ومراجعة سياسات الخصوصية.',
+    searchTools: 'البحث عن أداة بالاسم أو الوصف...',
+    searchUsers: 'البحث بالاسم أو البريد الإلكتروني أو المعرف...',
+    filterAll: 'جميع الفئات',
+    allStatus: 'جميع الحالات',
+    statusActive: 'نشط',
+    statusMaintenance: 'تحت الصيانة',
+    statusDisabled: 'معطل',
+    enable: 'تفعيل',
+    disable: 'تعطيل',
+    maintenance: 'وضع الصيانة',
+    refresh: 'تحديث',
+    tool: 'الأداة',
+    file: 'الملف',
+    size: 'الحجم',
+    status: 'الحالة',
+    time: 'الوقت',
+    noOps: 'لم يتم تسجيل أي عمليات مؤخراً. قم بتشغيل أي أداة لبدء التسجيل.',
+    connected: 'متصل بنجاح',
+    superAdmin: 'المسؤول العام (Super Admin)',
+    fullControl: 'تحكم كامل بالنظام والبيانات',
+    dangerTitle: 'منطقة الحظر وإدارة التخزين المؤقت',
+    dangerDesc: 'مسح تخزين IndexedDB المحلي، والملفات المؤقتة، وسجلات الأداء.',
+    purgeButton: 'مسح جميع البيانات المحلية',
+    purgeSuccess: 'تم مسح البيانات المحلية والذاكرة المؤقتة بنجاح.',
+  },
+  hi: {
+    controlCenter: 'कंट्रोल सेंटर',
+    version: 'v2.5.0 • मास्टर',
+    deviceStorage: 'डिवाइस स्टोरेज',
+    clientSidePrivacy: '100% डिवाइस गोपनीयता',
+    back: 'वापस',
+    engineActive: 'इंजन सक्रिय है',
+    registeredUsers: 'पंजीकृत उपयोगकर्ता',
+    realAccounts: 'सक्रिय Firebase खाते',
+    activeTools: 'सक्रिय टूल्स',
+    clientEngine: '100% क्लाइंट-साइड इंजन',
+    opsLogged: 'कुल क्रियाकलाप',
+    deviceTelemetry: 'डिवाइस टेलीमेट्री लॉग्स',
+    jobQueue: 'जॉब कतार (Queue)',
+    activeAndQueued: 'सक्रिय व कतारबद्ध',
+    idleReady: 'तैयार व खाली',
+    tabs: {
+      overview: 'डैशबोर्ड अवलोकन',
+      users: 'उपयोगकर्ता व भूमिकाएं',
+      tools: 'टूल कैटलॉग',
+      jobs: 'प्रोसेसिंग कार्य',
+      ai: 'AI व OCR इंजन',
+      plans: 'प्लान व सदस्यता',
+      api: 'डेवलपर REST API',
+      flags: 'फ़ीचर फ़्लैग',
+      translations: 'अनुवाद प्रबंधन',
+      health: 'सिस्टम स्वास्थ्य',
+      audit: 'ऑडिट ट्रेल',
+      danger: 'डेंजर ज़ोन',
+    },
+    overviewTitle: 'NEXORA लाइव टेलीमेट्री अवलोकन',
+    overviewSubtitle: 'रीयल-टाइम क्लाइंट टेलीमेट्री, सक्रिय Firebase कनेक्शन और स्टोरेज मेट्रिक्स।',
+    usersTitle: 'उपयोगकर्ता सूची व अनुमतियाँ',
+    usersSubtitle: 'Firebase Firestore से लाइव प्रमाणित उपयोगकर्ताओं के खाते।',
+    toolsTitle: '220+ क्लाइंट-साइड टूल्स इंजन',
+    toolsSubtitle: 'रखरखाव विंडो सेट करें, टूल्स को सक्षम/अक्षम करें और गोपनीयता जांचें।',
+    searchTools: 'नाम या विवरण से टूल खोजें...',
+    searchUsers: 'नाम, ईमेल या UID से खोजें...',
+    filterAll: 'सभी श्रेणियां',
+    allStatus: 'सभी स्थितियां',
+    statusActive: 'सक्रिय',
+    statusMaintenance: 'रखरखाव (Maintenance)',
+    statusDisabled: 'अक्षम',
+    enable: 'सक्षम करें',
+    disable: 'अक्षम करें',
+    maintenance: 'रखरखाव',
+    refresh: 'रिफ्रेश करें',
+    tool: 'टूल',
+    file: 'फ़ाइल',
+    size: 'आकार',
+    status: 'स्थिति',
+    time: 'समय',
+    noOps: 'अभी तक कोई गतिविधि दर्ज नहीं हुई। लाइव डेटा के लिए कोई टूल चलाएं।',
+    connected: 'सफलतापूर्वक कनेक्टेड',
+    superAdmin: 'सुपर एडमिनिस्ट्रेटर',
+    fullControl: 'सम्पूर्ण सिस्टम नियंत्रण',
+    dangerTitle: 'डेंजर ज़ोन व कैश नियंत्रण',
+    dangerDesc: 'स्थानीय IndexedDB स्टोरेज, अस्थायी फ़ाइलें व लॉग्स साफ़ करें।',
+    purgeButton: 'सभी स्थानीय डेटा साफ़ करें',
+    purgeSuccess: 'स्थानीय डेटा और अस्थायी फ़ाइलें सफलतापूर्वक हटाई गईं।',
+  },
+};
 
 export function AdminAnalytics() {
   const { user } = useAuth();
@@ -233,11 +530,17 @@ export function AdminAnalytics() {
     }
   };
 
+  const { language, isRTL } = useI18n();
+  const adminLoc = ADMIN_LOCALES[language] || ADMIN_LOCALES.en;
+
   const filteredTools = TOOLS_LIST.filter((tool) => {
+    const localized = getLocalizedTool(tool, language);
     const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
     const matchesSearch =
       tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tool.shortDesc.toLowerCase().includes(searchQuery.toLowerCase());
+      localized.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tool.shortDesc.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      localized.shortDesc.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -252,31 +555,34 @@ export function AdminAnalytics() {
   });
 
   const navMenuItems = [
-    { id: 'overview', label: 'Dashboard Overview', icon: Activity },
-    { id: 'users', label: 'Users & RBAC', icon: Users, badge: cloudUsers.length > 0 ? `${cloudUsers.length}` : undefined },
-    { id: 'tools', label: 'Tool Catalog', icon: Layers, badge: `${TOOLS_LIST.length}` },
-    { id: 'jobs', label: 'Processing Jobs', icon: Workflow, badge: activeJobs.length + cloudJobs.length > 0 ? `${activeJobs.length + cloudJobs.length}` : undefined },
-    { id: 'ai', label: 'AI & OCR Engines', icon: Sparkles },
-    { id: 'plans', label: 'Plans & Monetization', icon: CreditCard },
-    { id: 'api', label: 'Developer REST API', icon: Terminal },
-    { id: 'flags', label: 'Feature Flags', icon: Sliders },
-    { id: 'translations', label: 'Translation Manager', icon: Globe },
-    { id: 'health', label: 'System Health', icon: Server },
-    { id: 'audit', label: 'Audit Trail', icon: ShieldCheck, badge: `${auditLogs.length}` },
-    { id: 'danger', label: 'Danger Zone', icon: AlertOctagon },
+    { id: 'overview', label: adminLoc.tabs.overview || 'Dashboard Overview', icon: Activity },
+    { id: 'users', label: adminLoc.tabs.users || 'Users & RBAC', icon: Users, badge: cloudUsers.length > 0 ? `${cloudUsers.length}` : undefined },
+    { id: 'tools', label: adminLoc.tabs.tools || 'Tool Catalog', icon: Layers, badge: `${TOOLS_LIST.length}` },
+    { id: 'jobs', label: adminLoc.tabs.jobs || 'Processing Jobs', icon: Workflow, badge: activeJobs.length + cloudJobs.length > 0 ? `${activeJobs.length + cloudJobs.length}` : undefined },
+    { id: 'ai', label: adminLoc.tabs.ai || 'AI & OCR Engines', icon: Sparkles },
+    { id: 'plans', label: adminLoc.tabs.plans || 'Plans & Monetization', icon: CreditCard },
+    { id: 'api', label: adminLoc.tabs.api || 'Developer REST API', icon: Terminal },
+    { id: 'flags', label: adminLoc.tabs.flags || 'Feature Flags', icon: Sliders },
+    { id: 'translations', label: adminLoc.tabs.translations || 'Translation Manager', icon: Globe },
+    { id: 'health', label: adminLoc.tabs.health || 'System Health', icon: Server },
+    { id: 'audit', label: adminLoc.tabs.audit || 'Audit Trail', icon: ShieldCheck, badge: `${auditLogs.length}` },
+    { id: 'danger', label: adminLoc.tabs.danger || 'Danger Zone', icon: AlertOctagon },
   ];
 
   return (
-    <div className="w-full min-w-0 max-w-full bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[750px]">
+    <div
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className="w-full min-w-0 max-w-full bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[750px]"
+    >
       {/* 1. DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex flex-col w-64 shrink-0 bg-slate-900 border-r border-slate-800 p-4 space-y-6">
+      <aside className={`hidden md:flex flex-col w-64 shrink-0 bg-slate-900 ${isRTL ? 'border-l' : 'border-r'} border-slate-800 p-4 space-y-6`}>
         <div className="flex items-center gap-2.5 px-2 py-1">
           <div className="w-8 h-8 rounded-xl bg-linear-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-md">
             <ShieldCheck className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-xs font-black tracking-tight text-white uppercase">Control Center</div>
-            <div className="text-[10px] text-slate-400 font-mono">v2.5.0 • Master</div>
+            <div className="text-xs font-black tracking-tight text-white uppercase">{adminLoc.controlCenter}</div>
+            <div className="text-[10px] text-slate-400 font-mono">{adminLoc.version}</div>
           </div>
         </div>
 
@@ -314,11 +620,11 @@ export function AdminAnalytics() {
         {/* Live Storage Indicator */}
         <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5 text-xs">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="font-bold">Device Storage</span>
+            <span className="font-bold">{adminLoc.deviceStorage}</span>
             <HardDrive className="w-3.5 h-3.5 text-brand-400" />
           </div>
           <div className="font-mono font-black text-sm text-white">{formatBytes(storageBytes)}</div>
-          <div className="text-[10px] text-emerald-400">100% Client-Side Privacy</div>
+          <div className="text-[10px] text-emerald-400">{adminLoc.clientSidePrivacy}</div>
         </div>
       </aside>
 
@@ -412,17 +718,17 @@ export function AdminAnalytics() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    NEXORA Live Telemetry Overview
+                    {adminLoc.overviewTitle}
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Real-time client telemetry, Firestore active listeners, and device storage footprint.
+                    {adminLoc.overviewSubtitle}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Engine Active</span>
+                    <span>{adminLoc.engineActive}</span>
                   </span>
                 </div>
               </div>
@@ -431,39 +737,39 @@ export function AdminAnalytics() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-0">
                 <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 shadow-sm space-y-1 min-w-0">
                   <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
-                    <span>Registered Users</span>
+                    <span>{adminLoc.registeredUsers}</span>
                     <Users className="w-4 h-4 text-brand-400" />
                   </div>
                   <div className="text-2xl font-black text-white">{cloudUsers.length}</div>
-                  <p className="text-[11px] text-slate-400 truncate">Real Firestore Accounts</p>
+                  <p className="text-[11px] text-slate-400 truncate">{adminLoc.realAccounts}</p>
                 </div>
 
                 <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 shadow-sm space-y-1 min-w-0">
                   <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
-                    <span>Active Tools</span>
+                    <span>{adminLoc.activeTools}</span>
                     <Layers className="w-4 h-4 text-purple-400" />
                   </div>
                   <div className="text-2xl font-black text-white">{TOOLS_LIST.length}</div>
-                  <p className="text-[11px] text-slate-400 truncate">100% Client-Side Engine</p>
+                  <p className="text-[11px] text-slate-400 truncate">{adminLoc.clientEngine}</p>
                 </div>
 
                 <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 shadow-sm space-y-1 min-w-0">
                   <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
-                    <span>Operations Logged</span>
+                    <span>{adminLoc.opsLogged}</span>
                     <Activity className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div className="text-2xl font-black text-white">{realHistory.length}</div>
-                  <p className="text-[11px] text-slate-400 truncate">Real Device Telemetry</p>
+                  <p className="text-[11px] text-slate-400 truncate">{adminLoc.deviceTelemetry}</p>
                 </div>
 
                 <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 shadow-sm space-y-1 min-w-0">
                   <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
-                    <span>Job Queue</span>
+                    <span>{adminLoc.jobQueue}</span>
                     <Workflow className="w-4 h-4 text-indigo-400" />
                   </div>
                   <div className="text-2xl font-black text-white">{activeJobs.length + cloudJobs.length}</div>
                   <p className="text-[11px] text-slate-400 truncate">
-                    {activeJobs.length + cloudJobs.length > 0 ? 'Active & Queued' : 'Idle & Ready'}
+                    {activeJobs.length + cloudJobs.length > 0 ? adminLoc.activeAndQueued : adminLoc.idleReady}
                   </p>
                 </div>
               </div>
@@ -475,7 +781,7 @@ export function AdminAnalytics() {
                     <Cloud className="w-5 h-5 text-emerald-400" />
                     <div>
                       <h3 className="font-extrabold text-sm text-white">
-                        Cloud Backend Status: Firebase Connected ({firebaseStatus.projectId})
+                        Firebase Connected ({firebaseStatus.projectId})
                       </h3>
                       <p className="text-xs text-slate-400">
                         Auth Domain: {firebaseStatus.authDomain} • Storage: {firebaseStatus.storageBucket}
@@ -484,7 +790,7 @@ export function AdminAnalytics() {
                   </div>
 
                   <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    CONNECTED
+                    {adminLoc.connected}
                   </span>
                 </div>
               </div>
@@ -494,7 +800,7 @@ export function AdminAnalytics() {
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
                     <Activity className="w-4 h-4 text-brand-400" />
-                    <span>Live Processing Stream ({realHistory.length})</span>
+                    <span>{adminLoc.deviceTelemetry} ({realHistory.length})</span>
                   </h3>
                   <button
                     type="button"
@@ -502,24 +808,24 @@ export function AdminAnalytics() {
                     className="text-xs text-brand-400 hover:text-brand-300 font-bold flex items-center gap-1"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
-                    <span>Refresh</span>
+                    <span>{adminLoc.refresh}</span>
                   </button>
                 </div>
 
                 {realHistory.length === 0 ? (
                   <div className="py-8 text-center text-xs text-slate-500 font-medium">
-                    No recent operations logged yet. Run any tool to record live telemetry.
+                    {adminLoc.noOps}
                   </div>
                 ) : (
                   <div className="w-full min-w-0 overflow-x-auto rounded-2xl border border-slate-800">
-                    <table className="w-full text-left text-xs text-slate-300">
+                    <table className={`w-full ${isRTL ? 'text-right' : 'text-left'} text-xs text-slate-300`}>
                       <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-800">
                         <tr>
-                          <th className="p-3">Tool</th>
-                          <th className="p-3">File</th>
-                          <th className="p-3">Size</th>
-                          <th className="p-3">Status</th>
-                          <th className="p-3">Time</th>
+                          <th className="p-3">{adminLoc.tool}</th>
+                          <th className="p-3">{adminLoc.file}</th>
+                          <th className="p-3">{adminLoc.size}</th>
+                          <th className="p-3">{adminLoc.status}</th>
+                          <th className="p-3">{adminLoc.time}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800">
@@ -552,10 +858,10 @@ export function AdminAnalytics() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    Real Firestore Users ({cloudUsers.length})
+                    {adminLoc.usersTitle} ({cloudUsers.length})
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Live authenticated user accounts from Firebase Firestore.
+                    {adminLoc.usersSubtitle}
                   </p>
                 </div>
 
@@ -564,7 +870,7 @@ export function AdminAnalytics() {
                     type="text"
                     value={userSearchQuery}
                     onChange={(e) => setUserSearchQuery(e.target.value)}
-                    placeholder="Search users by name/email/UID..."
+                    placeholder={adminLoc.searchUsers}
                     className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-hidden"
                   />
                 </div>
@@ -574,25 +880,25 @@ export function AdminAnalytics() {
               <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
                 <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
                   <UserCheck className="w-4 h-4 text-emerald-400" />
-                  <span>Current Authenticated Administrator Session</span>
+                  <span>{adminLoc.superAdmin}</span>
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                   <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-                    <div className="text-slate-400 font-bold">Admin Account</div>
+                    <div className="text-slate-400 font-bold">{adminLoc.tabs.users}</div>
                     <div className="text-sm font-black text-white truncate">{user?.name || 'Hafiz Jamilurrahman'}</div>
                     <div className="text-[11px] text-slate-500 font-mono truncate">{user?.email || 'admin@nexoratools.internal'}</div>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
                     <div className="text-slate-400 font-bold">Role Verification</div>
-                    <div className="text-sm font-black text-emerald-400">Super Administrator</div>
+                    <div className="text-sm font-black text-emerald-400">{adminLoc.superAdmin}</div>
                     <div className="text-[11px] text-slate-500 font-mono">Firebase Custom Claims Verified</div>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
                     <div className="text-slate-400 font-bold">Privileges</div>
-                    <div className="text-sm font-black text-purple-400">Full Platform Control</div>
+                    <div className="text-sm font-black text-purple-400">{adminLoc.fullControl}</div>
                     <div className="text-[11px] text-slate-500 font-mono">users.*, tools.*, settings.*</div>
                   </div>
                 </div>
@@ -600,14 +906,14 @@ export function AdminAnalytics() {
 
               {/* Real Firestore Users Table */}
               <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
-                <h3 className="font-extrabold text-sm text-white">Registered Users List</h3>
+                <h3 className="font-extrabold text-sm text-white">{adminLoc.usersTitle}</h3>
                 {filteredUsers.length === 0 ? (
                   <div className="py-8 text-center text-xs text-slate-500 font-medium">
                     No registered users in Firestore yet. When users sign up or log in via Google/Email, they appear here in real-time.
                   </div>
                 ) : (
                   <div className="w-full min-w-0 overflow-x-auto rounded-2xl border border-slate-800">
-                    <table className="w-full text-left text-xs text-slate-300">
+                    <table className={`w-full ${isRTL ? 'text-right' : 'text-left'} text-xs text-slate-300`}>
                       <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-800">
                         <tr>
                           <th className="p-3">User</th>
@@ -658,10 +964,10 @@ export function AdminAnalytics() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    Tool Catalog & Maintenance Switches ({TOOLS_LIST.length})
+                    {adminLoc.toolsTitle} ({TOOLS_LIST.length})
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Live operational switches for all 220+ productivity utilities.
+                    {adminLoc.toolsSubtitle}
                   </p>
                 </div>
 
@@ -670,7 +976,7 @@ export function AdminAnalytics() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search tools..."
+                    placeholder={adminLoc.searchTools}
                     className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-hidden"
                   />
                 </div>
@@ -678,26 +984,28 @@ export function AdminAnalytics() {
 
               {/* Tools Table Container */}
               <div className="w-full min-w-0 overflow-x-auto rounded-3xl border border-slate-800 bg-slate-900 shadow-xl">
-                <table className="w-full text-left text-xs text-slate-300">
+                <table className={`w-full ${isRTL ? 'text-right' : 'text-left'} text-xs text-slate-300`}>
                   <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-800">
                     <tr>
-                      <th className="p-4">Tool Name</th>
-                      <th className="p-4">Category</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4 text-right">Switch State</th>
+                      <th className="p-4">{adminLoc.tool}</th>
+                      <th className="p-4">{adminLoc.filterAll}</th>
+                      <th className="p-4">{adminLoc.status}</th>
+                      <th className={`p-4 ${isRTL ? 'text-left' : 'text-right'}`}>{adminLoc.maintenance}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
                     {filteredTools.map((tool) => {
+                      const localized = getLocalizedTool(tool, language);
+                      const localizedCat = getLocalizedCategory(tool.category, language);
                       const status = toolStatuses[tool.id] || 'active';
                       return (
                         <tr key={tool.id} className="hover:bg-slate-800/50 transition-colors">
                           <td className="p-4">
-                            <div className="font-bold text-white">{tool.name}</div>
-                            <div className="text-[11px] text-slate-400">{tool.shortDesc}</div>
+                            <div className="font-bold text-white">{localized.name}</div>
+                            <div className="text-[11px] text-slate-400">{localized.shortDesc}</div>
                           </td>
-                          <td className="p-4 font-mono text-[11px] text-slate-400 uppercase">
-                            {tool.category}
+                          <td className="p-4 font-mono text-[11px] text-slate-400">
+                            {localizedCat}
                           </td>
                           <td className="p-4">
                             <span
@@ -709,16 +1017,16 @@ export function AdminAnalytics() {
                                   : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                               }`}
                             >
-                              {status}
+                              {status === 'active' ? adminLoc.statusActive : status === 'maintenance' ? adminLoc.statusMaintenance : adminLoc.statusDisabled}
                             </span>
                           </td>
-                          <td className="p-4 text-right">
+                          <td className={`p-4 ${isRTL ? 'text-left' : 'text-right'}`}>
                             <button
                               type="button"
                               onClick={() => handleToggleToolStatus(tool.id)}
                               className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors"
                             >
-                              Toggle
+                              {status === 'active' ? adminLoc.maintenance : adminLoc.enable}
                             </button>
                           </td>
                         </tr>
@@ -876,18 +1184,18 @@ export function AdminAnalytics() {
               <div>
                 <h2 className="text-xl sm:text-2xl font-black text-rose-400 tracking-tight flex items-center gap-2">
                   <AlertOctagon className="w-6 h-6" />
-                  <span>Administrative Danger Zone</span>
+                  <span>{adminLoc.dangerTitle}</span>
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Irreversible administrative operations. Use extreme caution.
+                  {adminLoc.dangerDesc}
                 </p>
               </div>
 
               <div className="p-6 rounded-3xl bg-rose-950/20 border border-rose-900/50 space-y-4">
                 <div>
-                  <h3 className="font-bold text-white text-sm">Emergency Local Cache & Queue Purge</h3>
+                  <h3 className="font-bold text-white text-sm">{adminLoc.dangerTitle}</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    Immediately wipe all IndexedDB records, processed file blobs, and active conversion jobs from this device.
+                    {adminLoc.dangerDesc}
                   </p>
                 </div>
 
@@ -897,7 +1205,7 @@ export function AdminAnalytics() {
                   className="px-4 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-colors flex items-center gap-2"
                 >
                   <Trash2 className="w-4 h-4" />
-                  <span>Execute Emergency Purge</span>
+                  <span>{adminLoc.purgeButton}</span>
                 </button>
               </div>
             </div>

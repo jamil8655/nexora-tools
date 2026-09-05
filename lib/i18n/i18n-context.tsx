@@ -9,6 +9,7 @@ interface I18nContextType {
   t: Translations;
   dir: 'ltr' | 'rtl';
   isRtl: boolean;
+  isRTL: boolean;
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
@@ -50,7 +51,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
 
   return (
-    <I18nContext.Provider value={{ language, setLanguage, t, dir, isRtl }}>
+    <I18nContext.Provider value={{ language, setLanguage, t, dir, isRtl, isRTL: isRtl }}>
       {children}
     </I18nContext.Provider>
   );
