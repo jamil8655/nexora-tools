@@ -26,8 +26,11 @@ import {
 } from 'lucide-react';
 import { TOOLS_LIST, CATEGORIES_CONFIG } from '@/lib/tools-config';
 import { ToolCard } from '@/components/shared/ToolCard';
+import { HorizontalRecentToolsCarousel } from '@/components/shared/HorizontalRecentToolsCarousel';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useUserStore } from '@/lib/user/user-store';
+
+import { getLocalizedTool, getLocalizedCategory } from '@/lib/i18n/catalog-translations';
 
 const categoryIconMap: Record<string, React.ElementType> = {
   pdf: FileText,
@@ -59,21 +62,73 @@ const categoryColorMap: Record<string, { bg: string; text: string }> = {
   ai: { bg: 'bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400', text: 'text-sky-600 dark:text-sky-400' },
 };
 
-export default function HomePage() {
-  const { t } = useI18n();
-  const { favorites, history, pinnedTools, recentTools: trackedRecents } = useUserStore();
-  const [activeCategory, setActiveCategory] = useState<string>('all');
+const HOME_LOCALES = {
+  en: {
+    bookmarked: (count: number) => `Bookmarked Tools (${count})`,
+    manageBookmarks: 'Manage Bookmarks →',
+    frequentUtilities: 'Frequent Utilities',
+    allToolsLink: 'All 220+ Tools →',
+    categories: 'Tool Categories',
+    showAllCategories: 'Show All Categories',
+    toolsCount: (count: number) => `${count} tools`,
+    popularTools: 'Popular Tools',
+    selectedTools: (catLabel: string) => `${catLabel} Tools`,
+    exploreDirectory: (count: number) => `Explore All ${count} Tools in Directory`,
+  },
+  ur: {
+    bookmarked: (count: number) => `محفوظ شدہ ٹولز (${count})`,
+    manageBookmarks: 'بک مارکس کا انتظام کریں ←',
+    frequentUtilities: 'اکثر استعمال ہونے والے ٹولز',
+    allToolsLink: 'تمام 220+ ٹولز دیکھیں ←',
+    categories: 'اقسام کی فہرست',
+    showAllCategories: 'تمام اقسام دیکھیں',
+    toolsCount: (count: number) => `${count} ٹولز`,
+    popularTools: 'مقبول ترین ٹولز',
+    selectedTools: (catLabel: string) => `${catLabel} کے ٹولز`,
+    exploreDirectory: (count: number) => `ڈائرکٹری کے تمام ${count} ٹولز دیکھیں`,
+  },
+  ar: {
+    bookmarked: (count: number) => `الأدوات المحفوظة (${count})`,
+    manageBookmarks: 'إدارة الإشارات المرجعية ←',
+    frequentUtilities: 'الأدوات الشائعة',
+    allToolsLink: 'جميع الأدوات 220+ ←',
+    categories: 'تصنيفات الأدوات',
+    showAllCategories: 'عرض جميع التصنيفات',
+    toolsCount: (count: number) => `${count} أداة`,
+    popularTools: 'الأدوات الشائعة',
+    selectedTools: (catLabel: string) => `أدوات ${catLabel}`,
+    exploreDirectory: (count: number) => `استكشف جميع الأدوات (${count}) في الدليل`,
+  },
+  hi: {
+    bookmarked: (count: number) => `बुकमार्क किए गए टूल्स (${count})`,
+    manageBookmarks: 'बुकमार्क प्रबंधित करें →',
+    frequentUtilities: 'अक्सर उपयोग किए जाने वाले टूल्स',
+    allToolsLink: 'सभी 220+ टूल्स देखें →',
+    categories: 'टूल श्रेणियां',
+    showAllCategories: 'सभी श्रेणियां दिखाएं',
+    toolsCount: (count: number) => `${count} टूल्स`,
+    popularTools: 'लोकप्रिय टूल्स',
+    selectedTools: (catLabel: string) => `${catLabel} टूल्स`,
+    exploreDirectory: (count: number) => `निर्देशिका में सभी ${count} टूल्स देखें`,
+  },
+};
 
-  const quickActions = [
-    { name: 'Compress PDF', href: '/tools/compress-pdf', icon: Minimize2, color: 'bg-rose-500', desc: 'Reduce file size' },
-    { name: 'Merge PDF', href: '/tools/merge-pdf', icon: Combine, color: 'bg-blue-500', desc: 'Combine documents' },
-    { name: 'PDF to Word', href: '/tools/pdf-to-word', icon: FileText, color: 'bg-indigo-500', desc: 'Convert to DOCX' },
-    { name: 'Word to PDF', href: '/tools/word-to-pdf', icon: FileText, color: 'bg-teal-500', desc: 'Convert to PDF' },
-    { name: 'Images to PDF', href: '/tools/images-to-pdf', icon: ImageIcon, color: 'bg-amber-500', desc: 'Convert photos' },
-    { name: 'Image Resizer', href: '/tools/image-resizer', icon: Camera, color: 'bg-emerald-500', desc: 'Custom dimensions' },
-    { name: 'OCR to Text', href: '/tools/ocr-image-to-text', icon: ScanText, color: 'bg-purple-500', desc: 'Extract text' },
-    { name: 'QR Code Studio', href: '/tools/qr-code-generator', icon: QrCode, color: 'bg-cyan-500', desc: 'Create QR codes' },
-  ];
+const QUICK_ACTION_DEFINITIONS = [
+  { id: 'compress-pdf', color: 'bg-rose-500', fallbackIcon: Minimize2 },
+  { id: 'merge-pdf', color: 'bg-blue-500', fallbackIcon: Combine },
+  { id: 'pdf-to-word', color: 'bg-indigo-500', fallbackIcon: FileText },
+  { id: 'word-to-pdf', color: 'bg-teal-500', fallbackIcon: FileText },
+  { id: 'images-to-pdf', color: 'bg-amber-500', fallbackIcon: ImageIcon },
+  { id: 'image-resizer', color: 'bg-emerald-500', fallbackIcon: Camera },
+  { id: 'ocr-image-to-text', color: 'bg-purple-500', fallbackIcon: ScanText },
+  { id: 'qr-code-generator', color: 'bg-cyan-500', fallbackIcon: QrCode },
+];
+
+export default function HomePage() {
+  const { language, isRTL } = useI18n();
+  const { favorites, pinnedTools } = useUserStore();
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const loc = HOME_LOCALES[language] || HOME_LOCALES.en;
 
   // User's bookmarked favorite tools
   const favoriteTools = TOOLS_LIST.filter(
@@ -82,19 +137,13 @@ export default function HomePage() {
       pinnedTools.includes(tool.id)
   );
 
-  // User's real recent tools
-  const recentToolIds = Array.from(new Set(history.map((h) => h.url.replace('/tools/', ''))));
-  const recentTools = (
-    trackedRecents && trackedRecents.length > 0
-      ? trackedRecents.map((r) => TOOLS_LIST.find((t) => t.id === r.toolId || t.slug === r.toolId)).filter(Boolean)
-      : TOOLS_LIST.filter((tool) =>
-          recentToolIds.includes(tool.id) || recentToolIds.includes(tool.slug)
-        )
-  ).slice(0, 4) as typeof TOOLS_LIST;
-
   const filteredTools = TOOLS_LIST.filter((tool) => {
     return activeCategory === 'all' || tool.category === activeCategory;
   });
+
+  const activeCategoryLabel = activeCategory === 'all'
+    ? loc.popularTools
+    : loc.selectedTools(getLocalizedCategory(activeCategory, language));
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-24 overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
@@ -104,10 +153,10 @@ export default function HomePage() {
           <div className="flex items-center justify-between px-1">
             <h2 className="text-xs font-black text-brand-600 dark:text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
               <Bookmark className="w-3.5 h-3.5 fill-current" />
-              <span>Bookmarked Tools ({favoriteTools.length})</span>
+              <span>{loc.bookmarked(favoriteTools.length)}</span>
             </h2>
             <Link href="/favorites" className="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
-              Manage Bookmarks →
+              {loc.manageBookmarks}
             </Link>
           </div>
 
@@ -119,57 +168,44 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 2. RECENT TOOLS (Conditional on real user execution) */}
-      {recentTools.length > 0 && (
-        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-xs font-black text-purple-600 dark:text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" />
-              <span>Recently Used</span>
-            </h2>
-            <Link href="/history" className="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
-              View History →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {recentTools.map((tool) => (
-              <ToolCard key={`recent-${tool.id}`} tool={tool} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* 2. RECENT TOOLS (Horizontal Scrolling RTL/LTR-Aware Carousel) */}
+      <HorizontalRecentToolsCarousel />
 
       {/* 3. FREQUENT TOOLS / QUICK ACTIONS */}
       <section className="px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4 max-w-7xl mx-auto space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-amber-500" />
-            <span>Frequent Utilities</span>
+            <span>{loc.frequentUtilities}</span>
           </h2>
           <Link href="/tools" className="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
-            All 220+ Tools →
+            {loc.allToolsLink}
           </Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-          {quickActions.map((action) => {
-            const Icon = action.icon;
+          {QUICK_ACTION_DEFINITIONS.map((def) => {
+            const tool = TOOLS_LIST.find((t) => t.id === def.id || t.slug === def.id);
+            const localized = tool ? getLocalizedTool(tool, language) : null;
+            const title = localized?.name || def.id;
+            const desc = localized?.shortDesc || '';
+            const FallbackIcon = def.fallbackIcon;
+
             return (
               <Link
-                key={action.name}
-                href={action.href}
+                key={def.id}
+                href={`/tools/${tool?.slug || def.id}`}
                 className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-brand-500 dark:hover:border-brand-500 active:scale-95 transition-all flex items-center gap-3 group"
               >
-                <div className={`w-9 h-9 rounded-xl ${action.color} text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform`}>
-                  <Icon className="w-4 h-4" />
+                <div className={`w-9 h-9 rounded-xl ${def.color} text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform`}>
+                  <FallbackIcon className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-xs font-black text-slate-900 dark:text-white truncate">
-                    {action.name}
+                    {title}
                   </h3>
                   <p className="text-[10px] text-slate-400 truncate">
-                    {action.desc}
+                    {desc}
                   </p>
                 </div>
               </Link>
@@ -183,7 +219,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-brand-600" />
-            <span>Tool Categories</span>
+            <span>{loc.categories}</span>
           </h2>
           {activeCategory !== 'all' && (
             <button
@@ -191,7 +227,7 @@ export default function HomePage() {
               onClick={() => setActiveCategory('all')}
               className="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline"
             >
-              Show All Categories
+              {loc.showAllCategories}
             </button>
           )}
         </div>
@@ -202,13 +238,14 @@ export default function HomePage() {
             const count = TOOLS_LIST.filter((t) => t.category === cat.id).length;
             const isSelected = activeCategory === cat.id;
             const colors = categoryColorMap[cat.id] || { bg: 'bg-brand-500/10 text-brand-600', text: 'text-brand-600' };
+            const localizedCatName = getLocalizedCategory(cat.id, language);
 
             return (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveCategory(activeCategory === cat.id ? 'all' : cat.id)}
-                className={`p-3 rounded-2xl border text-left transition-all duration-150 active:scale-95 flex items-center gap-3 min-h-[64px] ${
+                className={`p-3 rounded-2xl border text-left rtl:text-right transition-all duration-150 active:scale-95 flex items-center gap-3 min-h-[64px] ${
                   isSelected
                     ? 'bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'
@@ -222,9 +259,9 @@ export default function HomePage() {
                   <Icon className="w-4 h-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-black truncate">{cat.label}</p>
+                  <p className="text-xs font-black truncate">{localizedCatName}</p>
                   <p className={`text-[10px] ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
-                    {count} tools
+                    {loc.toolsCount(count)}
                   </p>
                 </div>
               </button>
@@ -237,11 +274,9 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
-            {activeCategory === 'all'
-              ? 'Popular Tools'
-              : `${CATEGORIES_CONFIG.find((c) => c.id === activeCategory)?.label || 'Selected'} Tools`}
+            {activeCategoryLabel}
           </h2>
-          <span className="text-[11px] text-slate-400 font-semibold">{filteredTools.length} tools</span>
+          <span className="text-[11px] text-slate-400 font-semibold">{loc.toolsCount(filteredTools.length)}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -256,8 +291,12 @@ export default function HomePage() {
               href={`/tools${activeCategory !== 'all' ? `?cat=${activeCategory}` : ''}`}
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-900 dark:text-white font-bold text-xs hover:border-brand-500 shadow-xs active:scale-95 transition-all"
             >
-              <span>Explore All {filteredTools.length} Tools in Directory</span>
-              <ArrowRight className="w-4 h-4 text-brand-600" />
+              <span>{loc.exploreDirectory(filteredTools.length)}</span>
+              {isRTL ? (
+                <ArrowRight className="w-4 h-4 text-brand-600 rotate-180" />
+              ) : (
+                <ArrowRight className="w-4 h-4 text-brand-600" />
+              )}
             </Link>
           </div>
         )}
