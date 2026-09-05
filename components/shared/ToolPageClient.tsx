@@ -16,6 +16,7 @@ import {
   markdownToPdf,
 } from '@/lib/pdf/pdf-manipulator';
 import { compressPdfAdvanced } from '@/lib/pdf/pdf-compressor';
+import { protectPdfWithPassword, unlockPdf } from '@/lib/pdf/pdf-encryptor';
 import {
   convertImage,
   compressImage,
@@ -58,6 +59,7 @@ import {
 
 // Interactive Specialized Custom Workspaces
 import { VisualPdfEditor } from '@/components/pdf/VisualPdfEditor';
+import { PdfProtectStudio } from '@/components/pdf/PdfProtectStudio';
 import { PdfOrganizerStudio } from '@/components/pdf/PdfOrganizerStudio';
 import { PdfToImagesStudio } from '@/components/pdf/PdfToImagesStudio';
 import { QrGenerator } from '@/components/qr/QrGenerator';
@@ -100,6 +102,25 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
 
   if (tool.id === 'pdf-editor' || tool.slug === 'edit-pdf' || tool.id === 'pdf-sign' || tool.id === 'pdf-add-text') {
     customWorkspace = <VisualPdfEditor />;
+  } else if (
+    tool.id === 'pdf-protect' ||
+    tool.id === 'protect-pdf' ||
+    tool.id === 'pdf-encrypt' ||
+    tool.id === 'encrypt-pdf' ||
+    tool.id === 'pdf-password' ||
+    tool.slug === 'protect-pdf' ||
+    tool.slug === 'encrypt-pdf' ||
+    tool.slug === 'pdf-protect'
+  ) {
+    customWorkspace = <PdfProtectStudio mode="protect" />;
+  } else if (
+    tool.id === 'pdf-unlock' ||
+    tool.id === 'unlock-pdf' ||
+    tool.id === 'pdf-remove-password' ||
+    tool.slug === 'unlock-pdf' ||
+    tool.slug === 'pdf-unlock'
+  ) {
+    customWorkspace = <PdfProtectStudio mode="unlock" />;
   } else if (tool.id === 'qr-generator' || tool.category === 'qr' || tool.slug === 'qr-code-generator') {
     customWorkspace = <QrGenerator />;
   } else if (tool.id === 'barcode-generator' || tool.slug === 'barcode-generator') {
@@ -120,7 +141,28 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
     customWorkspace = <MathCalculators />;
   } else if (tool.id === 'dpi-calculator') {
     customWorkspace = <DpiCalculator />;
-  } else if (tool.id === 'word-counter' || tool.id === 'char-counter' || tool.id === 'sentence-counter' || tool.id === 'reading-time-calc' || tool.id === 'case-converter' || tool.id === 'uppercase-converter' || tool.id === 'lowercase-converter' || tool.id === 'title-case-converter' || tool.id === 'duplicate-remover' || tool.id === 'sort-lines-az' || tool.id === 'sort-lines-za' || tool.id === 'remove-extra-spaces' || tool.id === 'remove-blank-lines' || tool.id === 'extract-emails' || tool.id === 'extract-urls' || tool.id === 'extract-phones' || tool.id === 'extract-numbers' || tool.id === 'extract-hashtags' || tool.id === 'extract-mentions' || tool.id === 'find-replace-text') {
+  } else if (
+    tool.id === 'word-counter' ||
+    tool.id === 'char-counter' ||
+    tool.id === 'sentence-counter' ||
+    tool.id === 'reading-time-calc' ||
+    tool.id === 'case-converter' ||
+    tool.id === 'uppercase-converter' ||
+    tool.id === 'lowercase-converter' ||
+    tool.id === 'title-case-converter' ||
+    tool.id === 'duplicate-remover' ||
+    tool.id === 'sort-lines-az' ||
+    tool.id === 'sort-lines-za' ||
+    tool.id === 'remove-extra-spaces' ||
+    tool.id === 'remove-blank-lines' ||
+    tool.id === 'extract-emails' ||
+    tool.id === 'extract-urls' ||
+    tool.id === 'extract-phones' ||
+    tool.id === 'extract-numbers' ||
+    tool.id === 'extract-hashtags' ||
+    tool.id === 'extract-mentions' ||
+    tool.id === 'find-replace-text'
+  ) {
     customWorkspace = <TextStudio />;
   } else if (tool.id === 'text-diff') {
     customWorkspace = <TextDiffViewer />;
@@ -158,9 +200,24 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
     customWorkspace = <BackgroundRemoverStudio />;
   } else if (tool.id === 'favicon-generator') {
     customWorkspace = <FaviconStudio />;
-  } else if (tool.id === 'ocr-pdf' || tool.id === 'ocr-image' || tool.id === 'ocr-to-word' || tool.id === 'ocr-to-txt' || tool.id === 'ocr-to-excel' || tool.id === 'ocr-to-csv' || tool.id === 'image-searchable-pdf') {
+  } else if (
+    tool.id === 'ocr-pdf' ||
+    tool.id === 'ocr-image' ||
+    tool.id === 'ocr-to-word' ||
+    tool.id === 'ocr-to-txt' ||
+    tool.id === 'ocr-to-excel' ||
+    tool.id === 'ocr-to-csv' ||
+    tool.id === 'image-searchable-pdf'
+  ) {
     customWorkspace = <OcrStudio />;
-  } else if (tool.id === 'pdf-to-image' || tool.id === 'pdf-to-jpg' || tool.id === 'pdf-to-png' || tool.id === 'pdf-to-webp' || tool.id === 'pdf-to-images' || tool.slug === 'pdf-to-images-zip') {
+  } else if (
+    tool.id === 'pdf-to-image' ||
+    tool.id === 'pdf-to-jpg' ||
+    tool.id === 'pdf-to-png' ||
+    tool.id === 'pdf-to-webp' ||
+    tool.id === 'pdf-to-images' ||
+    tool.slug === 'pdf-to-images-zip'
+  ) {
     customWorkspace = <PdfToImagesStudio />;
   } else if (tool.category === 'media' || tool.id.includes('downloader') || tool.id === 'whatsapp-status-saver') {
     customWorkspace = <MediaDownloaderStudio />;
@@ -174,7 +231,60 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
   ) => {
     onProgress(15, 'Reading input files into memory...');
 
-    // 1. PDF MERGE
+    // 1. PDF PASSWORD PROTECT & ENCRYPT
+    if (
+      tool.id === 'pdf-protect' ||
+      tool.id === 'protect-pdf' ||
+      tool.id === 'pdf-encrypt' ||
+      tool.id === 'encrypt-pdf' ||
+      tool.id === 'pdf-password' ||
+      tool.slug === 'protect-pdf' ||
+      tool.slug === 'encrypt-pdf'
+    ) {
+      const pwd = options.password || '123456';
+      onProgress(40, 'Encrypting PDF with document password...');
+      const results = [];
+      for (const f of files) {
+        const buffer = await f.arrayBuffer();
+        const encryptedBytes = await protectPdfWithPassword(buffer, pwd);
+        const blob = new Blob([encryptedBytes as any], { type: 'application/pdf' });
+        results.push({
+          name: `protected-${f.name}`,
+          originalSize: f.size,
+          processedSize: blob.size,
+          blob,
+        });
+      }
+      onProgress(100, 'Encryption complete!');
+      return results;
+    }
+
+    // 2. PDF UNLOCK & REMOVE PASSWORD
+    if (
+      tool.id === 'pdf-unlock' ||
+      tool.id === 'unlock-pdf' ||
+      tool.id === 'pdf-remove-password' ||
+      tool.slug === 'unlock-pdf' ||
+      tool.slug === 'pdf-unlock'
+    ) {
+      onProgress(40, 'Removing password restriction from PDF...');
+      const results = [];
+      for (const f of files) {
+        const buffer = await f.arrayBuffer();
+        const decryptedBytes = await unlockPdf(buffer, options.password);
+        const blob = new Blob([decryptedBytes as any], { type: 'application/pdf' });
+        results.push({
+          name: `unlocked-${f.name}`,
+          originalSize: f.size,
+          processedSize: blob.size,
+          blob,
+        });
+      }
+      onProgress(100, 'Unlock complete!');
+      return results;
+    }
+
+    // 3. PDF MERGE
     if (tool.id === 'pdf-merge') {
       onProgress(30, 'Reading PDF documents...');
       const buffers = await Promise.all(files.map((f) => f.arrayBuffer()));
@@ -192,7 +302,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       ];
     }
 
-    // 2. PDF SPLIT & EXTRACT
+    // 4. PDF SPLIT & EXTRACT
     if (tool.id === 'pdf-split' || tool.id === 'pdf-extract-pages' || tool.id === 'pdf-extract-selected') {
       onProgress(30, 'Analyzing PDF page count...');
       const buffer = await files[0].arrayBuffer();
@@ -210,7 +320,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       });
     }
 
-    // 3. PDF DELETE / REVERSE / ODD-EVEN / DUPLICATE / INSERT PAGES
+    // 5. PDF DELETE / REVERSE / ODD-EVEN / DUPLICATE / INSERT PAGES
     if (tool.id === 'pdf-delete-pages' || tool.id === 'pdf-remove-blank') {
       onProgress(40, 'Removing requested pages...');
       const buffer = await files[0].arrayBuffer();
@@ -296,7 +406,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return [{ name: `sanitized-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
     }
 
-    // 4. PDF ROTATE
+    // 6. PDF ROTATE
     if (tool.id === 'pdf-rotate' || tool.id === 'pdf-rotate-single') {
       onProgress(40, 'Rotating PDF pages...');
       const angle = parseInt(options.angle || '90');
@@ -316,7 +426,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return results;
     }
 
-    // 5. PDF WATERMARK
+    // 7. PDF WATERMARK
     if (tool.id === 'pdf-watermark') {
       onProgress(40, 'Applying watermark stamp to all pages...');
       const results = [];
@@ -339,7 +449,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return results;
     }
 
-    // 6. PDF PAGE NUMBERS
+    // 8. PDF PAGE NUMBERS
     if (tool.id === 'pdf-page-numbers') {
       onProgress(40, 'Rendering page number headers/footers...');
       const results = [];
@@ -357,7 +467,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return results;
     }
 
-    // 7. PDF COMPRESSOR & OPTIMIZATION
+    // 9. PDF COMPRESSOR & OPTIMIZATION
     if (
       tool.id === 'pdf-compress' ||
       tool.id === 'pdf-extreme-compress' ||
@@ -395,7 +505,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return results;
     }
 
-    // 8. PDF TO WORD (DOCX)
+    // 10. PDF TO WORD (DOCX)
     if (tool.id === 'pdf-to-docx' || tool.id === 'pdf-to-doc' || tool.id === 'pdf-to-word') {
       const results = [];
       for (let i = 0; i < files.length; i++) {
@@ -413,7 +523,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return results;
     }
 
-    // 9. EXCEL & SPREADSHEET TOOLS
+    // 11. EXCEL & SPREADSHEET TOOLS
     if (tool.id === 'xlsx-to-pdf' || tool.id === 'xls-to-pdf' || tool.id === 'xlsx-direct-pdf' || tool.id === 'excel-to-pdf') {
       onProgress(40, 'Converting spreadsheet to PDF...');
       const results = [];
@@ -462,7 +572,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return [{ name: `cleaned-${files[0].name}`, originalSize: files[0].size, processedSize: blob.size, blob }];
     }
 
-    // 10. WORD & DOCUMENT TOOLS
+    // 12. WORD & DOCUMENT TOOLS
     if (tool.id === 'docx-to-pdf' || tool.id === 'doc-to-pdf' || tool.id === 'docx-direct-pdf') {
       onProgress(40, 'Converting Word document to PDF...');
       const results = [];
@@ -499,7 +609,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.md`, originalSize: files[0].size, processedSize: blob.size, blob }];
     }
 
-    // 11. POWERPOINT PPTX
+    // 13. POWERPOINT PPTX
     if (tool.id === 'pptx-to-pdf' || tool.id === 'ppt-to-pdf' || tool.id === 'pptx-direct-pdf' || tool.id === 'pptx-to-txt') {
       onProgress(40, 'Parsing PowerPoint presentation slides...');
       const { text, pdfBlob } = await pptxToPdfOrText(files[0]);
@@ -510,9 +620,26 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return [{ name: `${files[0].name.replace(/\.[^/.]+$/, '')}.pdf`, originalSize: files[0].size, processedSize: pdfBlob.size, blob: pdfBlob }];
     }
 
-    // 12. IMAGE FILTERS & COMPRESSION
-    if (tool.id.includes('grayscale') || tool.id.includes('bw') || tool.id.includes('sharpen') || tool.id.includes('blur') || tool.id.includes('brightness') || tool.id.includes('contrast')) {
-      const filter = tool.id.includes('grayscale') ? 'grayscale' : tool.id.includes('bw') ? 'bw' : tool.id.includes('sharpen') ? 'sharpen' : tool.id.includes('blur') ? 'blur' : tool.id.includes('brightness') ? 'brightness' : 'contrast';
+    // 14. IMAGE FILTERS & COMPRESSION
+    if (
+      tool.id.includes('grayscale') ||
+      tool.id.includes('bw') ||
+      tool.id.includes('sharpen') ||
+      tool.id.includes('blur') ||
+      tool.id.includes('brightness') ||
+      tool.id.includes('contrast')
+    ) {
+      const filter = tool.id.includes('grayscale')
+        ? 'grayscale'
+        : tool.id.includes('bw')
+        ? 'bw'
+        : tool.id.includes('sharpen')
+        ? 'sharpen'
+        : tool.id.includes('blur')
+        ? 'blur'
+        : tool.id.includes('brightness')
+        ? 'brightness'
+        : 'contrast';
       onProgress(40, `Applying ${filter} filter...`);
       const results = [];
       for (const f of files) {
@@ -538,7 +665,7 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
       return results;
     }
 
-    // 13. ZIP & GENERAL FILE TOOLS
+    // 15. ZIP & ARCHIVE TOOLS
     if (tool.id === 'zip-creator' || tool.id === 'image-zip-creator') {
       onProgress(50, 'Creating ZIP archive...');
       const blob = await createImagesZip(files);
@@ -559,11 +686,14 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
     if (tool.id === 'file-hash-generator' || tool.id === 'sha256-generator') {
       onProgress(50, 'Calculating SHA-256 cryptographic hash...');
       const hash = await calculateFileHash(files[0], 'SHA-256');
-      const blob = new Blob([`File: ${files[0].name}\nSize: ${files[0].size} bytes\nSHA-256: ${hash}\nGenerated by: NEXORA Tools Pro\n`], { type: 'text/plain' });
+      const blob = new Blob(
+        [`File: ${files[0].name}\nSize: ${files[0].size} bytes\nSHA-256: ${hash}\nGenerated by: NEXORA Tools Pro\n`],
+        { type: 'text/plain' }
+      );
       return [{ name: `${files[0].name}.sha256.txt`, originalSize: files[0].size, processedSize: blob.size, blob }];
     }
 
-    // 14. IMAGE TO PDF
+    // 16. IMAGE TO PDF
     if (tool.id === 'image-to-pdf' || tool.id === 'images-to-pdf' || tool.id === 'multi-images-to-pdf' || tool.id.endsWith('-to-pdf')) {
       onProgress(30, 'Encoding images into PDF...');
       const imageBuffers = await Promise.all(

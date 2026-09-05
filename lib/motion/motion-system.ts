@@ -33,7 +33,7 @@ export const MOTION = {
 /**
  * Trigger subtle native haptic feedback on supported Android / Web devices
  */
-export function triggerHaptic(type: 'light' | 'medium' | 'success' | 'selection' = 'light') {
+export function triggerHaptic(type: 'light' | 'medium' | 'success' | 'selection' | 'error' = 'light') {
   if (typeof window === 'undefined' || !window.navigator) return;
 
   try {
@@ -48,6 +48,9 @@ export function triggerHaptic(type: 'light' | 'medium' | 'success' | 'selection'
           break;
         case 'success':
           navigator.vibrate([15, 30, 20]);
+          break;
+        case 'error':
+          navigator.vibrate([30, 40, 30]);
           break;
       }
     }

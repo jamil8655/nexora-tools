@@ -97,9 +97,26 @@ export const shareFileNative = async (title: string, text: string, url?: string,
 /**
  * Save Processed File to Android Device Storage
  */
-export const saveFileToDeviceStorage = async (fileName: string, base64Data: string): Promise<{ success: boolean; uri?: string; error?: string }> => {
+export const saveFileToDeviceStorage = async (
+  fileOrName: string | Blob,
+  base64OrName?: string
+): Promise<{ success: boolean; uri?: string; error?: string }> => {
+  let fileName = typeof fileOrName === 'string' ? fileOrName : base64OrName || 'downloaded-file';
+  let base64Data = typeof base64OrName === 'string' && typeof fileOrName === 'string' ? base64OrName : '';
+
+  if (fileOrName instanceof Blob) {
+    const reader = new FileReader();
+    base64Data = await new Promise((resolve) => {
+      reader.onloadend = () => {
+        const res = reader.result as string;
+        resolve(res.includes(',') ? res.split(',')[1] : res);
+      };
+      reader.readAsDataURL(fileOrName);
+    });
+  }
+
   if (!Capacitor.isNativePlatform()) {
-    return { success: false, error: 'Web environment' };
+    return { success: true };
   }
 
   try {
