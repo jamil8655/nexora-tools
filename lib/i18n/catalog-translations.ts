@@ -392,6 +392,30 @@ export const TOOL_TRANSLATIONS: Record<string, Record<Language, { name: string; 
     ar: { name: 'تحويل الفيديو إلى صوت MP3', shortDesc: 'استخراج الصوت عالي الجودة من مقاطع الفيديو بصيغة MP3.' },
     hi: { name: 'वीडियो से MP3 ऑडियो निकालें', shortDesc: 'किसी भी वीडियो फ़ाइल से साफ़ MP3 ऑडियो अलग करें।' },
   },
+  'financial-calculators': {
+    en: { name: 'Loan & EMI Calculator', shortDesc: 'Calculate monthly loan EMI, total interest, and amortized repayment schedules.' },
+    ur: { name: 'قرض اور قسط (EMI) کیلکولیٹر', shortDesc: 'ماہانہ قسط (EMI)، کل سود اور قرض کی ادائیگی کا حساب لگائیں۔' },
+    ar: { name: 'حاسبة القروض والأقساط الشهرية', shortDesc: 'حساب القسط الشهري، إجمالي الفوائد، وجدول سداد القرض.' },
+    hi: { name: 'लोन और ईएमआई (EMI) कैलकुलेटर', shortDesc: 'मासिक ईएमआई, कुल ब्याज और ऋण भुगतान अनुसूची की गणना करें।' },
+  },
+  'gst-calculator': {
+    en: { name: 'GST & Sales Tax Calculator', shortDesc: 'Calculate inclusive and exclusive GST / VAT taxes with CGST and SGST splits.' },
+    ur: { name: 'جی ایس ٹی اور سیلز ٹیکس کیلکولیٹر', shortDesc: 'جی ایس ٹی اور ویٹ ٹیکس کا حساب لگائیں (CGST + SGST تقسیم کے ساتھ)۔' },
+    ar: { name: 'حاسبة ضريبة القيمة المضافة (GST/VAT)', shortDesc: 'حساب الضرائب الشاملة وغير الشاملة وتفصيل الضريبة المضافة.' },
+    hi: { name: 'जीएसटी और टैक्स कैलकुलेटर', shortDesc: 'जीएसटी और वैट टैक्स की गणना करें (CGST + SGST विभाजन के साथ)।' },
+  },
+  'discount-calculator': {
+    en: { name: 'Discount & Sale Calculator', shortDesc: 'Calculate final shopping price, percentage discounts, and total money saved.' },
+    ur: { name: 'رعایت اور بچت کیلکولیٹر', shortDesc: 'خریداری کی حتمی قیمت، فیصد رعایت اور کل بچت کا حساب لگائیں۔' },
+    ar: { name: 'حاسبة الخصومات والعروض والتوفير', shortDesc: 'حساب السعر النهائي بعد الخصم ونسبة التوفير الإجمالية.' },
+    hi: { name: 'छूट और बचत कैलकुलेटर', shortDesc: 'अंतिम खरीद मूल्य, प्रतिशत छूट और कुल बचत की गणना करें।' },
+  },
+  'profit-margin-calculator': {
+    en: { name: 'Profit Margin & Markup Calculator', shortDesc: 'Calculate gross profit, profit margins, and markup percentages for products.' },
+    ur: { name: 'منافع کا مارجن اور مارک اپ', shortDesc: 'کاروبار یا مصنوعات کے خالص منافع، مارجن اور مارک اپ فیصد کا حساب لگائیں۔' },
+    ar: { name: 'حاسبة هامش الربح والزيادة', shortDesc: 'حساب إجمالي الربح، هامش الربح المئوي ونسبة زيادة الأسعار.' },
+    hi: { name: 'लाभ मार्जिन और मार्कअप कैलकुलेटर', shortDesc: 'उत्पाद या व्यवसाय के लिए सकल लाभ, लाभ मार्जिन और मार्कअप प्रतिशत की गणना करें।' },
+  },
 };
 
 export const COURSE_TRANSLATIONS: Record<string, Record<Language, { title: string; subtitle: string; category: string }>> = {

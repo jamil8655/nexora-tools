@@ -6215,6 +6215,106 @@ export const TOOLS_LIST: ToolDefinition[] = [
       "smart crop pdf",
       "crop image to pdf"
     ]
+  },
+  {
+    "id": "financial-calculators",
+    "slug": "emi-calculator",
+    "name": "Loan & EMI Calculator",
+    "shortDesc": "Calculate monthly loan EMI, total interest, and amortized repayment schedules.",
+    "fullDesc": "Calculate monthly loan EMI, total interest, and amortized repayment schedules.",
+    "category": "calculator",
+    "icon": "Coins",
+    "popular": true,
+    "featured": true,
+    "isClientSide": true,
+    "acceptedMimeTypes": [],
+    "acceptedExtensions": [],
+    "maxFiles": 0,
+    "maxFileSizeMB": 0,
+    "outputExtension": "",
+    "outputMimeType": "",
+    "tags": [
+      "emi calculator",
+      "loan calculator",
+      "mortgage calculator",
+      "home loan emi",
+      "car loan emi",
+      "finance"
+    ]
+  },
+  {
+    "id": "gst-calculator",
+    "slug": "gst-calculator",
+    "name": "GST & Sales Tax Calculator",
+    "shortDesc": "Calculate inclusive and exclusive GST / VAT taxes with CGST and SGST splits.",
+    "fullDesc": "Calculate inclusive and exclusive GST / VAT taxes with CGST and SGST splits.",
+    "category": "calculator",
+    "icon": "Receipt",
+    "popular": true,
+    "featured": false,
+    "isClientSide": true,
+    "acceptedMimeTypes": [],
+    "acceptedExtensions": [],
+    "maxFiles": 0,
+    "maxFileSizeMB": 0,
+    "outputExtension": "",
+    "outputMimeType": "",
+    "tags": [
+      "gst calculator",
+      "vat calculator",
+      "sales tax calculator",
+      "tax calculator",
+      "cgst sgst"
+    ]
+  },
+  {
+    "id": "discount-calculator",
+    "slug": "discount-calculator",
+    "name": "Discount & Sale Calculator",
+    "shortDesc": "Calculate final shopping price, percentage discounts, and total money saved.",
+    "fullDesc": "Calculate final shopping price, percentage discounts, and total money saved.",
+    "category": "calculator",
+    "icon": "Tag",
+    "popular": false,
+    "featured": false,
+    "isClientSide": true,
+    "acceptedMimeTypes": [],
+    "acceptedExtensions": [],
+    "maxFiles": 0,
+    "maxFileSizeMB": 0,
+    "outputExtension": "",
+    "outputMimeType": "",
+    "tags": [
+      "discount calculator",
+      "sale price",
+      "percentage off",
+      "savings calculator"
+    ]
+  },
+  {
+    "id": "profit-margin-calculator",
+    "slug": "profit-margin-calculator",
+    "name": "Profit Margin & Markup Calculator",
+    "shortDesc": "Calculate gross profit, profit margins, and markup percentages for products and businesses.",
+    "fullDesc": "Calculate gross profit, profit margins, and markup percentages for products and businesses.",
+    "category": "calculator",
+    "icon": "TrendingUp",
+    "popular": false,
+    "featured": false,
+    "isClientSide": true,
+    "acceptedMimeTypes": [],
+    "acceptedExtensions": [],
+    "maxFiles": 0,
+    "maxFileSizeMB": 0,
+    "outputExtension": "",
+    "outputMimeType": "",
+    "tags": [
+      "profit margin",
+      "markup calculator",
+      "cost price",
+      "selling price",
+      "business calculator"
+    ]
   }
 ];
 

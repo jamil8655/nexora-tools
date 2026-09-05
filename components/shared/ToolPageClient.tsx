@@ -81,6 +81,7 @@ import { GeneralUnitConverter } from '@/components/calculators/GeneralUnitConver
 import { StorageUnitConverter } from '@/components/calculators/StorageUnitConverter';
 import { BandwidthCalculator } from '@/components/calculators/BandwidthCalculator';
 import { MathCalculators } from '@/components/calculators/MathCalculators';
+import { FinancialLoanCalculators } from '@/components/calculators/FinancialLoanCalculators';
 import { DpiCalculator } from '@/components/calculators/DpiCalculator';
 import { AudioCutterStudio } from '@/components/media/AudioCutterStudio';
 import { AudioBoosterStudio } from '@/components/media/AudioBoosterStudio';
@@ -141,6 +142,21 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
     customWorkspace = <BandwidthCalculator />;
   } else if (tool.id === 'math-calculators') {
     customWorkspace = <MathCalculators />;
+  } else if (
+    tool.id === 'financial-calculators' ||
+    tool.id === 'emi-calculator' ||
+    tool.id === 'loan-calculator' ||
+    tool.id === 'gst-calculator' ||
+    tool.id === 'discount-calculator' ||
+    tool.id === 'profit-margin-calculator' ||
+    tool.id === 'compound-interest-calculator' ||
+    tool.slug === 'emi-calculator' ||
+    tool.slug === 'gst-calculator' ||
+    tool.slug === 'discount-calculator' ||
+    tool.slug === 'profit-margin-calculator' ||
+    tool.slug === 'loan-calculator'
+  ) {
+    customWorkspace = <FinancialLoanCalculators />;
   } else if (tool.id === 'dpi-calculator') {
     customWorkspace = <DpiCalculator />;
   } else if (
