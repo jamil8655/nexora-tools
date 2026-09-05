@@ -316,10 +316,20 @@ export function Header() {
 
       {/* Android Slide-over Navigation Drawer */}
       {isMenuDrawerOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end">
+        <div className="fixed inset-0 z-50 flex justify-end">
+          {/* Backdrop Click Dismiss */}
+          <div
+            onClick={() => setIsMenuDrawerOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            aria-hidden="true"
+          />
+
           <div
             dir={isRTL ? 'rtl' : 'ltr'}
-            className="w-full max-w-xs sm:max-w-sm bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col justify-between p-5 overflow-y-auto animate-in slide-in-from-right duration-200"
+            onClick={(e) => e.stopPropagation()}
+            className={`relative z-10 w-full max-w-xs sm:max-w-sm bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col justify-between p-5 overflow-y-auto animate-in duration-200 ${
+              isRTL ? 'slide-in-from-left' : 'slide-in-from-right'
+            }`}
           >
             <div className="space-y-6">
               {/* Drawer Top Header */}
