@@ -130,6 +130,16 @@ export async function reorderPdfPages(pdfBuffer: ArrayBuffer, newOrder: number[]
 }
 
 /**
+ * Reverse the order of all pages in a PDF.
+ */
+export async function reversePdfPages(pdfBuffer: ArrayBuffer): Promise<Uint8Array> {
+  const srcDoc = await PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
+  const total = srcDoc.getPageCount();
+  const reverseOrder = Array.from({ length: total }, (_, i) => total - 1 - i);
+  return await reorderPdfPages(pdfBuffer, reverseOrder);
+}
+
+/**
  * Add a diagonal or centered text watermark stamp to all pages.
  */
 export async function watermarkPdf(
