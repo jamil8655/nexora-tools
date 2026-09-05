@@ -1,13 +1,24 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Download, RefreshCw, Copy, Check, CheckCircle2, Share2, Sparkles, FolderDown } from 'lucide-react';
+import {
+  Download,
+  RefreshCw,
+  Copy,
+  Check,
+  CheckCircle2,
+  Share2,
+  Sparkles,
+  Eye,
+  FileCheck2,
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { formatBytes, calculatePercentageSaved } from '@/lib/utils/formatters';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { AdSlot } from '@/components/ads/AdSlot';
-import { shareFileNative, saveFileToDeviceStorage, isNativeAndroid } from '@/lib/native/android-bridge';
+import { shareFileNative, isNativeAndroid } from '@/lib/native/android-bridge';
 import { triggerHaptic } from '@/lib/motion/motion-system';
+import { openDownloadedFile } from '@/lib/utils/download';
 
 interface ResultPreviewProps {
   files: {
@@ -33,7 +44,8 @@ export function ResultPreview({
   const { t } = useI18n();
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [shared, setShared] = useState(false);
-  const [savedNative, setSavedNative] = useState<number | null>(null);
+  const [downloadingIndex, setDownloadingIndex] = useState<number | null>(null);
+  const [downloadedIndices, setDownloadedIndices] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     triggerHaptic('success');
@@ -55,23 +67,24 @@ export function ResultPreview({
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const handleNativeSave = async (file: ResultPreviewProps['files'][0], index: number) => {
-    if (file.blob) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const base64 = (reader.result as string).split(',')[1];
-        if (base64) {
-          const res = await saveFileToDeviceStorage(file.name, base64);
-          if (res) {
-            setSavedNative(index);
-            setTimeout(() => setSavedNative(null), 3000);
-          }
-        }
-      };
-      reader.readAsDataURL(file.blob);
-    } else {
-      onDownloadSingle(index);
+  const handleDownloadWithFeedback = async (index: number) => {
+    setDownloadingIndex(index);
+    triggerHaptic('medium');
+    try {
+      await onDownloadSingle(index);
+      setDownloadedIndices((prev) => new Set(prev).add(index));
+    } finally {
+      setTimeout(() => setDownloadingIndex(null), 400);
     }
+  };
+
+  const handlePreviewOpen = async (file: ResultPreviewProps['files'][0]) => {
+    triggerHaptic('light');
+    await openDownloadedFile({
+      name: file.name,
+      blob: file.blob,
+      mimeType: file.blob?.type,
+    });
   };
 
   const handleShare = async (file?: ResultPreviewProps['files'][0]) => {
@@ -139,6 +152,8 @@ export function ResultPreview({
         {files.map((file, idx) => {
           const processedBytes = file.processedSize || file.blob?.size;
           const isImage = file.dataUrl || (file.blob && file.blob.type.startsWith('image/'));
+          const isDownloaded = downloadedIndices.has(idx);
+          const isCurrentDownloading = downloadingIndex === idx;
 
           return (
             <div
@@ -184,13 +199,43 @@ export function ResultPreview({
                     </button>
                   )}
 
+                  {/* Quick In-App Preview / Open */}
+                  {file.blob && (
+                    <button
+                      type="button"
+                      onClick={() => handlePreviewOpen(file)}
+                      className="px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold inline-flex items-center gap-1.5 transition-all border border-slate-200 dark:border-slate-700 active:scale-95"
+                      title="Preview in app"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View</span>
+                    </button>
+                  )}
+
+                  {/* Download Button */}
                   <button
                     type="button"
-                    onClick={() => onDownloadSingle(idx)}
-                    className="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-95 text-white text-xs font-bold shadow-md shadow-brand-600/25 inline-flex items-center gap-1.5 transition-all"
+                    onClick={() => handleDownloadWithFeedback(idx)}
+                    disabled={isCurrentDownloading}
+                    className={`px-4 py-2.5 rounded-xl active:scale-95 text-white text-xs font-bold shadow-md inline-flex items-center gap-1.5 transition-all ${
+                      isDownloaded
+                        ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/25'
+                        : 'bg-brand-600 hover:bg-brand-500 shadow-brand-600/25'
+                    }`}
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Download</span>
+                    {isCurrentDownloading ? (
+                      <span className="inline-flex items-center gap-1">Saving...</span>
+                    ) : isDownloaded ? (
+                      <>
+                        <FileCheck2 className="w-3.5 h-3.5" />
+                        <span>Saved ✓</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Download</span>
+                      </>
+                    )}
                   </button>
 
                   <button
@@ -274,3 +319,4 @@ export function ResultPreview({
     </div>
   );
 }
+

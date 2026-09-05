@@ -7,8 +7,10 @@ import { PrivacyBadge } from './PrivacyBadge';
 import { FileUploader } from './FileUploader';
 import { ProgressBar } from './ProgressBar';
 import { ResultPreview } from './ResultPreview';
-import { Play, Settings2, HelpCircle } from 'lucide-react';
-import { downloadSingleFile, downloadAsZip } from '@/lib/utils/download';
+import { DownloadSuccessModal } from './DownloadSuccessModal';
+import { ToolOptionControls } from './ToolOptionControls';
+import { Play, Sparkles, HelpCircle } from 'lucide-react';
+import { downloadSingleFile, downloadAsZip, SavedFileInfo } from '@/lib/utils/download';
 import { useI18n } from '@/lib/i18n/i18n-context';
 import { useUserStore } from '@/lib/user/user-store';
 import { getLocalizedTool, getLocalizedCategory } from '@/lib/i18n/catalog-translations';
@@ -41,7 +43,14 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [options, setOptions] = useState<Record<string, any>>(() => {
-    const initial: Record<string, any> = {};
+    const initial: Record<string, any> = {
+      quality: 0.75,
+      level: 'medium',
+      outputFormat: 'image/jpeg',
+      angle: '90',
+      splitMode: 'all',
+      orientation: 'portrait',
+    };
     tool.options?.forEach((opt) => {
       initial[opt.id] = opt.defaultValue;
     });
@@ -52,6 +61,7 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
   const [progress, setProgress] = useState(0);
   const [progressStatus, setProgressStatus] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [downloadedModalFile, setDownloadedModalFile] = useState<SavedFileInfo | null>(null);
   const [results, setResults] = useState<
     {
       name: string;
@@ -66,6 +76,17 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
 
   useEffect(() => {
     setIsMounted(true);
+
+    const handleGlobalDownload = (e: CustomEvent<SavedFileInfo>) => {
+      if (e.detail) {
+        setDownloadedModalFile(e.detail);
+      }
+    };
+
+    window.addEventListener('nexora:file-downloaded' as any, handleGlobalDownload as any);
+    return () => {
+      window.removeEventListener('nexora:file-downloaded' as any, handleGlobalDownload as any);
+    };
   }, []);
 
   const handleStartProcess = async () => {
@@ -104,11 +125,12 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
     }
   };
 
-  const handleDownloadSingle = (index: number) => {
+  const handleDownloadSingle = async (index: number) => {
     if (!results || !results[index]) return;
     const file = results[index];
     if (file.blob) {
-      downloadSingleFile(file.blob, file.name);
+      const savedInfo = await downloadSingleFile(file.blob, file.name);
+      if (savedInfo) setDownloadedModalFile(savedInfo);
       addDownload({
         name: file.name,
         size: `${Math.round((file.processedSize || file.blob.size) / 1024)} KB`,
@@ -116,7 +138,8 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
       });
     } else if (file.textResult) {
       const blob = new Blob([file.textResult], { type: 'text/plain;charset=utf-8' });
-      downloadSingleFile(blob, file.name);
+      const savedInfo = await downloadSingleFile(blob, file.name);
+      if (savedInfo) setDownloadedModalFile(savedInfo);
       addDownload({
         name: file.name,
         size: `${Math.round(blob.size / 1024)} KB`,
@@ -125,7 +148,7 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
     }
   };
 
-  const handleDownloadAllZip = () => {
+  const handleDownloadAllZip = async () => {
     if (!results) return;
     const zipFiles: { name: string; blob: Blob }[] = [];
     results.forEach((r) => {
@@ -136,7 +159,8 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
       }
     });
     const zipName = `${tool.slug}-result.zip`;
-    downloadAsZip(zipFiles, zipName);
+    const savedInfo = await downloadAsZip(zipFiles, zipName);
+    if (savedInfo) setDownloadedModalFile(savedInfo);
     addDownload({
       name: zipName,
       size: 'Multi-File ZIP',
@@ -225,101 +249,14 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
               />
             )}
 
-            {/* Configurable Tool Options */}
-            {tool.options && tool.options.length > 0 && selectedFiles.length > 0 && (
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 space-y-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
-                  <Settings2 className="w-4 h-4 text-brand-500" />
-                  <span>Conversion Settings</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {tool.options.map((opt) => (
-                    <div key={opt.id} className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                        {opt.label}
-                      </label>
-
-                      {opt.type === 'select' && (
-                        <select
-                          value={options[opt.id]}
-                          onChange={(e) => setOptions({ ...options, [opt.id]: e.target.value })}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        >
-                          {opt.options?.map((o) => (
-                            <option key={o.value} value={o.value}>
-                              {o.label}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-
-                      {opt.type === 'slider' && (
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="range"
-                            min={opt.min}
-                            max={opt.max}
-                            step={opt.step}
-                            value={options[opt.id]}
-                            onChange={(e) => setOptions({ ...options, [opt.id]: parseFloat(e.target.value) })}
-                            className="flex-1 accent-brand-600"
-                          />
-                          <span className="text-xs font-bold text-brand-600 dark:text-brand-400 min-w-[36px] text-right">
-                            {options[opt.id]}
-                          </span>
-                        </div>
-                      )}
-
-                      {opt.type === 'text' && (
-                        <input
-                          type="text"
-                          value={options[opt.id]}
-                          placeholder={opt.placeholder}
-                          onChange={(e) => setOptions({ ...options, [opt.id]: e.target.value })}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        />
-                      )}
-
-                      {opt.type === 'password' && (
-                        <input
-                          type="password"
-                          value={options[opt.id]}
-                          placeholder={opt.placeholder}
-                          onChange={(e) => setOptions({ ...options, [opt.id]: e.target.value })}
-                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                        />
-                      )}
-
-                      {opt.type === 'color' && (
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="color"
-                            value={options[opt.id]}
-                            onChange={(e) => setOptions({ ...options, [opt.id]: e.target.value })}
-                            className="w-10 h-10 rounded-xl cursor-pointer border border-slate-300 dark:border-slate-600 p-0.5 bg-white dark:bg-slate-800"
-                          />
-                          <span className="text-xs font-mono text-slate-600 dark:text-slate-400">
-                            {options[opt.id]}
-                          </span>
-                        </div>
-                      )}
-
-                      {opt.type === 'checkbox' && (
-                        <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer pt-1">
-                          <input
-                            type="checkbox"
-                            checked={options[opt.id]}
-                            onChange={(e) => setOptions({ ...options, [opt.id]: e.target.checked })}
-                            className="rounded text-brand-600 focus:ring-brand-500 w-4 h-4"
-                          />
-                          <span>Enable option</span>
-                        </label>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {/* Dynamic & Fine-Grained Tool Options with Sliders & Controls */}
+            {selectedFiles.length > 0 && (
+              <ToolOptionControls
+                tool={tool}
+                files={selectedFiles}
+                options={options}
+                onOptionsChange={setOptions}
+              />
             )}
 
             {/* Error Message */}
@@ -336,7 +273,7 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
                   type="button"
                   disabled={isProcessing}
                   onClick={handleStartProcess}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-base shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 transition-all duration-150 flex items-center justify-center gap-2.5 select-none"
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed text-white font-black text-sm sm:text-base shadow-xl shadow-brand-500/25 hover:shadow-brand-500/40 transition-all duration-150 flex items-center justify-center gap-2.5 select-none"
                 >
                   <Play className="w-5 h-5 fill-current" />
                   <span>Start {tool.name}</span>
@@ -346,6 +283,12 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
           </div>
         )}
       </div>
+
+      {/* Global In-App Download Complete Modal */}
+      <DownloadSuccessModal
+        fileInfo={downloadedModalFile}
+        onClose={() => setDownloadedModalFile(null)}
+      />
 
       {/* Responsive Ad Space for Monetization */}
       <AdSlot placement="tool-bottom" />
@@ -375,3 +318,4 @@ export function ToolLayout({ tool, onProcess, customWorkspace }: ToolLayoutProps
     </div>
   );
 }
+

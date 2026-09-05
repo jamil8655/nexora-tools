@@ -81,6 +81,42 @@ public class MainActivity extends BridgeActivity {
             return false;
         }
 
+        @JavascriptInterface
+        public boolean openFileInSystem(String fileName, String mimeType) {
+            try {
+                File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File file = new File(downloadsDir, fileName);
+                if (!file.exists()) {
+                    showToast("File not found in Downloads: " + fileName);
+                    return false;
+                }
+
+                android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW);
+                String effectiveMime = (mimeType != null && !mimeType.isEmpty()) ? mimeType : "*/*";
+                
+                Uri fileUri;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    fileUri = androidx.core.content.FileProvider.getUriForFile(
+                            mContext,
+                            mContext.getPackageName() + ".fileprovider",
+                            file
+                    );
+                    intent.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } else {
+                    fileUri = Uri.fromFile(file);
+                }
+
+                intent.setDataAndType(fileUri, effectiveMime);
+                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                showToast("Cannot open file: " + e.getLocalizedMessage());
+                return false;
+            }
+        }
+
         private void showToast(final String message) {
             runOnUiThread(() -> Toast.makeText(mContext, message, Toast.LENGTH_LONG).show());
         }

@@ -20,6 +20,7 @@ import { protectPdfWithPassword, unlockPdf } from '@/lib/pdf/pdf-encryptor';
 import {
   convertImage,
   compressImage,
+  compressImageToTargetKB,
   resizeImage,
   rotateAndFlipImage,
   stripExifAndMetadata,
@@ -651,15 +652,34 @@ export function ToolPageClient({ tool }: ToolPageClientProps) {
 
     if (tool.id.includes('compress') && tool.category === 'image') {
       const results = [];
+      const targetFormat = options.outputFormat || 'image/jpeg';
+      const targetKb = options.targetKb;
+      const qualityFactor = options.quality ?? 0.75;
+
       for (let i = 0; i < files.length; i++) {
-        onProgress(Math.round(((i + 1) / files.length) * 90), `Compressing ${files[i].name}...`);
-        const compressed = await compressImage(files[i], 0.75);
+        const file = files[i];
+        onProgress(Math.round(((i + 1) / files.length) * 90), `Compressing ${file.name}...`);
+        
+        let outputBlob: Blob;
+        let dataUrl: string | undefined;
+
+        if (targetKb && targetKb > 0) {
+          const res = await compressImageToTargetKB(file, targetKb, targetFormat);
+          outputBlob = res.blob;
+          dataUrl = res.dataUrl;
+        } else {
+          const res = await compressImage(file, qualityFactor);
+          outputBlob = res.blob;
+          dataUrl = res.dataUrl;
+        }
+
+        const ext = targetFormat === 'image/png' ? 'png' : targetFormat === 'image/webp' ? 'webp' : 'jpg';
         results.push({
-          name: `compressed-${files[i].name}`,
-          originalSize: files[i].size,
-          processedSize: compressed.blob.size,
-          blob: compressed.blob,
-          dataUrl: compressed.dataUrl,
+          name: `compressed-${file.name.replace(/\.[^/.]+$/, '')}.${ext}`,
+          originalSize: file.size,
+          processedSize: outputBlob.size,
+          blob: outputBlob,
+          dataUrl,
         });
       }
       return results;

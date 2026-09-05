@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { resizeImage, compressImageToTargetKB } from '@/lib/image/image-manipulator';
 import { formatBytes } from '@/lib/utils/formatters';
+import { downloadSingleFile } from '@/lib/utils/download';
 
 export function ImageResizerStudio() {
   const [file, setFile] = useState<File | null>(null);
@@ -437,14 +438,18 @@ export function ImageResizerStudio() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <a
-                href={resultUrl}
-                download={`resized_${file?.name.replace(/\.[^/.]+$/, '')}.${format === 'image/jpeg' ? 'jpg' : format === 'image/webp' ? 'webp' : 'png'}`}
-                className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 text-xs sm:text-sm"
+              <button
+                type="button"
+                onClick={() => {
+                  const ext = format === 'image/jpeg' ? 'jpg' : format === 'image/webp' ? 'webp' : 'png';
+                  const filename = `resized_${file?.name.replace(/\.[^/.]+$/, '')}.${ext}`;
+                  downloadSingleFile(resultBlob, filename);
+                }}
+                className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 text-xs sm:text-sm active:scale-95 transition-all"
               >
                 <Download className="w-4 h-4" />
-                Download Resized Image ({formatBytes(resultBlob.size)})
-              </a>
+                <span>Download Resized Image ({formatBytes(resultBlob.size)})</span>
+              </button>
               <button
                 type="button"
                 onClick={() => {
